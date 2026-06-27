@@ -387,7 +387,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ffe613c6ea9af48b564459ed2017f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Test
-  testint: 3
+  testint: 0
+  test4int: 1
 --- !u!212 &1615925996
 SpriteRenderer:
   serializedVersion: 3
