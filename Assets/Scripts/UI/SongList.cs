@@ -9,16 +9,21 @@ public class SongList : MonoBehaviour
     public List<GameObject> SongSelectors;
     public GameObject SSprefab;
     public GameObject contentPannel;
-    public KeySetting keySetting;
+    public GameObject songIndicator;
+    public int difficultyIndex = 0;
+    // public KeySetting keySetting;
     InputSystem_Actions inputSystem_Actions;
     public InputAction cursorAction;
     private Vector2 tragetPos = new Vector2(0, 0);
     RectTransform contentRect;
     List<Song> songs = new List<Song>();
+    float SSheight;
     void Awake()
     {
         TestMakeSong("test", "artist", 100, 12, 1, 1002, ComboResult.none, 80);
-        TestMakeSong("test2", "me", 100, 11, 1, 108, ComboResult.none, 81);
+        TestMakeSong("test2", "me", 100, 11, 1, 108, ComboResult.allperfact, 81);
+
+        SSheight = SSprefab.GetComponent<RectTransform>().rect.height;
 
         inputSystem_Actions = new InputSystem_Actions();
         cursorAction = inputSystem_Actions.UI.Move;
@@ -51,24 +56,24 @@ public class SongList : MonoBehaviour
     public void TestMakeSong(string songname, string artist, float bpm, float difficulty, int totalnotecount, float score, ComboResult comboResult, float prate)
     {
             songs.Add(new Song(){
-            songname = "test",
-            artist = "test",
-            bpm = 120,
+            songname = songname,
+            artist = artist,
+            bpm = bpm,
             songPath = "Assets/Resources/Songs/test/test.mp3",
             previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
             pattern = new List<Pattern>(){
                 new Pattern(){
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
-                    difficulty = 1,
-                    totalNoteCount = 100
+                    difficulty = difficulty,
+                    totalNoteCount = totalnotecount
                 }
             },
             record = new List<Record>(){
                 new Record(){
-                    score = 1000,
+                    score = score,
                     maxcombo = 100,
-                    comboResult = ComboResult.none,
-                    prate = 100
+                    comboResult = comboResult,
+                    prate = prate
                 }
             }
         });
@@ -83,17 +88,19 @@ public class SongList : MonoBehaviour
             selector.GetComponent<RectTransform>().anchoredPosition = pos;
             selector.GetComponent<SongSelector>().Setup(song);
             SongSelectors.Add(selector);
-            pos += new Vector3(0, -110, 0);
+            pos += new Vector3(0, -(SSheight+10), 0);
         }
         currentSelector = SongSelectors[songIndex];
-        currentSelector.GetComponent<SongSelector>().OnCursor();
+        EnableSelector(songIndex);
     }
+
     public void EnableSelector(int index)
     {
         currentSelector.GetComponent<SongSelector>().OffCursor();
         songIndex = index;
         currentSelector = SongSelectors[songIndex];
         currentSelector.GetComponent<SongSelector>().OnCursor();
+        songIndicator.GetComponent<SongIndicator>().SetIndicator(currentSelector.GetComponent<SongSelector>().GetSong(), difficultyIndex);
     }
     void CursorMove(Vector2 input)
     {
@@ -114,6 +121,6 @@ public class SongList : MonoBehaviour
                 Debug.Log("down");
             }
         }
-        tragetPos = new Vector2(0, 110*songIndex);
+        tragetPos = new Vector2(0, (SSheight+10) * songIndex);
     }
 }

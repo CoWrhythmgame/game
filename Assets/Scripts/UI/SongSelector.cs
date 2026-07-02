@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class SongSelector : MonoBehaviour
 {
-    private Song song;
+    Song song;
     public Text songname;
     public Text artist;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -12,6 +12,10 @@ public class SongSelector : MonoBehaviour
         this.song = song;
         songname.text = song.songname;
         artist.text = song.artist;
+    }
+    public Song GetSong()
+    {
+        return song;
     }
     public void OnCursor()
     {
