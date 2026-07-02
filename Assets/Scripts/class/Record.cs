@@ -6,8 +6,8 @@ public enum ComboResult
 }
 public class Record
 {
-    float score = 0;
-    int maxcombo = 0;
-    ComboResult comboResult = ComboResult.none;
-    float prate = 0;
+    public float score = 0;
+    public int maxcombo = 0;
+    public ComboResult comboResult = ComboResult.none;
+    public float prate = 0;
 }

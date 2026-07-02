@@ -5,10 +5,10 @@ public enum NoteType
 }
 public class note
 {
-    int lane = 0;
-    float time = 0;
-    NoteType noteType = NoteType.single;
-    float releaseTime = 0;
-    EditorOnlyNote editorOnlyNote;
+    public int lane = 0;
+    public float time = 0;
+    public NoteType noteType = NoteType.single;
+    public float releaseTime = 0;
+    public EditorOnlyNote editorOnlyNote;
     
 }

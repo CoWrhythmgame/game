@@ -1,6 +1,6 @@
 using UnityEngine;
 public class EditorOnlyNote
 {
-    string note = "";
+    public string note = "";
     Color color = Color.white;
 }
