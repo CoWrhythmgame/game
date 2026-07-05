@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+[Serializable]
 public class KeySetting
 {
     public KeyCode up = KeyCode.UpArrow;

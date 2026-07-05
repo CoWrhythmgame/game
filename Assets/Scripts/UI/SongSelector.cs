@@ -12,6 +12,7 @@ public class SongSelector : MonoBehaviour
         this.song = song;
         songname.text = song.songname;
         artist.text = song.artist;
+        OffCursor();
     }
     public Song GetSong()
     {

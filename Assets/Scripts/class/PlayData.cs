@@ -1,3 +1,6 @@
+using System;
+
+[Serializable]
 public class PlayData
 {
     public float score = 0;
