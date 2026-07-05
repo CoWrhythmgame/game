@@ -1,11 +1,14 @@
+using System;
+
+[Serializable]
 public class PlayOption
 {
-    int masterVol = 0;
-    int musicVol = 0;
-    int SEVol = 0;
-    int noteSoundVol = 0;
-    float scrollSpeed = 0;
-    float noteOffset = 0;
-    int keySoundType = 0;
-    KeySetting keySetting;
+    public int masterVol = 0;
+    public int musicVol = 0;
+    public int SEVol = 0;
+    public int noteSoundVol = 0;
+    public float scrollSpeed = 0;
+    public float noteOffset = 0;
+    public int keySoundType = 0;
+    public KeySetting keySetting;
 }

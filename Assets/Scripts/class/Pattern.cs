@@ -1,7 +1,10 @@
 
+using System;
+
+[Serializable]
 public class Pattern
 {
-    string patternPath = "";
-    float difficulty = 0;
-    int totalNoteCount = 0;
+    public string patternPath = "";
+    public float difficulty = 0;
+    public int totalNoteCount = 0;
 }

@@ -1,13 +1,16 @@
+using System;
+
 public enum ComboResult
 {
     none = 0, 
     fullcombo = 1,
     allperfact = 2,
 }
+[Serializable]
 public class Record
 {
-    float score = 0;
-    int maxcombo = 0;
-    ComboResult comboResult = ComboResult.none;
-    float prate = 0;
+    public float score = 0;
+    public int maxcombo = 0;
+    public ComboResult comboResult = ComboResult.none;
+    public float prate = 0;
 }

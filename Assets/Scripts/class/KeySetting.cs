@@ -1,15 +1,17 @@
 using UnityEngine;
+using System;
+[Serializable]
 public class KeySetting
 {
-    KeyCode up = KeyCode.UpArrow;
-    KeyCode down = KeyCode.DownArrow;
-    KeyCode left = KeyCode.LeftArrow;
-    KeyCode right = KeyCode.RightArrow;
-    KeyCode confirm = KeyCode.Return;
-    KeyCode lane1 = KeyCode.A;
-    KeyCode lane2 = KeyCode.S;
-    KeyCode lane3 = KeyCode.Semicolon;
-    KeyCode lane4 = KeyCode.Quote;
+    public KeyCode up = KeyCode.UpArrow;
+    public KeyCode down = KeyCode.DownArrow;
+    public KeyCode left = KeyCode.LeftArrow;
+    public KeyCode right = KeyCode.RightArrow;
+    public KeyCode confirm = KeyCode.Return;
+    public KeyCode lane1 = KeyCode.A;
+    public KeyCode lane2 = KeyCode.S;
+    public KeyCode lane3 = KeyCode.Semicolon;
+    public KeyCode lane4 = KeyCode.Quote;
 
     
 }
