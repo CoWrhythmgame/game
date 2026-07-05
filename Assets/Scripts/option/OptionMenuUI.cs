@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.Audio;
 public class OptionMenuUI : MonoBehaviour
 {
     public static bool IsOptionOpen { get; private set; }
@@ -14,6 +14,13 @@ public class OptionMenuUI : MonoBehaviour
 
     [Header("Option Value Texts")]
     [SerializeField] private TextMeshProUGUI[] valueTexts;
+
+    [Header("Selected Option Colors")]
+    [SerializeField] private Color normalOptionTextColor = Color.white;
+    [SerializeField] private Color selectedOptionTextColor = Color.yellow;
+
+    [Header("Audio Mixer")]
+    [SerializeField] private AudioMixer audioMixer;
 
     private int currentIndex = 0;
 
@@ -42,7 +49,13 @@ public class OptionMenuUI : MonoBehaviour
 
     private float scrollSpeed = 1.0f;
     private float noteOffset = 0.0f;
+    private float VolumeToDb(int volume)
+    {
+        if (volume <= 0)
+            return -80f;
 
+        return Mathf.Log10(volume / 100f) * 20f;
+    }
     private void Start()
     {
         LoadOptions();
@@ -193,8 +206,13 @@ public class OptionMenuUI : MonoBehaviour
             Application.targetFrameRate = frameValues[frameIndex];
         }
 
-        AudioListener.volume = masterVolume / 100f;
-
+        if (audioMixer != null)
+        {
+            audioMixer.SetFloat("MasterVolume", VolumeToDb(masterVolume));
+            audioMixer.SetFloat("MusicVolume", VolumeToDb(musicVolume));
+            audioMixer.SetFloat("SFXVolume", VolumeToDb(soundEffectVolume));
+            audioMixer.SetFloat("KeySoundVolume", VolumeToDb(keyVolume));
+        }
         // musicVolume, soundEffectVolume, keyVolume은 지금은 저장만 함.
         // 나중에 AudioMixer나 SoundManager가 생기면 여기서 각각 적용하면 됨.
 
@@ -260,10 +278,12 @@ public class OptionMenuUI : MonoBehaviour
 
             string optionName = GetOptionName(i);
 
+            nameTexts[i].text = optionName;
+
             if (i == currentIndex)
-                nameTexts[i].text = "> " + optionName;
+                nameTexts[i].color = selectedOptionTextColor;
             else
-                nameTexts[i].text = "   " + optionName;
+                nameTexts[i].color = normalOptionTextColor;
         }
     }
 
