@@ -1,3 +1,6 @@
+using System;
+
+[Serializable]
 public class PlayOption
 {
     public int masterVol = 0;

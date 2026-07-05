@@ -1,4 +1,7 @@
 
+using System;
+
+[Serializable]
 public class Pattern
 {
     public string patternPath = "";

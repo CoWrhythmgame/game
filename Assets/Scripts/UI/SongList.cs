@@ -30,6 +30,8 @@ public class SongList : MonoBehaviour
 
     void Awake()
     {
+        songs = FileManager.LoadSong();
+        Debug.Log(JsonUtility.ToJson(songs[0],true));
             TestMakeSong("test", "artist", 100, 12, 1, 1002, ComboResult.none, 80);
             TestMakeSong("test2", "me", 100, 11, 1, 108, ComboResult.allperfact, 81);
             TestMakeSong("TeSt3", "AAA", 123, new List<Pattern>()
@@ -93,7 +95,11 @@ public class SongList : MonoBehaviour
         songIndicator = songIndicatorobj.GetComponent<SongIndicator>();
         SSheight = SSprefab.GetComponent<RectTransform>().rect.height;
         SIwidth = songIndicatorobj.GetComponent<RectTransform>().rect.width;
-
+        Song temp = songs[2];
+        // temp.record.Clear();
+        // temp.pattern.Clear();
+        Debug.Log(JsonUtility.ToJson(temp,true));
+        Debug.Log(Application.streamingAssetsPath);
         inputSystem_Actions = new InputSystem_Actions();
         cursorAction = inputSystem_Actions.UI.Move;
         cursorAction.Enable();
@@ -149,7 +155,7 @@ public class SongList : MonoBehaviour
     //songselect커서 이동에 대한 함수 index로 이동
     public void EnableSelector(int index)
     {
-        if(songIndex < 0 || songIndex >= SongSelectors.Count)
+        if(index < 0 || index >= SongSelectors.Count)
         {
             return;
         }

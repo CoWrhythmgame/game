@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
+[Serializable]
 public class EditorOnlyNote
 {
     public string note = "";
-    Color color = Color.white;
+    public Color color = Color.white;
 }
