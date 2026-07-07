@@ -24,6 +24,16 @@ public class FileManager
         #endif
         return folderPath;
     }
+    public static string[] GetSongNames( string AssetPath)
+    {
+        string[] songnames = Directory.GetDirectories(AssetPath+"/SongInfo")
+        .Where(file => !file.EndsWith(".meta")).ToArray();
+        for(int i = 0; i < songnames.Length; i++)
+        {
+            songnames[i] = songnames[i].Replace(AssetPath+"/SongInfo", "");
+        }
+        return songnames;
+    }
     //json을 song으로 변환
     public static Song GetSongFromJson(string songJson, List<string> patternInfosJson, List<string> recordsJson)
     {
@@ -93,12 +103,8 @@ public class FileManager
         string AssetPath = GetStreamingAssetsPath();
         string LocalPath = GetLocalPath();
 
-        string[] songnames = Directory.GetDirectories(AssetPath+"/SongInfo")
-        .Where(file => !file.EndsWith(".meta")).ToArray();
-        for(int i = 0; i < songnames.Length; i++)
-        {
-            songnames[i] = songnames[i].Replace(AssetPath+"/SongInfo", "");
-        }
+
+        string[] songnames = GetSongNames(AssetPath);
         for(int i = 0; i < songnames.Length; i++)
         {
             string songJson;
