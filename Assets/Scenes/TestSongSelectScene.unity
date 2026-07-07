@@ -5538,18 +5538,12 @@ MonoBehaviour:
   currentSelector: {fileID: 0}
   SongSelectors: []
   SSprefab: {fileID: 700145180358277662, guid: 3b9055f05e049dd499d063fce47c1c1f, type: 3}
-  contentPannel: {fileID: 1451103194}
-  songIndicator: {fileID: 19564659}
+  songContentPannel: {fileID: 1451103194}
+  songIndicatorobj: {fileID: 19564659}
   difficultyIndex: 0
-  cursorAction:
-    m_Name: Cursor
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 8ce7ff8e-38d9-42ff-84f7-7205c692cab8
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
+  DifficultyContentPannel: {fileID: 2084250425}
+  DifficultyL: {fileID: 1242566030}
+  DifficultyR: {fileID: 1862346307}
 --- !u!1 &2084250425
 GameObject:
   m_ObjectHideFlags: 0
