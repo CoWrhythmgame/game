@@ -111,6 +111,10 @@ public class SongList : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (OptionMenuUI.IsOptionOpen) // 추가한 코드 : 옵션 메뉴가 열려있으면 방향키 입력을 무시하도록 함
+        {
+            return;
+        }
         Vector2 input = cursorAction.ReadValue<Vector2>();
         if (cursorAction.WasPressedThisFrame())
         {
