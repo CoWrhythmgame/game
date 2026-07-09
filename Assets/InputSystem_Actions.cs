@@ -159,6 +159,67 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""GamePlay"",
+            ""id"": ""73d62c4b-abdc-4f8f-86f8-1fd183b9fcf6"",
+            ""actions"": [
+                {
+                    ""name"": ""Lane"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""1d0e151f-700c-4e54-b6c6-2bb2194f95c0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""d5db44d8-33a7-4f37-8221-8baec2bf3055"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Lane"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b0406794-e722-4e8e-956d-d92ed11c7389"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Lane"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""557480e1-8012-40eb-b0b9-6c0c9249fe02"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Lane"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""39c0407f-66bf-47fd-8d28-7df5ace863b0"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Lane"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -243,11 +304,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Move = m_UI.FindAction("Move", throwIfNotFound: true);
+        // GamePlay
+        m_GamePlay = asset.FindActionMap("GamePlay", throwIfNotFound: true);
+        m_GamePlay_Lane = m_GamePlay.FindAction("Lane", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
     {
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_GamePlay.enabled, "This will cause a leak and performance issues, InputSystem_Actions.GamePlay.Disable() has not been called.");
     }
 
     /// <summary>
@@ -415,6 +480,102 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="UIActions" /> instance referencing this action map.
     /// </summary>
     public UIActions @UI => new UIActions(this);
+
+    // GamePlay
+    private readonly InputActionMap m_GamePlay;
+    private List<IGamePlayActions> m_GamePlayActionsCallbackInterfaces = new List<IGamePlayActions>();
+    private readonly InputAction m_GamePlay_Lane;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "GamePlay".
+    /// </summary>
+    public struct GamePlayActions
+    {
+        private @InputSystem_Actions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public GamePlayActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Lane".
+        /// </summary>
+        public InputAction @Lane => m_Wrapper.m_GamePlay_Lane;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="GamePlayActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(GamePlayActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="GamePlayActions" />
+        public void AddCallbacks(IGamePlayActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GamePlayActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GamePlayActionsCallbackInterfaces.Add(instance);
+            @Lane.started += instance.OnLane;
+            @Lane.performed += instance.OnLane;
+            @Lane.canceled += instance.OnLane;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="GamePlayActions" />
+        private void UnregisterCallbacks(IGamePlayActions instance)
+        {
+            @Lane.started -= instance.OnLane;
+            @Lane.performed -= instance.OnLane;
+            @Lane.canceled -= instance.OnLane;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="GamePlayActions.UnregisterCallbacks(IGamePlayActions)" />.
+        /// </summary>
+        /// <seealso cref="GamePlayActions.UnregisterCallbacks(IGamePlayActions)" />
+        public void RemoveCallbacks(IGamePlayActions instance)
+        {
+            if (m_Wrapper.m_GamePlayActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="GamePlayActions.AddCallbacks(IGamePlayActions)" />
+        /// <seealso cref="GamePlayActions.RemoveCallbacks(IGamePlayActions)" />
+        /// <seealso cref="GamePlayActions.UnregisterCallbacks(IGamePlayActions)" />
+        public void SetCallbacks(IGamePlayActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GamePlayActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GamePlayActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="GamePlayActions" /> instance referencing this action map.
+    /// </summary>
+    public GamePlayActions @GamePlay => new GamePlayActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -507,5 +668,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "GamePlay" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="GamePlayActions.AddCallbacks(IGamePlayActions)" />
+    /// <seealso cref="GamePlayActions.RemoveCallbacks(IGamePlayActions)" />
+    public interface IGamePlayActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Lane" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLane(InputAction.CallbackContext context);
     }
 }
