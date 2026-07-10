@@ -38,11 +38,11 @@ public class FileManager
     public static Song GetSongFromJson(string songJson, List<string> patternInfosJson, List<string> recordsJson)
     {
         Song song = JsonUtility.FromJson<Song>(songJson);
-        List<Pattern> patterns = new List<Pattern>();
+        List<PatternInfo> patterns = new List<PatternInfo>();
         List<Record> records = new List<Record>();
         foreach(string pattern in patternInfosJson)
         {
-            Pattern temp = JsonUtility.FromJson<Pattern>(pattern);
+            PatternInfo temp = JsonUtility.FromJson<PatternInfo>(pattern);
             patterns.Add(temp);
         }
         foreach(string record in recordsJson)

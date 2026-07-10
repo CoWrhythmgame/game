@@ -34,27 +34,27 @@ public class SongList : MonoBehaviour
         Debug.Log(JsonUtility.ToJson(songs[0],true));
             TestMakeSong("test", "artist", 100, 12, 1, 1002, ComboResult.none, 80);
             TestMakeSong("test2", "me", 100, 11, 1, 108, ComboResult.allperfact, 81);
-            TestMakeSong("TeSt3", "AAA", 123, new List<Pattern>()
+            TestMakeSong("TeSt3", "AAA", 123, new List<PatternInfo>()
             {
-                new Pattern()
+                new PatternInfo()
                 {
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 1,
                     totalNoteCount = 1
                 },
-                new Pattern()
+                new PatternInfo()
                 {
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 2,
                     totalNoteCount = 2
                 },
-                new Pattern()
+                new PatternInfo()
                 {
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 3,
                     totalNoteCount = 3
                 },
-                new Pattern()
+                new PatternInfo()
                 {
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 4,
@@ -233,8 +233,8 @@ public class SongList : MonoBehaviour
             bpm = bpm,
             songPath = "Assets/Resources/Songs/test/test.mp3",
             previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
-            pattern = new List<Pattern>(){
-                new Pattern(){
+            pattern = new List<PatternInfo>(){
+                new PatternInfo(){
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = difficulty,
                     totalNoteCount = totalnotecount
@@ -250,7 +250,7 @@ public class SongList : MonoBehaviour
             }
         });
     }
-    public void TestMakeSong(string songname, string artist, float bpm, List<Pattern> patterns, List<Record> records)
+    public void TestMakeSong(string songname, string artist, float bpm, List<PatternInfo> patterns, List<Record> records)
     {
             songs.Add(new Song(){
             songname = songname,

@@ -2,7 +2,7 @@
 using System;
 
 [Serializable]
-public class Pattern
+public class PatternInfo
 {
     public string patternPath = "";
     public float difficulty = 0;

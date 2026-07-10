@@ -1,0 +1,117 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.PlayerLoop;
+
+public class JudgementManager : MonoBehaviour
+{
+    // 4버튼 기준, 레인별로 노트를 담아둘 큐 배열
+    private Queue<NoteObject>[] _laneBuffers;
+    private double _startAudioTime;
+    private double _startInputTime;
+    private double _offset;
+    // 판정 기준 시간 (단위: 초)
+    private readonly double _perfectWindow = 0.05001; // ±50.01ms
+    private readonly double _greatWindow = 0.08335;   // ±83.35ms
+    private readonly double _goodWindow = 0.11669;   // ±116.69ms
+    // private readonly double _missWindow = 0.15003;    // ±150.03ms
+    private readonly double _missWindow = 0.5d;    //임시
+
+    private void Awake()
+    {
+        // 4개의 레인 버퍼 초기화
+        _laneBuffers = new Queue<NoteObject>[4];
+        for (int i = 0; i < 4; i++)
+        {
+            _laneBuffers[i] = new Queue<NoteObject>();
+        }
+        _offset = _startAudioTime;
+    }
+
+    // 1. 노트 스포너가 노트를 생성할 때 버퍼에 등록합니다.
+    public void RegisterNoteToBuffer(int laneIndex, NoteObject note)
+    {
+        _laneBuffers[laneIndex].Enqueue(note);
+    }
+
+    // 2. 아까 만든 InputManager에서 특정 레인 키가 눌렸을 때 호출됩니다.
+    public void OnLaneInputFired(int laneIndex, double inputTime)
+    {
+        Queue<NoteObject> buffer = _laneBuffers[laneIndex];
+        // Debug.Log("입력감지, 남은노트: "+buffer.Count);
+        // 해당 레인에 쳐야 할 노트가 없으면 무시
+        if (buffer.Count == 0) return;
+
+        // 큐의 맨 앞(가장 먼저 떨어지는) 노트 확인 (아직 빼지 않음)
+        NoteObject targetNote = buffer.Peek();
+
+        // 오차 시간 계산
+        double timeDiff = targetNote.GetTargetTime() - (inputTime-_startInputTime);
+        
+        // Debug.Log(InputState.currentTime);
+        // Debug.Log("입력: "+(inputTime-_startInputTime));
+        // Debug.Log(_startInputTime);
+        // bool isFast = false;
+        // if(timeDiff > 0) isFast = true;
+        timeDiff = Math.Abs(timeDiff);
+        Debug.Log("입력 오차: "+timeDiff);
+        // 판정 로직
+        if (timeDiff <= _perfectWindow)
+        {
+            ProcessHit(buffer, targetNote, "Perfect");
+        }
+        else if (timeDiff <= _greatWindow)
+        {
+            ProcessHit(buffer, targetNote, "Great");
+        }
+        else if (timeDiff <= _goodWindow)
+        {
+            ProcessHit(buffer, targetNote, "Good");
+        }
+        else if (targetNote.GetTargetTime() > inputTime-_startInputTime && timeDiff <= _missWindow)
+        {
+            // 너무 일찍 친 경우 (Fast Miss)
+            ProcessHit(buffer, targetNote, "Miss");
+        }
+        // 허용 범위 밖으로 너무 일찍 눌렀다면 아무 반응도 하지 않고 남겨둡니다 (허공 치기)
+    }
+
+    // 타격 성공 처리
+    private void ProcessHit(Queue<NoteObject> buffer, NoteObject note, string judgment)
+    {
+        Debug.Log($"판정: {judgment}");
+        buffer.Dequeue(); // 버퍼에서 제거
+        note.OnHit();     // 타격 이펙트 재생 및 Pool로 반환
+    }
+    public void SetStartTime(double audioTime, double inputTime)
+    {
+        _startAudioTime = audioTime;
+        _startInputTime = inputTime;
+    }
+
+    private void Update()
+    {
+        // 3. 유저가 치지 않고 놓친 노트(Miss) 처리
+        // Time.time 대신 반드시 음악의 현재 위치(DSP 타임 등)를 가져와야 합니다.
+        double currentTime = AudioSettings.dspTime-_startAudioTime; 
+        
+        //이거 좀 위험해보임
+        for (int i = 0; i < _laneBuffers.Length; i++)
+        {
+            if (_laneBuffers[i].Count > 0)
+            {
+                NoteObject targetNote = _laneBuffers[i].Peek();
+
+                // 노트의 타겟 시간이 한참 지났는데도(Miss 범위를 벗어남) 큐에 남아있다면 놓친 것입니다.
+                if (currentTime - targetNote.GetTargetTime() > _goodWindow)
+                {
+                    Debug.Log("Miss! (놓침)");
+
+                    _laneBuffers[i].Dequeue();
+                    targetNote.OnMiss(); // Pool로 반환
+                }
+            }
+        }
+    }
+}
