@@ -168,9 +168,9 @@ public class SongList : MonoBehaviour
         currentSelector = SongSelectors[songIndex];
         currentSelector.GetComponent<SongSelector>().OnCursor();
         currentSongData = currentSelector.GetComponent<SongSelector>().GetSong();
-        if(difficultyIndex >= currentSongData.pattern.Count)
+        if(difficultyIndex >= currentSongData.patternInfo.Count)
         {
-            SetDifficulty(currentSongData.pattern.Count-1);
+            SetDifficulty(currentSongData.patternInfo.Count-1);
         }else
         {
             SetDifficulty(difficultyIndex);
@@ -180,7 +180,7 @@ public class SongList : MonoBehaviour
     //
     public void SetDifficulty(int index)
     {
-        int dcount = currentSongData.pattern.Count;
+        int dcount = currentSongData.patternInfo.Count;
         if(dcount <= index || index < 0)
         {
             return;
@@ -233,7 +233,7 @@ public class SongList : MonoBehaviour
             bpm = bpm,
             songPath = "Assets/Resources/Songs/test/test.mp3",
             previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
-            pattern = new List<PatternInfo>(){
+            patternInfo = new List<PatternInfo>(){
                 new PatternInfo(){
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = difficulty,
@@ -258,7 +258,7 @@ public class SongList : MonoBehaviour
             bpm = bpm,
             songPath = "Assets/Resources/Songs/test/test.mp3",
             previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
-            pattern = patterns,
+            patternInfo = patterns,
             record = records
         });
     }

@@ -11,6 +11,7 @@ public class NotePoolManager : MonoBehaviour
     [SerializeField] private int _defaultCapacity = 100; // 곡 시작 전 미리 만들어둘 노트 개수
     [SerializeField] private int _maxSize = 300;         // 최대 허용 노트 개수
     [SerializeField] private float _tripseconds = 2;
+    private PatternManager patternManager;
     private float spawnY;
     private float judgeY;
     private List<Vector3> noteSpawnPos = new List<Vector3>();
@@ -19,6 +20,8 @@ public class NotePoolManager : MonoBehaviour
 
     private void Awake()
     {
+        patternManager = transform.GetComponent<PatternManager>();
+        judgementManager = GameObject.FindGameObjectWithTag("JudgementManager").GetComponent<JudgementManager>();
         // 풀 초기화
         _notePool = new ObjectPool<NoteObject>(
             createFunc: CreateNote,
@@ -30,7 +33,6 @@ public class NotePoolManager : MonoBehaviour
             maxSize: _maxSize
         );
         SetNoteSpawnTransform(4);
-        judgementManager = GameObject.FindGameObjectWithTag("JudgementManager").GetComponent<JudgementManager>();
         // 🚨 실무 핵심 (Pre-warm): 게임 시작(음악 재생) 전에 미리 100개를 생성해둡니다.
         PrewarmPool();
 

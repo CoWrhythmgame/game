@@ -9,6 +9,6 @@ public class Song
     public float bpm = 0;
     public string songPath = "";
     public string previewPath = "";
-    public List<PatternInfo> pattern;
+    public List<PatternInfo> patternInfo;
     public List<Record> record;
 }

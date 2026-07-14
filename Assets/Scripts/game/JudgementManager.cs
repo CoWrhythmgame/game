@@ -6,17 +6,24 @@ using UnityEngine.PlayerLoop;
 
 public class JudgementManager : MonoBehaviour
 {
+    private ScoreManager scoreManager;
+    private PatternManager patternManager;
     // 4버튼 기준, 레인별로 노트를 담아둘 큐 배열
     private Queue<NoteObject>[] _laneBuffers;
+    private PlayOption _playOption;
+    private int[] _judgeCount;
+    private int[] _FSList;
     private double _startAudioTime;
     private double _startInputTime;
     private double _offset;
+    private float _noteOffset;
     // 판정 기준 시간 (단위: 초)
     private readonly double _perfectWindow = 0.05001; // ±50.01ms
     private readonly double _greatWindow = 0.08335;   // ±83.35ms
     private readonly double _goodWindow = 0.11669;   // ±116.69ms
     // private readonly double _missWindow = 0.15003;    // ±150.03ms
     private readonly double _missWindow = 0.5d;    //임시
+    private double _FSwindow = 0.05001;
 
     private void Awake()
     {
@@ -26,7 +33,10 @@ public class JudgementManager : MonoBehaviour
         {
             _laneBuffers[i] = new Queue<NoteObject>();
         }
-        _offset = _startAudioTime;
+        _judgeCount = new int[4]{0,0,0,0};
+        _FSList = new int[2]{0,0};
+        scoreManager = transform.GetComponent<ScoreManager>();
+        patternManager = GameObject.FindGameObjectWithTag("NoteManager").GetComponent<PatternManager>();
     }
 
     // 1. 노트 스포너가 노트를 생성할 때 버퍼에 등록합니다.
@@ -47,13 +57,13 @@ public class JudgementManager : MonoBehaviour
         NoteObject targetNote = buffer.Peek();
 
         // 오차 시간 계산
-        double timeDiff = targetNote.GetTargetTime() - (inputTime-_startInputTime);
+        double timeDiff = targetNote.GetTargetTime() - inputTime+_offset;
         
         // Debug.Log(InputState.currentTime);
         // Debug.Log("입력: "+(inputTime-_startInputTime));
         // Debug.Log(_startInputTime);
-        // bool isFast = false;
-        // if(timeDiff > 0) isFast = true;
+        bool isFast = false;
+        if(timeDiff > 0) isFast = true;
         timeDiff = Math.Abs(timeDiff);
         Debug.Log("입력 오차: "+timeDiff);
         // 판정 로직
@@ -75,19 +85,55 @@ public class JudgementManager : MonoBehaviour
             ProcessHit(buffer, targetNote, "Miss");
         }
         // 허용 범위 밖으로 너무 일찍 눌렀다면 아무 반응도 하지 않고 남겨둡니다 (허공 치기)
+
+        //페슬
+        if(timeDiff > _FSwindow)
+        {
+            ProcessFS(isFast);
+        }
     }
+
 
     // 타격 성공 처리
     private void ProcessHit(Queue<NoteObject> buffer, NoteObject note, string judgment)
     {
         Debug.Log($"판정: {judgment}");
+        scoreManager.AddJudgment(judgment);
+        switch (judgment)
+        {
+            case "Perfect": _judgeCount[0]++; break;
+            case "Great": _judgeCount[1]++; break;
+            case "Good": _judgeCount[2]++; break;
+            case "Miss": _judgeCount[3]++; break;
+        }
         buffer.Dequeue(); // 버퍼에서 제거
         note.OnHit();     // 타격 이펙트 재생 및 Pool로 반환
+        
+        //이거때문에 note메니저랑 judgement메니저끼리 상호간섭함
+        //더 좋은 방안이 없을까
+        patternManager.CheckPatternEnd();
+    }
+    private void ProcessFS(bool isFast)
+    {
+        if (isFast)
+        {
+            Debug.Log("FAST");
+            _FSList[0]++;
+        }
+        else
+        {
+            Debug.Log("SLOW");
+            _FSList[1]++;
+        }
     }
     public void SetStartTime(double audioTime, double inputTime)
     {
         _startAudioTime = audioTime;
         _startInputTime = inputTime;
+        
+        _playOption = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>().GetPlayOption();
+        _noteOffset = _playOption.noteOffset;
+        _offset = _startInputTime+_noteOffset;
     }
 
     private void Update()
@@ -114,4 +160,14 @@ public class JudgementManager : MonoBehaviour
             }
         }
     }
+    #region GameEnd
+    public PlayData OnPatternEnd()
+    {
+        PlayData playData = scoreManager.OnPatternEnd();
+        playData.fscount = _FSList;
+        playData.noteCount = _judgeCount;
+
+        return playData;
+    }
+    #endregion
 }

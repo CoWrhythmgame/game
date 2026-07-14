@@ -7,6 +7,7 @@ public class DataMaster : MonoBehaviour
     private PlayData _playData = new PlayData();
     private PlayOption _playOption = new PlayOption();
     private Song _song = new Song();
+    private bool _isNewRecord = false;
     private int _difficultyIndex = 0;
     void Awake()
     {
@@ -38,6 +39,12 @@ public class DataMaster : MonoBehaviour
     }
     #endregion
     #region InGameScene
+    //인게임 씬을 로드할 때 호출
+    public void OnLoadIngameScene()
+    {
+        _isNewRecord = false;
+    }
+
     //곡 정보를 불러올 때 호출
     public Song GetSong()
     {
@@ -57,12 +64,25 @@ public class DataMaster : MonoBehaviour
     {
         this._playData = playData;
     }
+    public void SetRecord(Record record, bool isNewRecord = false)
+    {
+        _song.record[_difficultyIndex] = record;
+        this._isNewRecord = isNewRecord;
+    }
     #endregion
     #region ResultScene
     //결과창에서 표기할 데이터 전달할 때 호출
     public PlayData GetPlayData()
     {
         return _playData;
+    }
+    public Record GetRecord()
+    {
+        return _song.record[_difficultyIndex];
+    }
+    public bool GetIsNewRecord()
+    {
+        return _isNewRecord;
     }
     #endregion
 }

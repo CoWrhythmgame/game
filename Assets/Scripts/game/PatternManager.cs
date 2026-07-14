@@ -7,6 +7,9 @@ public class PatternManager : MonoBehaviour
 {
     [SerializeField] private NotePoolManager notePoolManager;
     [SerializeField] private float _scrollSpeed = 1f;
+    [SerializeField] private float _noteOffset = 0f;
+    private GameObject dataMaster;
+    private GameObject judgementManager;
     private PlayOption _playOption;
     private Song _songData;
     [SerializeField]private int _difficultyIndex;
@@ -17,56 +20,54 @@ public class PatternManager : MonoBehaviour
     private double _tripTime = 0d;
     void Start()
     {
+        SetUp();
+
+        Invoke("StartSong", 1f);
+    }
+    private void SetUp()
+    {
         notePoolManager = transform.GetComponent<NotePoolManager>();
+        dataMaster = GameObject.FindGameObjectWithTag("DataMaster");
+        judgementManager = GameObject.FindGameObjectWithTag("JudgementManager");
         _noteQueue = new Queue<Note>[4];
         for (int i = 0; i < 4; i++)
         {
             _noteQueue[i] = new Queue<Note>();
         }
-        
-        _songData = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>().GetSong();
-        _difficultyIndex = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>().GetDifficultyIndex();
-        _playOption = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>().GetPlayOption();
+        GetDataFromMaster();
 
         // _scrolSpeed = _playOption.scrollSpeed;
+        // _noteOffset = _playOption.noteOffset;
         _tripTime = 2d/_scrollSpeed;
-        Invoke("StartSong", 1f);
+    }
+    private void GetDataFromMaster()
+    {
+        _songData = dataMaster.GetComponent<DataMaster>().GetSong();
+        _difficultyIndex = dataMaster.GetComponent<DataMaster>().GetDifficultyIndex();
+        _playOption = dataMaster.GetComponent<DataMaster>().GetPlayOption();
     }
     private void StartSong()
     {
         _startAudioTime = AudioSettings.dspTime;
         _startInputTime = InputState.currentTime;
         
-
-        GameObject.FindGameObjectWithTag("JudgementManager").GetComponent<JudgementManager>().SetStartTime(_startAudioTime, _startInputTime);
-
         ReadPattern();
+
+        judgementManager.GetComponent<JudgementManager>().SetStartTime(_startAudioTime, _startInputTime);
+        judgementManager.GetComponent<ScoreManager>().Initialize(_noteList.Count);
     }
     private void ReadPattern()
     {
         //이곳에 pattern.json 읽는 함수 호출
+        // Pattern pattern = FileManager.LoadPattern(_songData, _difficultyIndex);
         _noteList = new List<Note>();
-        TestFillList(0, 5);
-        TestFillList(1, 5);
-        TestFillList(2, 5);
-        
-        TestFillList(3, 7);
-        TestFillList(2, 7);
-        TestFillList(1, 7);
 
+        // _noteList = pattern.notes;
+
+        _noteList = FileManager.TestPatternLoad().notes;
         FillQueue();
     }
 
-    private void TestFillList(int lane, double time, NoteType noteType = NoteType.single, double releaseTime = 0)
-    {
-        _noteList.Add(new Note()
-        {
-            lane = lane,
-            time = time,
-            noteType = noteType,
-            releaseTime = releaseTime
-        });
-    }
     private void FillQueue()
     {
         _noteList = _noteList.OrderBy(s => s.time).ToList();
@@ -74,6 +75,51 @@ public class PatternManager : MonoBehaviour
         {
             _noteQueue[_noteList[i].lane].Enqueue(_noteList[i]);
         }
+    }
+    public void CheckPatternEnd()
+    {
+        int notecount = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            notecount += _noteQueue[i].Count;
+        }
+        if(notecount == 0)
+        {
+            PlayData playdata = judgementManager.GetComponent<JudgementManager>().OnPatternEnd();
+            Debug.Log(JsonUtility.ToJson(playdata, true));
+            dataMaster.GetComponent<DataMaster>().SetPlayData(playdata);
+
+
+            // ingame 작업중에는 song값을 불러오지 않으므로 비활성화
+            // Record newrecord = UpdateRecord(playdata);
+            // dataMaster.GetComponent<DataMaster>().SetRecord(newrecord, newrecord != _songData.record[_difficultyIndex]);
+        }
+    }
+
+    private Record UpdateRecord(PlayData playData)
+    {
+        Record record = _songData.record[_difficultyIndex];
+        if(playData.maxcombo > record.maxcombo)
+        {
+            record.maxcombo = playData.maxcombo;
+        }
+        if(playData.score > record.score)
+        {
+            record.score = playData.score;
+        }
+        if(playData.prate > record.prate)
+        {
+            record.prate = playData.prate;
+        }
+        if(record.score >= 1000000)
+        {
+            record.comboResult = ComboResult.allperfact;
+        }
+        else if(_songData.patternInfo[_difficultyIndex].totalNoteCount == record.maxcombo)
+        {
+            record.comboResult = ComboResult.fullcombo;
+        }
+        return record;
     }
 
     // Update is called once per frame
@@ -93,4 +139,16 @@ public class PatternManager : MonoBehaviour
             }
         }
     }
+    #region 테스트용
+    private void TestFillList(int lane, double time, NoteType noteType = NoteType.single, double releaseTime = 0)
+    {
+        _noteList.Add(new Note()
+        {
+            lane = lane,
+            time = time,
+            noteType = noteType,
+            releaseTime = releaseTime
+        });
+    }
+    #endregion
 }
