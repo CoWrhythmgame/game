@@ -69,5 +69,7 @@ public class Lane : MonoBehaviour
     {
         keyBeam.SetActive(false);
         //롱노트 관련
+        judgementManager.OnLaneReleaseFired(laneIndex, context.time);
+
     }
 }

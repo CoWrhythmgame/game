@@ -16,10 +16,10 @@ public class ScoreManager : MonoBehaviour
     private int _maxCombo;
 
     // 곡이 시작될 때 (노트 스포너가 패턴을 다 읽고 난 후) 호출
-    public void Initialize(int totalNoteCount)
+    public void Initialize(int totalNoteCount, int holdNoteCount)
     {
         // 모든 노트를 Perfect로 쳤을 때의 가중치
-        _maxPossibleWeight = (long)totalNoteCount * WEIGHT_PERFECT; 
+        _maxPossibleWeight = (long)(totalNoteCount+holdNoteCount) * WEIGHT_PERFECT; 
         _currentAccumulatedWeight = 0;
         _combo = 0;
         _maxCombo = 0;

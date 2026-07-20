@@ -533,7 +533,7 @@ GameObject:
   - component: {fileID: 721841580}
   m_Layer: 0
   m_Name: NoteManager
-  m_TagString: Untagged
+  m_TagString: NoteManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1893,17 +1893,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6083527562854936667, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 4025159193867184526, guid: 0d4d699cdf606e04ebbee95d43418fca, type: 3}
+    - target: {fileID: 7154544121348377699, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
+      propertyPath: '_noteSprite.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4025159193867184526, guid: 0d4d699cdf606e04ebbee95d43418fca, type: 3}
+    - target: {fileID: 7154544121348377699, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
+      propertyPath: '_noteSprite.Array.data[1]'
+      value: 
+      objectReference: {fileID: 4025159193867184526, guid: 3fa9f60e6dc58ac4186e101f0c8ea724, type: 3}
     - target: {fileID: 7304791166683003562, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_Name
       value: Note
       objectReference: {fileID: 0}
     - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.09
+      value: -12.04
       objectReference: {fileID: 0}
     - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.63
+      value: -2.68
       objectReference: {fileID: 0}
     - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_LocalPosition.z

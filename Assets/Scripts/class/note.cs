@@ -12,6 +12,7 @@ public class Note
     public double time = 0;
     public NoteType noteType = NoteType.single;
     public double releaseTime = 0;
+    public float bpm = 1;
     public EditorOnlyNote editorOnlyNote;
     
 }

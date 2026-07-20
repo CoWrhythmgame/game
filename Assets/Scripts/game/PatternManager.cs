@@ -18,6 +18,7 @@ public class PatternManager : MonoBehaviour
     private double _startAudioTime = 0d;
     private double _startInputTime = 0d;
     private double _tripTime = 0d;
+    private float _songBPM = 1;
     void Start()
     {
         SetUp();
@@ -38,8 +39,10 @@ public class PatternManager : MonoBehaviour
 
         // _scrolSpeed = _playOption.scrollSpeed;
         // _noteOffset = _playOption.noteOffset;
+        // _songBPM = _songData.bpm;
         _tripTime = 2d/_scrollSpeed;
     }
+    //datamaster에서 가져옴
     private void GetDataFromMaster()
     {
         _songData = dataMaster.GetComponent<DataMaster>().GetSong();
@@ -53,8 +56,9 @@ public class PatternManager : MonoBehaviour
         
         ReadPattern();
 
+
         judgementManager.GetComponent<JudgementManager>().SetStartTime(_startAudioTime, _startInputTime);
-        judgementManager.GetComponent<ScoreManager>().Initialize(_noteList.Count);
+        judgementManager.GetComponent<ScoreManager>().Initialize(_noteList.Count,_noteList.Where(c=>c.noteType == NoteType.hold).ToList().Count);
     }
     private void ReadPattern()
     {
@@ -65,6 +69,9 @@ public class PatternManager : MonoBehaviour
         // _noteList = pattern.notes;
 
         _noteList = FileManager.TestPatternLoad().notes;
+
+        TestFillList(0, 9, NoteType.hold, 11);
+
         FillQueue();
     }
 
@@ -129,10 +136,11 @@ public class PatternManager : MonoBehaviour
         for(int i = 0; i < 4; i++)
         {
             if(_noteQueue[i].Count > 0){
-                Note temp = _noteQueue[i].Peek();
-                if(currentTime >= temp.time - _tripTime)
+                Note note = _noteQueue[i].Peek();
+                
+                if(currentTime >= note.time - _tripTime*note.bpm/_songBPM)
                 {
-                    notePoolManager.SpawnNote(temp.lane, temp.time, _scrollSpeed);
+                    notePoolManager.SpawnNote(note, _scrollSpeed, note.bpm/_songBPM);
                     _noteQueue[i].Dequeue();
                 }
                 //여기에 롱노트 관련 삽입

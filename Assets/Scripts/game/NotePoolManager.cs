@@ -42,6 +42,7 @@ public class NotePoolManager : MonoBehaviour
     private NoteObject CreateNote()
     {
         NoteObject note = Instantiate(_notePrefab, transform);
+        note.Warming();
         return note;
     }
 
@@ -88,17 +89,17 @@ public class NotePoolManager : MonoBehaviour
         }
     }
     // 실제 게임 중 노트를 스폰할 때 외부(패턴 매니저 등)에서 호출하는 함수
-    public void SpawnNote(int laneIndex, double targetTime, float scrollSpeed, float noteSpeed = 1)
+    public void SpawnNote(Note note, float scrollSpeed, float noteSpeed = 1)
     {
         // 1. 풀에서 노트를 가져옵니다.
         NoteObject newNote = _notePool.Get();
         
         // 2. 위치 계산 (레인 인덱스에 따라 X좌표 결정)
-        Vector3 spawnPos = noteSpawnPos[laneIndex];
+        Vector3 spawnPos = noteSpawnPos[note.lane];
         float speed = (spawnY-judgeY)/_tripseconds*scrollSpeed*noteSpeed;//노트 속도 - 기본값: _tripseconds초내에 spawn-judge거리를 이동
         // 3. 노트 초기화
-        newNote.Initialize(_notePool, laneIndex, targetTime, spawnPos, speed);
+        newNote.Initialize(_notePool, note, spawnPos, speed, spawnY-judgeY);
 
-        judgementManager.RegisterNoteToBuffer(laneIndex, newNote);
+        judgementManager.RegisterNoteToBuffer(note.lane, newNote);
     }
 }

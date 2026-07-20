@@ -23,7 +23,9 @@ public class JudgementManager : MonoBehaviour
     private readonly double _goodWindow = 0.11669;   // ±116.69ms
     // private readonly double _missWindow = 0.15003;    // ±150.03ms
     private readonly double _missWindow = 0.5d;    //임시
+    private readonly double _longPerfectWindow = 0.08335; // ±50.01ms
     private double _FSwindow = 0.05001;
+    private bool _isHold;
 
     private void Awake()
     {
@@ -49,7 +51,6 @@ public class JudgementManager : MonoBehaviour
     public void OnLaneInputFired(int laneIndex, double inputTime)
     {
         Queue<NoteObject> buffer = _laneBuffers[laneIndex];
-        // Debug.Log("입력감지, 남은노트: "+buffer.Count);
         // 해당 레인에 쳐야 할 노트가 없으면 무시
         if (buffer.Count == 0) return;
 
@@ -59,9 +60,6 @@ public class JudgementManager : MonoBehaviour
         // 오차 시간 계산
         double timeDiff = targetNote.GetTargetTime() - inputTime+_offset;
         
-        // Debug.Log(InputState.currentTime);
-        // Debug.Log("입력: "+(inputTime-_startInputTime));
-        // Debug.Log(_startInputTime);
         bool isFast = false;
         if(timeDiff > 0) isFast = true;
         timeDiff = Math.Abs(timeDiff);
@@ -91,6 +89,44 @@ public class JudgementManager : MonoBehaviour
         {
             ProcessFS(isFast);
         }
+    }    
+    //키를 땠을때 호출
+    public void OnLaneReleaseFired(int laneIndex, double inputTime)
+    {
+        Queue<NoteObject> buffer = _laneBuffers[laneIndex];
+        // 해당 레인에 쳐야 할 노트가 없으면 무시
+        if (buffer.Count == 0) return;
+
+        // 큐의 맨 앞(가장 먼저 떨어지는) 노트 확인 (아직 빼지 않음)
+        NoteObject targetNote = buffer.Peek();
+
+        //노트가 롱노트이면서 판정중이 아니라면
+        if(!(targetNote.GetIsLong() && targetNote.GetIsHolding())) return;
+
+        // 오차 시간 계산
+        double timeDiff = targetNote.GetReleaseTime() - inputTime+_offset;
+    
+        timeDiff = Math.Abs(timeDiff);
+        Debug.Log("입력 오차: "+timeDiff);
+        // 판정 로직
+        if (timeDiff <= _longPerfectWindow)
+        {
+            ProcessHit(buffer, targetNote, "Perfect");
+            ProcessRelease(buffer, targetNote);
+        }
+        else
+        {
+            ProcessHit(buffer, targetNote, "Miss");
+            // 너무 일찍 친 경우 (Fast Miss)
+            ProcessRelease(buffer, targetNote);
+        }
+        // 허용 범위 밖으로 너무 일찍 눌렀다면 아무 반응도 하지 않고 남겨둡니다 (허공 치기)
+
+        //페슬
+        if(timeDiff > _FSwindow)
+        {
+            ProcessFS(true);
+        }
     }
 
 
@@ -106,12 +142,18 @@ public class JudgementManager : MonoBehaviour
             case "Good": _judgeCount[2]++; break;
             case "Miss": _judgeCount[3]++; break;
         }
-        buffer.Dequeue(); // 버퍼에서 제거
-        note.OnHit();     // 타격 이펙트 재생 및 Pool로 반환
+        if(!note.GetIsLong()) buffer.Dequeue(); // 롱노트가 아니면 버퍼에서 제거
+        note.OnHit(_startAudioTime);     // 타격 이펙트 재생 및 Pool로 반환
         
         //이거때문에 note메니저랑 judgement메니저끼리 상호간섭함
         //더 좋은 방안이 없을까
         patternManager.CheckPatternEnd();
+    }
+    //롱놋 해제 처리
+    private void ProcessRelease(Queue<NoteObject> buffer, NoteObject note)
+    {
+        buffer.Dequeue();
+        note.OnRelease();
     }
     private void ProcessFS(bool isFast)
     {
@@ -148,14 +190,22 @@ public class JudgementManager : MonoBehaviour
             if (_laneBuffers[i].Count > 0)
             {
                 NoteObject targetNote = _laneBuffers[i].Peek();
-
-                // 노트의 타겟 시간이 한참 지났는데도(Miss 범위를 벗어남) 큐에 남아있다면 놓친 것입니다.
-                if (currentTime - targetNote.GetTargetTime() > _goodWindow)
+                // 롱노트가 아닌데 늦었으면
+                if (currentTime - targetNote.GetTargetTime() > _goodWindow && !targetNote.GetIsLong())
                 {
                     Debug.Log("Miss! (놓침)");
 
                     _laneBuffers[i].Dequeue();
                     targetNote.OnMiss(); // Pool로 반환
+                }
+                // 롱노트인데 늦었으면
+                if (currentTime - targetNote.GetReleaseTime() > _longPerfectWindow && targetNote.GetIsLong())
+                {
+                    Debug.Log("Good, 롱노트 놓침");
+
+                    ProcessHit(_laneBuffers[i], targetNote, "Good");
+                    ProcessRelease(_laneBuffers[i], targetNote);
+                    ProcessFS(false);
                 }
             }
         }

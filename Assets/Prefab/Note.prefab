@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.51, y: 5.39, z: 0}
-  m_LocalScale: {x: 1, y: 0.3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -82,8 +82,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0.60980904, b: 1, a: 1}
+  m_Sprite: {fileID: 4025159193867184526, guid: 0d4d699cdf606e04ebbee95d43418fca, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -105,3 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec78f4e49332bce41b65bef7b6e3c92f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Note
+  _noteSprite:
+  - {fileID: 4025159193867184526, guid: 0d4d699cdf606e04ebbee95d43418fca, type: 3}
+  - {fileID: 4025159193867184526, guid: 3fa9f60e6dc58ac4186e101f0c8ea724, type: 3}
+  _travelheight: 34
