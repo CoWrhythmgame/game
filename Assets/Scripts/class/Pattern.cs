@@ -1,10 +1,7 @@
-
 using System;
-
+using System.Collections.Generic;
 [Serializable]
 public class Pattern
 {
-    public string patternPath = "";
-    public float difficulty = 0;
-    public int totalNoteCount = 0;
+    public List<Note> notes;
 }

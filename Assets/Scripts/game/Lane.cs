@@ -1,25 +1,31 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 public class Lane : MonoBehaviour
 {
     public int laneIndex;
     public GameObject keyBeam;
     public GameObject keyBomb;
     [SerializeField]private InputActionProperty inputActions;
-
+    [SerializeField]private JudgementManager judgementManager;
+    public float Scrollspeed = 1f;
+    void Awake()
+    {
+        judgementManager = GameObject.FindGameObjectWithTag("JudgementManager").GetComponent<JudgementManager>();
+    }
     void OnEnable()
     {
-        Debug.Log("Lane OnEnable");
         inputActions.action.Enable();
         inputActions.action.performed += OnLanePerformed;
     }
     void OnDisable()
     {   
-        Debug.Log("Lane OnDisable");
         inputActions.action.Disable();
         inputActions.action.performed -= OnLanePerformed;
     }
+    
+    //키 입력 감지시 호출
     private void OnLanePerformed(InputAction.CallbackContext context)
     {
         // 1. 현재 입력을 발생시킨 구체적인 컨트롤(키) 정보를 가져옵니다.
@@ -44,23 +50,26 @@ public class Lane : MonoBehaviour
         {
             if(context.ReadValueAsButton())
             {
-                Debug.Log($"[레인 {laneindex + 1}] 입력 감지! 타임스탬프: {context.time}");
                 OnLanePressed(context);
             }
             else
             {
-                Debug.Log($"[레인 {laneindex + 1}] 입력 해제! 타임스탬프: {context.time}");
                 OnLaneReleased(context);
             }
         }
     }
+    //눌렀을 때
     public void OnLanePressed(InputAction.CallbackContext context)
     {
         keyBeam.SetActive(true);
-        // 여기에 레인 입력 시 발생할 이벤트를 추가합니다.
+        judgementManager.OnLaneInputFired(laneIndex, context.time);
     }
+    //땠을 때
     public void OnLaneReleased(InputAction.CallbackContext context)
     {
         keyBeam.SetActive(false);
+        //롱노트 관련
+        judgementManager.OnLaneReleaseFired(laneIndex, context.time);
+
     }
 }
