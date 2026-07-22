@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Audio;
+
 public class OptionMenuUI : MonoBehaviour
 {
     public static bool IsOptionOpen { get; private set; }
@@ -49,13 +50,7 @@ public class OptionMenuUI : MonoBehaviour
 
     private float scrollSpeed = 1.0f;
     private float noteOffset = 0.0f;
-    private float VolumeToDb(int volume)
-    {
-        if (volume <= 0)
-            return -80f;
 
-        return Mathf.Log10(volume / 100f) * 20f;
-    }
     private void Awake()
     {
         LoadOptions();
@@ -66,6 +61,19 @@ public class OptionMenuUI : MonoBehaviour
     {
         CloseOption();
         RefreshUI();
+    }
+
+    private void OnDisable()
+    {
+        IsOptionOpen = false;
+
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        IsOptionOpen = false;
     }
 
     private void Update()
@@ -107,7 +115,7 @@ public class OptionMenuUI : MonoBehaviour
         }
     }
 
-    private void ToggleOption()
+    public void ToggleOption()
     {
         if (IsOptionOpen)
             CloseOption();
@@ -115,7 +123,7 @@ public class OptionMenuUI : MonoBehaviour
             OpenOption();
     }
 
-    private void OpenOption()
+    public void OpenOption()
     {
         IsOptionOpen = true;
         currentIndex = 0;
@@ -124,14 +132,18 @@ public class OptionMenuUI : MonoBehaviour
             optionPanel.SetActive(true);
 
         RefreshUI();
+
+        Debug.Log("Option Open");
     }
 
-    private void CloseOption()
+    public void CloseOption()
     {
         IsOptionOpen = false;
 
         if (optionPanel != null)
             optionPanel.SetActive(false);
+
+        Debug.Log("Option Close");
     }
 
     private void MoveCursor(int direction)
@@ -200,6 +212,28 @@ public class OptionMenuUI : MonoBehaviour
         SaveOptions();
         RefreshUI();
     }
+
+    private void ApplyOptions()
+    {
+        Screen.fullScreen = isFullScreen;
+
+        if (frameIndex >= 0 && frameIndex < frameValues.Length)
+        {
+            Application.targetFrameRate = frameValues[frameIndex];
+        }
+
+        if (audioMixer == null)
+        {
+            Debug.LogWarning("OptionMenuUI: AudioMixer가 연결되지 않았습니다.");
+            return;
+        }
+
+        SetMixerVolume("MasterVolume", masterVolume);
+        SetMixerVolume("MusicVolume", musicVolume);
+        SetMixerVolume("SFXVolume", soundEffectVolume);
+        SetMixerVolume("KeySoundVolume", keyVolume);
+    }
+
     private void SetMixerVolume(string parameterName, int volume)
     {
         float dbValue = VolumeToDb(volume);
@@ -213,23 +247,13 @@ public class OptionMenuUI : MonoBehaviour
 
         Debug.Log(parameterName + " = " + volume + " / " + dbValue + " dB");
     }
-    private void ApplyOptions()
-    {
-        Screen.fullScreen = isFullScreen;
 
-        if (frameIndex >= 0 && frameIndex < frameValues.Length)
-        {
-            Application.targetFrameRate = frameValues[frameIndex];
-        }
-        if (audioMixer == null)
-        {
-            Debug.LogWarning("OptionMenuUI: AudioMixer가 연결되지 않았습니다.");
-            return;
-        }
-        SetMixerVolume("MasterVolume", masterVolume);
-        SetMixerVolume("MusicVolume", musicVolume);
-        SetMixerVolume("SFXVolume", soundEffectVolume);
-        SetMixerVolume("KeySoundVolume", keyVolume);
+    private float VolumeToDb(int volume)
+    {
+        if (volume <= 0)
+            return -80f;
+
+        return Mathf.Log10(volume / 100f) * 20f;
     }
 
     private void SaveOptions()
@@ -289,7 +313,6 @@ public class OptionMenuUI : MonoBehaviour
                 continue;
 
             string optionName = GetOptionName(i);
-
             nameTexts[i].text = optionName;
 
             if (i == currentIndex)

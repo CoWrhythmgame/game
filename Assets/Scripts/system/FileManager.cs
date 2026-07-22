@@ -119,4 +119,170 @@ public class FileManager
         }
         return songs;
     }
+
+    // 추가한 코드 
+    public static Record UpdateRecord(string songName, int patternIndex, PlayData playData)
+    {
+        Record newRecord = ConvertPlayDataToRecord(playData);
+        Record oldRecord = LoadRecord(songName, patternIndex);
+
+        if (IsBetterRecord(newRecord, oldRecord))
+        {
+            SaveRecord(songName, patternIndex, newRecord);
+            return newRecord;
+        }
+
+        return oldRecord;
+    }
+
+    public static Record LoadRecord(string songName, int patternIndex)
+    {
+        string filePath = GetRecordFilePath(songName, patternIndex);
+
+        if (!File.Exists(filePath))
+        {
+            return new Record();
+        }
+
+        string json = File.ReadAllText(filePath);
+        return JsonUtility.FromJson<Record>(json);
+    }
+
+    public static void SaveRecord(string songName, int patternIndex, Record record)
+    {
+        string directoryPath = GetRecordDirectoryPath(songName);
+
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        string filePath = GetRecordFilePath(songName, patternIndex);
+        string json = JsonUtility.ToJson(record, true);
+
+        File.WriteAllText(filePath, json);
+
+        Debug.Log("Record saved: " + filePath);
+    }
+
+    private static Record ConvertPlayDataToRecord(PlayData playData)
+    {
+        if (playData == null)
+        {
+            return new Record();
+        }
+
+        return new Record
+        {
+            score = playData.score,
+            maxcombo = playData.maxcombo,
+            prate = playData.prate,
+            comboResult = CalculateComboResult(playData)
+        };
+    }
+
+    private static ComboResult CalculateComboResult(PlayData playData)
+    {
+        if (playData == null || playData.noteCount == null || playData.noteCount.Length < 4)
+        {
+            return ComboResult.none;
+        }
+
+        int great = playData.noteCount[1];
+        int good = playData.noteCount[2];
+        int miss = playData.noteCount[3];
+
+        if (miss == 0 && great == 0 && good == 0)
+        {
+            return ComboResult.allperfact;
+        }
+
+        if (miss == 0)
+        {
+            return ComboResult.fullcombo;
+        }
+
+        return ComboResult.none;
+    }
+
+    private static bool IsBetterRecord(Record newRecord, Record oldRecord)
+    {
+        if (oldRecord == null)
+        {
+            return true;
+        }
+
+        if (newRecord.score > oldRecord.score)
+        {
+            return true;
+        }
+
+        if (Mathf.Approximately(newRecord.score, oldRecord.score) &&
+            newRecord.prate > oldRecord.prate)
+        {
+            return true;
+        }
+
+        if (Mathf.Approximately(newRecord.score, oldRecord.score) &&
+            Mathf.Approximately(newRecord.prate, oldRecord.prate) &&
+            newRecord.maxcombo > oldRecord.maxcombo)
+        {
+            return true;
+        }
+
+        if (newRecord.comboResult > oldRecord.comboResult)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static string GetRecordDirectoryPath(string songName)
+    {
+        string localPath = GetLocalPath();
+        string safeSongName = SanitizeFileName(songName);
+
+        return Path.Combine(localPath, "Record", safeSongName);
+    }
+
+    private static string GetRecordFilePath(string songName, int patternIndex)
+    {
+        string directoryPath = GetRecordDirectoryPath(songName);
+        string fileName = GetRecordFileName(patternIndex);
+
+        return Path.Combine(directoryPath, fileName);
+    }
+
+    private static string GetRecordFileName(int patternIndex)
+    {
+        switch (patternIndex)
+        {
+            case 0:
+                return "1-Easy.json";
+            case 1:
+                return "2-Normal.json";
+            case 2:
+                return "3-Hard.json";
+            case 3:
+                return "4-Extreme.json";
+            default:
+                return (patternIndex + 1) + "-Unknown.json";
+        }
+    }
+
+    private static string SanitizeFileName(string fileName)
+    {
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return "UnknownSong";
+        }
+
+        foreach (char invalidChar in Path.GetInvalidFileNameChars())
+        {
+            fileName = fileName.Replace(invalidChar, '_');
+        }
+
+        return fileName;
+    }
 }
