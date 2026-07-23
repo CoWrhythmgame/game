@@ -16,8 +16,8 @@ public class SongIndicator : MonoBehaviour
     {
         songname.text = song.songname;
         artist.text = song.artist;
-        difficulty.text = song.pattern[difficultyindex].difficulty.ToString();
-        TotalNote.text = song.pattern[difficultyindex].totalNoteCount.ToString();
+        difficulty.text = song.patternInfo[difficultyindex].difficulty.ToString();
+        TotalNote.text = song.patternInfo[difficultyindex].totalNoteCount.ToString();
         BPM.text = song.bpm.ToString();
         Score.text = song.record[difficultyindex].score.ToString();
         Combo.text = song.record[difficultyindex].maxcombo.ToString();

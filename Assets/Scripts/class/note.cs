@@ -6,12 +6,13 @@ public enum NoteType
     hold = 1,
 }
 [Serializable]
-public class note
+public class Note
 {
     public int lane = 0;
-    public float time = 0;
+    public double time = 0;
     public NoteType noteType = NoteType.single;
-    public float releaseTime = 0;
+    public double releaseTime = 0;
+    public float bpm = 1;
     public EditorOnlyNote editorOnlyNote;
     
 }

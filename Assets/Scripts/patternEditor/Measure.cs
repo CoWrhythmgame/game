@@ -1,31 +1,53 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 
 public class Measure : MonoBehaviour
 {
+    #region Variables
     [Header("Objects")]
     [SerializeField] private GameObject _notePrefab;
+    [SerializeField] private GameObject _noteListObject;
+    [SerializeField] private GameObject _ConstraintObject;
     [SerializeField] private GameObject _shadeNote;
     [SerializeField] private TMPro.TMP_Text _text;
+
     [Header("Lines")]
     [SerializeField] private List<GameObject> _Lines_4;
     [SerializeField] private List<GameObject> _Lines_6;
     [SerializeField] private List<GameObject> _Lines_8;
+
     [Header("FromToolbar")]
     [SerializeField] private int _signature = 4;
+    [SerializeField] private NoteType _NoteType = NoteType.single;
+
     [Header("SongData")]
     [SerializeField] private float _bpm = 120;
+    [SerializeField] List<GameObject> _notes;
+
     [Header("Debug")]
     [SerializeField] private bool Debug_Increase = false;
     [SerializeField] private bool Debug_Decrease = false;
-    private int _MeasureIndex = 0;
+    [SerializeField] private int _MeasureIndex = 0;
     private Transform _transform;
     private Vector3 _mousePos;
+    private ConstraintSource _source;
+    #endregion
+
+    #region LifeCycle
     private void Awake()
     {
         _transform = transform.GetComponent<Transform>();
+        _notes = new List<GameObject>();
+        _source = new ConstraintSource
+        {
+            sourceTransform = _ConstraintObject.transform,
+            weight = 1
+        };
+
     }
     public void Initialize(int index, float bpm)
     {
@@ -63,10 +85,21 @@ public class Measure : MonoBehaviour
         }
         OnToolbarChanged();//디버그용. 확인가능한 수단이 만들어지면 반드시 제거할것
     }
+    #endregion
+
+    #region Callbacks
     private void OnOverMouse()
     {
         _shadeNote.SetActive(true);
         _shadeNote.transform.localPosition = GetGridVector3(_mousePos);
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            AddNote();
+        }
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            DeleteNote();
+        }
     }
     private void OnOffMouse()
     {
@@ -79,6 +112,49 @@ public class Measure : MonoBehaviour
         // _signature = (박자 설정에서 값 가져옴)
         RenderLines(_signature);
     }
+    #endregion
+    /// <summary>
+    /// 확대, 축소, 삭제시 어긋타는걸 막기위한 함수(최적화를 위해 활성화되었을때 호출)
+    /// </summary>
+    public void SyncMeasure()
+    {
+        MeasureRePosition();
+    }
+    #region Note Logic
+    /// <summary>
+    /// 노트 추가 함수
+    /// </summary>
+    private void AddNote()
+    {
+        Vector3 notePos = GetGridVector3(_mousePos);
+        if(_notes.Any(note => note.transform.localPosition == notePos))return;
+
+        GameObject note = Instantiate(_notePrefab, _noteListObject.transform);
+        note.GetComponent<ScaleConstraint>().AddSource(_source);
+        note.transform.localPosition = notePos;
+        note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _NoteType);
+        _notes.Add(note);
+    }
+    /// <summary>
+    /// 마우스 위치의 노트 삭제
+    /// </summary>
+    private void DeleteNote()
+    {
+        Debug.Log("delete");
+        Vector3 notePos = GetGridVector3(_mousePos);
+        if(!_notes.Any(note => note.transform.localPosition == notePos))return;
+        GameObject note = _notes.FirstOrDefault(note => note.transform.localPosition == notePos);
+        Debug.Log(note);
+        _notes.Remove(note);
+        Destroy(note);
+    }
+
+    #endregion
+    #region Measure Logic
+    /// <summary>
+    /// 비트 값을 받아서 그 약수에 맞는 비트 가이드라인을 보여줌. 가이드라인은 필요시 더 추가할것.
+    /// </summary>
+    /// <param name="signature">현제 설정된 비트</param>
     private void RenderLines(int signature)
     {
     
@@ -116,11 +192,17 @@ public class Measure : MonoBehaviour
             }
         }
     }
-    //확대, 축소, 삭제시 어긋타는걸 막기위한 함수(최적화를 위해 활성화되었을때 호출)
-    public void SyncMeasure()
+    /// <summary>
+    /// 마디선 이동
+    /// </summary>
+    private void MeasureRePosition()
     {
-        MeasureRePosition();
+        _transform.position = new Vector3(0,_MeasureIndex*_transform.localScale.y-4f,0);
     }
+    /// <summary>
+    /// 마우스 위치를 반환
+    /// </summary>
+    /// <returns>마우스 위치</returns>
     private Vector3 GetMouseWorldPosition()
     {   
         // 1. 화면 픽셀 좌표 가져오기
@@ -133,12 +215,21 @@ public class Measure : MonoBehaviour
         
         return worldPos;
     }
-    private Vector3 GetGridVector3(Vector3 vector3)
+    /// <summary>
+    /// 벡터를 가져와서 마디선 그리드에 맞는(snap) 벡터를 반환
+    /// </summary>
+    /// <param name="mousePos">마우스 위치 벡터</param>
+    /// <returns>그리드에 스냅된 벡터</returns>
+    private Vector3 GetGridVector3(Vector3 mousePos)
     {
-        float x = (MathF.Floor(vector3.x)+1f/2)/_transform.localScale.x;
-        float y = Mathf.Floor(vector3.y*_signature/_transform.localScale.y)/_signature;
-        return new Vector3(x,y,0)-_transform.position/_transform.localScale.y;
+        float x = (MathF.Floor(mousePos.x)+1f/2)/_transform.localScale.x;
+        float y = Mathf.Floor((mousePos.y-_transform.position.y)*_signature/_transform.localScale.y)/_signature;
+        return new Vector3(x,y,0);
     }
+    /// <summary>
+    /// 마우스가 이 오브젝트 위에 있는지 여부를 반환
+    /// </summary>
+    /// <returns>오브젝트 위 마우스 여부</returns>
     private bool IsMouseOn()
     {
         if(Mathf.Abs(_transform.position.x-_mousePos.x) < _transform.localScale.x / 2)
@@ -150,10 +241,7 @@ public class Measure : MonoBehaviour
         }
         return false;
     }
-    private void MeasureRePosition()
-    {
-        _transform.position = new Vector3(0,_MeasureIndex*_transform.localScale.y-4f,0);
-    }
+    #endregion
     #region Debug
     private void Debug_SizeIncrease()
     {

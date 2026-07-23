@@ -56,11 +56,15 @@ public class OptionMenuUI : MonoBehaviour
 
         return Mathf.Log10(volume / 100f) * 20f;
     }
-    private void Start()
+    private void Awake()
     {
         LoadOptions();
-        CloseOption();
         ApplyOptions();
+    }
+
+    private void Start()
+    {
+        CloseOption();
         RefreshUI();
     }
 
@@ -196,7 +200,19 @@ public class OptionMenuUI : MonoBehaviour
         SaveOptions();
         RefreshUI();
     }
+    private void SetMixerVolume(string parameterName, int volume)
+    {
+        float dbValue = VolumeToDb(volume);
+        bool success = audioMixer.SetFloat(parameterName, dbValue);
 
+        if (!success)
+        {
+            Debug.LogWarning("AudioMixer parameter not found: " + parameterName);
+            return;
+        }
+
+        Debug.Log(parameterName + " = " + volume + " / " + dbValue + " dB");
+    }
     private void ApplyOptions()
     {
         Screen.fullScreen = isFullScreen;
@@ -205,19 +221,15 @@ public class OptionMenuUI : MonoBehaviour
         {
             Application.targetFrameRate = frameValues[frameIndex];
         }
-
-        if (audioMixer != null)
+        if (audioMixer == null)
         {
-            audioMixer.SetFloat("MasterVolume", VolumeToDb(masterVolume));
-            audioMixer.SetFloat("MusicVolume", VolumeToDb(musicVolume));
-            audioMixer.SetFloat("SFXVolume", VolumeToDb(soundEffectVolume));
-            audioMixer.SetFloat("KeySoundVolume", VolumeToDb(keyVolume));
+            Debug.LogWarning("OptionMenuUI: AudioMixer가 연결되지 않았습니다.");
+            return;
         }
-        // musicVolume, soundEffectVolume, keyVolume은 지금은 저장만 함.
-        // 나중에 AudioMixer나 SoundManager가 생기면 여기서 각각 적용하면 됨.
-
-        // scrollSpeed, noteOffset도 지금은 저장만 함.
-        // 나중에 인게임 쪽에서 PlayerPrefs 또는 OptionManager를 통해 읽어서 쓰면 됨.
+        SetMixerVolume("MasterVolume", masterVolume);
+        SetMixerVolume("MusicVolume", musicVolume);
+        SetMixerVolume("SFXVolume", soundEffectVolume);
+        SetMixerVolume("KeySoundVolume", keyVolume);
     }
 
     private void SaveOptions()
