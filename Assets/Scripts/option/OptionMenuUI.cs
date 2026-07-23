@@ -23,25 +23,35 @@ public class OptionMenuUI : MonoBehaviour
     [Header("Audio Mixer")]
     [SerializeField] private AudioMixer audioMixer;
 
+    [Header("Key Setting")]
+    [SerializeField] private KeySettingManager keySettingManager;
+
+    private const int LaneKeyOptionStartIndex = 8;
+    private const int LaneKeyOptionCount = 4;
     private int currentIndex = 0;
+    private bool wasWaitingForKey = false;
 
     private readonly string[] optionNames =
     {
-        "Full Scene",
+        "Full Screen",
         "Frame",
         "Master Volume",
         "Music Volume",
         "Sound Effect",
         "Key Volume",
         "Scroll Speed",
-        "Note Offset"
+        "Note Offset",
+        "Lane 1 Key",
+        "Lane 2 Key",
+        "Lane 3 Key",
+        "Lane 4 Key"
     };
 
     private bool isFullScreen = true;
 
     private int frameIndex = 1;
-    private readonly int[] frameValues = { 30, 60, 120, 144, -1 };
-    private readonly string[] frameTexts = { "30", "60", "120", "144", "Unlimited" };
+    private readonly int[] frameValues = { 60, 120 };
+    private readonly string[] frameTexts = { "60", "120" };
 
     private int masterVolume = 100;
     private int musicVolume = 100;
@@ -90,6 +100,21 @@ public class OptionMenuUI : MonoBehaviour
         if (!IsOptionOpen)
             return;
 
+        bool isWaitingForKey = keySettingManager != null && keySettingManager.IsWaitingForKey;
+
+        if (isWaitingForKey)
+        {
+            wasWaitingForKey = true;
+            RefreshUI();
+            return;
+        }
+
+        if (wasWaitingForKey)
+        {
+            wasWaitingForKey = false;
+            RefreshUI();
+        }
+
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             CloseOption();
@@ -114,7 +139,50 @@ public class OptionMenuUI : MonoBehaviour
             ChangeValue(1);
         }
     }
+    private void ApplyOptions()
+    {
+        ApplyFullScreen();
+        ApplyFrameRate();
 
+        if (audioMixer == null)
+        {
+            Debug.LogWarning("OptionMenuUI: AudioMixer가 연결되지 않았습니다.");
+            return;
+        }
+
+        SetMixerVolume("MasterVolume", masterVolume);
+        SetMixerVolume("MusicVolume", musicVolume);
+        SetMixerVolume("SFXVolume", soundEffectVolume);
+        SetMixerVolume("KeySoundVolume", keyVolume);
+    }
+
+    private void ApplyFullScreen()
+    {
+        if (isFullScreen)
+        {
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            Screen.fullScreen = true;
+        }
+        else
+        {
+            Screen.fullScreen = false;
+        }
+
+        Debug.Log("Full Screen = " + isFullScreen);
+    }
+
+    private void ApplyFrameRate()
+    {
+        if (frameIndex < 0 || frameIndex >= frameValues.Length)
+        {
+            frameIndex = 0;
+        }
+
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = frameValues[frameIndex];
+
+        Debug.Log("Frame Rate = " + frameValues[frameIndex]);
+    }
     public void ToggleOption()
     {
         if (IsOptionOpen)
@@ -165,7 +233,7 @@ public class OptionMenuUI : MonoBehaviour
     {
         switch (currentIndex)
         {
-            case 0: // Full Scene
+            case 0: // Full Screen
                 isFullScreen = !isFullScreen;
                 break;
 
@@ -206,32 +274,17 @@ public class OptionMenuUI : MonoBehaviour
                 noteOffset = Mathf.Clamp(noteOffset, -5.0f, 5.0f);
                 noteOffset = Mathf.Round(noteOffset * 10f) / 10f;
                 break;
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+                StartLaneKeyChange(currentIndex - LaneKeyOptionStartIndex);
+                return;
         }
 
         ApplyOptions();
         SaveOptions();
         RefreshUI();
-    }
-
-    private void ApplyOptions()
-    {
-        Screen.fullScreen = isFullScreen;
-
-        if (frameIndex >= 0 && frameIndex < frameValues.Length)
-        {
-            Application.targetFrameRate = frameValues[frameIndex];
-        }
-
-        if (audioMixer == null)
-        {
-            Debug.LogWarning("OptionMenuUI: AudioMixer가 연결되지 않았습니다.");
-            return;
-        }
-
-        SetMixerVolume("MasterVolume", masterVolume);
-        SetMixerVolume("MusicVolume", musicVolume);
-        SetMixerVolume("SFXVolume", soundEffectVolume);
-        SetMixerVolume("KeySoundVolume", keyVolume);
     }
 
     private void SetMixerVolume(string parameterName, int volume)
@@ -275,7 +328,7 @@ public class OptionMenuUI : MonoBehaviour
     private void LoadOptions()
     {
         isFullScreen = PlayerPrefs.GetInt("Option_IsFullScreen", 1) == 1;
-        frameIndex = PlayerPrefs.GetInt("Option_FrameIndex", 1);
+        frameIndex = PlayerPrefs.GetInt("Option_FrameIndex", 0);
 
         masterVolume = PlayerPrefs.GetInt("Option_MasterVolume", 100);
         musicVolume = PlayerPrefs.GetInt("Option_MusicVolume", 100);
@@ -335,6 +388,19 @@ public class OptionMenuUI : MonoBehaviour
         SetValueText(5, keyVolume.ToString());
         SetValueText(6, scrollSpeed.ToString("0.0"));
         SetValueText(7, noteOffset.ToString("0.0"));
+        for (int i = 0; i < LaneKeyOptionCount; i++)
+        {
+            int optionIndex = LaneKeyOptionStartIndex + i;
+
+            if (keySettingManager == null)
+            {
+                SetValueText(optionIndex, "-");
+            }
+            else
+            {
+                SetValueText(optionIndex, keySettingManager.GetLaneKeyDisplayName(i));
+            }
+        }
     }
 
     private void SetValueText(int index, string value)
@@ -357,5 +423,16 @@ public class OptionMenuUI : MonoBehaviour
             return optionNames[index];
 
         return "Option " + index;
+    }
+    private void StartLaneKeyChange(int laneIndex)
+    {
+        if (keySettingManager == null)
+        {
+            Debug.LogWarning("OptionMenuUI: KeySettingManager가 연결되지 않았습니다.");
+            return;
+        }
+
+        keySettingManager.BeginChangeLaneKey(laneIndex);
+        RefreshUI();
     }
 }

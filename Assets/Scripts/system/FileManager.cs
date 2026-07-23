@@ -184,7 +184,7 @@ public class FileManager
     {
         Record newRecord = ConvertPlayDataToRecord(playData);
         Record oldRecord = LoadRecord(songName, patternIndex);
-
+        
         if (IsBetterRecord(newRecord, oldRecord))
         {
             SaveRecord(songName, patternIndex, newRecord);
@@ -193,7 +193,7 @@ public class FileManager
 
         return oldRecord;
     }
-
+    
     public static Record LoadRecord(string songName, int patternIndex)
     {
         string filePath = GetRecordFilePath(songName, patternIndex);

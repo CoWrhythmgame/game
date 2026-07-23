@@ -9,6 +9,7 @@ public class DataMaster : MonoBehaviour
     private Song _song = new Song();
     private bool _isNewRecord = false;
     private int _difficultyIndex = 0;
+
     void Awake()
     {
         // 1. 이미 인스턴스가 존재하는데, 그게 내가 아니라면? (중복 생성된 경우)

@@ -99,7 +99,7 @@
             "id": "73d62c4b-abdc-4f8f-86f8-1fd183b9fcf6",
             "actions": [
                 {
-                    "name": "Lane",
+                    "name": "Sound",
                     "type": "PassThrough",
                     "id": "1d0e151f-700c-4e54-b6c6-2bb2194f95c0",
                     "expectedControlType": "Button",
@@ -115,6 +115,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Lane",
+                    "type": "Button",
+                    "id": "9790b4d3-6282-47a0-b390-e667c479735a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -125,7 +134,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";PC",
-                    "action": "Lane",
+                    "action": "Sound",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -136,7 +145,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";PC",
-                    "action": "Lane",
+                    "action": "Sound",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -147,7 +156,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";PC",
-                    "action": "Lane",
+                    "action": "Sound",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -158,7 +167,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";PC",
-                    "action": "Lane",
+                    "action": "Sound",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -170,6 +179,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "108acbc5-fb5e-4bbe-93c1-4902d0b5b507",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lane",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d8cba996-cbcd-4677-8f40-042932cc1882",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lane",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2743b90f-203d-4584-8d3f-7861e82f2bdc",
+                    "path": "<Keyboard>/semicolon",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lane",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cba21ad-8e5f-4cf0-8712-0a270600aa6a",
+                    "path": "<Keyboard>/quote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lane",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

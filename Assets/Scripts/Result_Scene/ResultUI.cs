@@ -69,29 +69,30 @@ public class ResultUI : MonoBehaviour
             InputManager.Instance.OnPause();
         }
 
-        if (DataMaster.Instance != null &&
-            DataMaster.Instance.CurrentPlayData != null)
+        if (DataMaster.Instance == null)
         {
-            Song song = DataMaster.Instance.CurrentSong;
-            int patternIndex = DataMaster.Instance.CurrentPatternIndex;
-            PlayData playData = DataMaster.Instance.CurrentPlayData;
-
-            ShowResult(song, patternIndex, playData);
-
-            if (song != null)
-            {
-                FileManager.UpdateRecord(song.songname, patternIndex, playData);
-            }
-            else
-            {
-                Debug.LogWarning("ResultUI: CurrentSong이 없어서 Record 저장을 건너뜁니다.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("ResultUI: 전달받은 PlayData가 없습니다. 더미 결과를 표시합니다.");
+            Debug.LogWarning("ResultUI: DataMaster가 없습니다. 더미 결과를 표시합니다.");
             ShowDummyResult();
+            RefreshMenuUI();
+            return;
         }
+
+        Song song = DataMaster.Instance.GetSong();
+        int difficultyIndex = DataMaster.Instance.GetDifficultyIndex();
+        PlayData playData = DataMaster.Instance.GetPlayData();
+
+        if (song == null || string.IsNullOrEmpty(song.songname) || playData == null)
+        {
+            Debug.LogWarning("ResultUI: 전달받은 결과 데이터가 없습니다. 더미 결과를 표시합니다.");
+            ShowDummyResult();
+            RefreshMenuUI();
+            return;
+        }
+
+        ShowResult(song, difficultyIndex, playData);
+
+        Record updatedRecord = FileManager.UpdateRecord(song.songname, difficultyIndex, playData);
+        DataMaster.Instance.SetRecord(updatedRecord);
 
         RefreshMenuUI();
     }
