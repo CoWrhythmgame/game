@@ -61,6 +61,7 @@ public class OptionMenuUI : MonoBehaviour
     private float scrollSpeed = 1.0f;
     private float noteOffset = 0.0f;
 
+    
     private void Awake()
     {
         LoadOptions();
@@ -146,7 +147,7 @@ public class OptionMenuUI : MonoBehaviour
 
         if (audioMixer == null)
         {
-            Debug.LogWarning("OptionMenuUI: AudioMixer°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("OptionMenuUI: AudioMixerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
@@ -286,7 +287,6 @@ public class OptionMenuUI : MonoBehaviour
         SaveOptions();
         RefreshUI();
     }
-
     private void SetMixerVolume(string parameterName, int volume)
     {
         float dbValue = VolumeToDb(volume);
@@ -300,7 +300,6 @@ public class OptionMenuUI : MonoBehaviour
 
         Debug.Log(parameterName + " = " + volume + " / " + dbValue + " dB");
     }
-
     private float VolumeToDb(int volume)
     {
         if (volume <= 0)
@@ -428,7 +427,7 @@ public class OptionMenuUI : MonoBehaviour
     {
         if (keySettingManager == null)
         {
-            Debug.LogWarning("OptionMenuUI: KeySettingManager°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("OptionMenuUI: KeySettingManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 

@@ -44,8 +44,17 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2885556537
+    locked: 0
+  - name: Lane
+    uniqueID: 3617749153
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Note
+    uniqueID: 1314622695
     locked: 0
   m_RenderingLayers:
   - Default
