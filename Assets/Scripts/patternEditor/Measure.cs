@@ -11,7 +11,7 @@ public class Measure : MonoBehaviour
     [Header("Objects")]
     [SerializeField] private GameObject _notePrefab;
     [SerializeField] private GameObject _noteListObject;
-    [SerializeField] private GameObject _ConstraintObject;
+    //// [SerializeField] private GameObject _ConstraintObject; 더이상 사용하지 않음.
     [SerializeField] private GameObject _shadeNote;
     [SerializeField] private TMPro.TMP_Text _text;
 
@@ -19,10 +19,12 @@ public class Measure : MonoBehaviour
     [SerializeField] private List<GameObject> _Lines_4;
     [SerializeField] private List<GameObject> _Lines_6;
     [SerializeField] private List<GameObject> _Lines_8;
+    [SerializeField] private List<GameObject> _Lines_12;
+    [SerializeField] private List<GameObject> _Lines_16;
 
     [Header("FromToolbar")]
     [SerializeField] private int _signature = 4;
-    [SerializeField] private NoteType _NoteType = NoteType.single;
+    [SerializeField] private NoteType _noteType = NoteType.single;
 
     [Header("SongData")]
     [SerializeField] private float _bpm = 120;
@@ -35,6 +37,7 @@ public class Measure : MonoBehaviour
     private Transform _transform;
     private Vector3 _mousePos;
     private ConstraintSource _source;
+    private MeasureList _measureList;
     #endregion
 
     #region LifeCycle
@@ -42,11 +45,14 @@ public class Measure : MonoBehaviour
     {
         _transform = transform.GetComponent<Transform>();
         _notes = new List<GameObject>();
-        _source = new ConstraintSource
-        {
-            sourceTransform = _ConstraintObject.transform,
-            weight = 1
-        };
+        _measureList = transform.parent.parent.GetComponent<MeasureList>();
+
+        // ! constraint 제거 더이상 사용하지 않음.
+        //// _source = new ConstraintSource
+        //// {
+        ////     sourceTransform = _ConstraintObject.transform,
+        ////     weight = 1
+        //// };
 
     }
     public void Initialize(int index, float bpm)
@@ -54,11 +60,11 @@ public class Measure : MonoBehaviour
         _MeasureIndex = index;
         _text.text = _MeasureIndex.ToString();
         _bpm = bpm;
-        SyncMeasure();
+        OnMeasureChanged();
     }
     private void OnEnable()
     {
-        SyncMeasure();
+        OnMeasureChanged();
         OnToolbarChanged();
     }
     
@@ -83,11 +89,18 @@ public class Measure : MonoBehaviour
             Debug_SizeDecrease();
             Debug_Decrease=false;
         }
-        OnToolbarChanged();//디버그용. 확인가능한 수단이 만들어지면 반드시 제거할것
+        // //HACK: 디버그용. 툴바가 만들어지면 반드시 제거할것
+        // SyncWithToolbar();
     }
     #endregion
 
     #region Callbacks
+    public void OnIndexChanged(int index)
+    {
+        _MeasureIndex = index;
+        _text.text = _MeasureIndex.ToString();
+        OnMeasureChanged();
+    }
     private void OnOverMouse()
     {
         _shadeNote.SetActive(true);
@@ -105,21 +118,24 @@ public class Measure : MonoBehaviour
     {
         _shadeNote.SetActive(false);
     }
-    //툴바 조작 시 호출
-    private void OnToolbarChanged()
+    /// <summary>
+    /// 확대, 축소, 삭제시 호출되는 함수(최적화를 위해 활성화되었을때 호출)
+    /// </summary>
+    public void OnMeasureChanged()
     {
-        
-        // _signature = (박자 설정에서 값 가져옴)
+        MeasureRePosition();
+        NoteReSize();
+    }
+    /// <summary>
+    /// MeasureList에서 저장하고 있는 툴바 정보를 가져옴
+    /// </summary>
+    public void OnToolbarChanged()
+    {
+        _signature = _measureList.GetSignature();
+        _noteType = _measureList.GetNoteType();
         RenderLines(_signature);
     }
     #endregion
-    /// <summary>
-    /// 확대, 축소, 삭제시 어긋타는걸 막기위한 함수(최적화를 위해 활성화되었을때 호출)
-    /// </summary>
-    public void SyncMeasure()
-    {
-        MeasureRePosition();
-    }
     #region Note Logic
     /// <summary>
     /// 노트 추가 함수
@@ -130,9 +146,12 @@ public class Measure : MonoBehaviour
         if(_notes.Any(note => note.transform.localPosition == notePos))return;
 
         GameObject note = Instantiate(_notePrefab, _noteListObject.transform);
-        note.GetComponent<ScaleConstraint>().AddSource(_source);
+        // note.GetComponent<ScaleConstraint>().AddSource(_source);
         note.transform.localPosition = notePos;
-        note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _NoteType);
+        note.transform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
+
+        note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _noteType);
+        
         _notes.Add(note);
     }
     /// <summary>
@@ -148,7 +167,22 @@ public class Measure : MonoBehaviour
         _notes.Remove(note);
         Destroy(note);
     }
-
+    /// <summary>
+    /// 확대, 축소시 모든 노트 크기 조절
+    /// </summary>
+    private void NoteReSize()
+    {
+        foreach(GameObject note in _notes)
+        {
+            NoteType noteType = note.GetComponent<EditorNote>().GetNoteType();
+            if(noteType == NoteType.single)
+            {
+                note.transform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
+            }
+            //TODO: 여기에 롱노트 로직 넣어야함.
+            
+        }
+    }
     #endregion
     #region Measure Logic
     /// <summary>
@@ -170,6 +204,14 @@ public class Measure : MonoBehaviour
         {
             line.SetActive(false);
         }
+        foreach(GameObject line in _Lines_12)
+        {
+            line.SetActive(false);
+        }
+        foreach(GameObject line in _Lines_16)
+        {
+            line.SetActive(false);
+        }
         if(signature % 4 == 0)
         {
             foreach(GameObject line in _Lines_4)
@@ -187,6 +229,20 @@ public class Measure : MonoBehaviour
         if(signature % 8 == 0)
         {
             foreach(GameObject line in _Lines_8)
+            {
+                line.SetActive(true);
+            }
+        }
+        if(signature % 12 == 0)
+        {
+            foreach(GameObject line in _Lines_12)
+            {
+                line.SetActive(true);
+            }
+        }
+        if(signature % 16 == 0)
+        {
+            foreach(GameObject line in _Lines_16)
             {
                 line.SetActive(true);
             }
@@ -215,6 +271,9 @@ public class Measure : MonoBehaviour
         
         return worldPos;
     }
+    #endregion
+    #region MouseLogic
+    
     /// <summary>
     /// 벡터를 가져와서 마디선 그리드에 맞는(snap) 벡터를 반환
     /// </summary>
@@ -223,7 +282,18 @@ public class Measure : MonoBehaviour
     private Vector3 GetGridVector3(Vector3 mousePos)
     {
         float x = (MathF.Floor(mousePos.x)+1f/2)/_transform.localScale.x;
-        float y = Mathf.Floor((mousePos.y-_transform.position.y)*_signature/_transform.localScale.y)/_signature;
+        float y;
+
+        //offgrid
+        if(_signature == 1) {
+            y = (mousePos.y-_transform.position.y)/_transform.localScale.y;
+        }
+        else{
+            y = Mathf.Floor((mousePos.y-_transform.position.y)*_signature/_transform.localScale.y)/_signature;
+        }
+
+
+
         return new Vector3(x,y,0);
     }
     /// <summary>
@@ -246,12 +316,12 @@ public class Measure : MonoBehaviour
     private void Debug_SizeIncrease()
     {
         _transform.localScale = new Vector3(_transform.localScale.x, _transform.localScale.y*2, 0);
-        SyncMeasure();
+        OnMeasureChanged();
     }
     private void Debug_SizeDecrease()
     {
         _transform.localScale = new Vector3(_transform.localScale.x, _transform.localScale.y/2, 0);
-        SyncMeasure();
+        OnMeasureChanged();
     }
     #endregion
 }

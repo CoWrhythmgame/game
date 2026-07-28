@@ -23,5 +23,9 @@ public class EditorNote : MonoBehaviour
         _noteType = noteType;
         _longNoteLength = longNoteLength;
     }
+    public NoteType GetNoteType()
+    {
+        return _noteType;
+    }
 
 }
