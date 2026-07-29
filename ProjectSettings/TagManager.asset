@@ -10,6 +10,7 @@ TagManager:
   - JudgementManager
   - DataMaster
   - NoteManager
+  - Inspector
   layers:
   - Default
   - TransparentFX
