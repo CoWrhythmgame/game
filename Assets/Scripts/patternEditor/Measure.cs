@@ -8,12 +8,14 @@ using UnityEngine.InputSystem;
 public class Measure : MonoBehaviour
 {
     #region Variables
-    [Header("Objects")]
+    [Header("Connect Area")]
     [SerializeField] private GameObject _notePrefab;
     [SerializeField] private GameObject _noteListObject;
     //// [SerializeField] private GameObject _ConstraintObject; 더이상 사용하지 않음.
     [SerializeField] private GameObject _shadeNote;
+    [SerializeField] private ObjectButton _inspectorButton;
     [SerializeField] private TMPro.TMP_Text _text;
+    [SerializeField] private Inspector _inspector;
 
     [Header("Lines")]
     [SerializeField] private List<GameObject> _Lines_4;
@@ -27,7 +29,7 @@ public class Measure : MonoBehaviour
     [SerializeField] private NoteType _noteType = NoteType.single;
 
     [Header("SongData")]
-    [SerializeField] private float _bpm = 120;
+    [SerializeField] private float _BPM = 120;
     [SerializeField] List<GameObject> _notes;
 
     [Header("Debug")]
@@ -36,7 +38,7 @@ public class Measure : MonoBehaviour
     [SerializeField] private int _MeasureIndex = 0;
     private Transform _transform;
     private Vector3 _mousePos;
-    private ConstraintSource _source;
+    //// private ConstraintSource _source;
     private MeasureList _measureList;
     #endregion
 
@@ -46,6 +48,10 @@ public class Measure : MonoBehaviour
         _transform = transform.GetComponent<Transform>();
         _notes = new List<GameObject>();
         _measureList = transform.parent.parent.GetComponent<MeasureList>();
+
+        _inspector = GameObject.FindGameObjectWithTag("Inspector").GetComponent<Inspector>();
+
+        _inspectorButton.OnButtonClicked += ShowInspector;
 
         // ! constraint 제거 더이상 사용하지 않음.
         //// _source = new ConstraintSource
@@ -59,7 +65,7 @@ public class Measure : MonoBehaviour
     {
         _MeasureIndex = index;
         _text.text = _MeasureIndex.ToString();
-        _bpm = bpm;
+        _BPM = bpm;
         OnMeasureChanged();
     }
     private void OnEnable()
@@ -89,8 +95,6 @@ public class Measure : MonoBehaviour
             Debug_SizeDecrease();
             Debug_Decrease=false;
         }
-        // //HACK: 디버그용. 툴바가 만들어지면 반드시 제거할것
-        // SyncWithToolbar();
     }
     #endregion
 
@@ -100,6 +104,10 @@ public class Measure : MonoBehaviour
         _MeasureIndex = index;
         _text.text = _MeasureIndex.ToString();
         OnMeasureChanged();
+    }
+    public void OnInspectorBpmChanged(float BPM)
+    {
+        _BPM = BPM;
     }
     private void OnOverMouse()
     {
@@ -134,6 +142,10 @@ public class Measure : MonoBehaviour
         _signature = _measureList.GetSignature();
         _noteType = _measureList.GetNoteType();
         RenderLines(_signature);
+    }
+    public void ShowInspector()
+    {
+        _inspector.Show(this, _MeasureIndex,_BPM);
     }
     #endregion
     #region Note Logic
@@ -271,6 +283,7 @@ public class Measure : MonoBehaviour
         
         return worldPos;
     }
+    
     #endregion
     #region MouseLogic
     

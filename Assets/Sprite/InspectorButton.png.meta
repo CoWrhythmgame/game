@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d8a926994c6d59f4985bab7af711fa3b
+guid: 69d9e32a8cee95f4c882ac5ebf87263d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5922621636176013493
-    second: ToolBarButton_0
+      213: 2527103916802817271
+    second: InspectorButton_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ToolBarButton_0
+      name: InspectorButton_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 64
-        height: 64
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b479fa4500f9ecda0800000000000000
-      internalID: -5922621636176013493
+      spriteID: 7fcb7878f93121320800000000000000
+      internalID: 2527103916802817271
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ToolBarButton_0: -5922621636176013493
+      InspectorButton_0: 2527103916802817271
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

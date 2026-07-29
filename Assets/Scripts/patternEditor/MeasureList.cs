@@ -6,10 +6,11 @@ using UnityEngine.InputSystem;
 public class MeasureList : MonoBehaviour
 {
     #region Variables
-    [Header("Objects")]
+    [Header("Connect Area")]
     [SerializeField] private GameObject _measurePrefab;
     [SerializeField] private GameObject _addButton;
     [SerializeField] private GameObject _camera;
+    [SerializeField] private Inspector _inspector;
 
     [Header("MeasureData")]
     [SerializeField] private int _scale = 1;
@@ -38,6 +39,10 @@ public class MeasureList : MonoBehaviour
     {
         _measures = new List<GameObject>();
         _camera = Camera.main.gameObject;
+
+        _addButton.GetComponent<ObjectButton>().OnButtonClicked += AddMeasure;
+        _inspector.OnDeleteButtonClicked += DeleteMeasure;
+
         AddMeasure();
     }
     void Update()

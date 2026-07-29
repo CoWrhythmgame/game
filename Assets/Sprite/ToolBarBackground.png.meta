@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 171079714156219488bbc5226057d75a
+guid: d8a926994c6d59f4985bab7af711fa3b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6134212955408006587
-    second: ToolBar_0
+      213: -5922621636176013493
+    second: ToolBarBackground
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,8 +51,8 @@ TextureImporter:
   spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
-  spriteBorder: {x: 33, y: 2, z: 2, w: 2}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 5, y: 5, z: 5, w: 5}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ToolBar_0
+      name: ToolBarBackground
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 448
+        width: 60
         height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 4, y: 4, z: 0, w: 4}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bbd71b7be2a112550800000000000000
-      internalID: 6134212955408006587
+      spriteID: b479fa4500f9ecda0800000000000000
+      internalID: -5922621636176013493
       vertices: []
       indices: 
       edges: []
@@ -125,8 +125,8 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: 4261fc1d10e751a43985ed6027dfb07b
+    internalID: -452451160
     vertices: []
     indices: 
     edges: []
@@ -135,7 +135,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ToolBar_0: 6134212955408006587
+      ToolBarBackground: -5922621636176013493
+      ToolBarButton_0: -5922621636176013493
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
