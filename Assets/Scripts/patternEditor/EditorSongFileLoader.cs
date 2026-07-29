@@ -10,9 +10,17 @@ using UnityEditor;
 
 public class EditorSongFileLoader : MonoBehaviour
 {
+    private enum SongMetaInputMode
+    {
+        None,
+        ImportNewSong,
+        EditCurrentSong
+    }
+
     [Header("Main UI")]
     [SerializeField] private EditorSongInfoUI songInfoUI;
     [SerializeField] private Button loadSongButton;
+    [SerializeField] private Button editInfoButton;
 
     [Header("Song Meta Input Panel")]
     [SerializeField] private GameObject songMetaInputPanel;
@@ -27,14 +35,22 @@ public class EditorSongFileLoader : MonoBehaviour
     [SerializeField] private string defaultArtistName = "Unknown Artist";
 
     private string pendingSourcePath = "";
+    private SongMetaInputMode inputMode = SongMetaInputMode.None;
+
     private EditorLoadedSongData currentSongData;
 
     public EditorLoadedSongData CurrentSongData => currentSongData;
+    public bool HasLoadedSong => currentSongData != null;
+
+    public event Action<EditorLoadedSongData> OnSongLoadedOrUpdated;
 
     private void Awake()
     {
         if (loadSongButton != null)
             loadSongButton.onClick.AddListener(OpenSongFile);
+
+        if (editInfoButton != null)
+            editInfoButton.onClick.AddListener(OpenEditSongInfoPanel);
 
         if (confirmButton != null)
             confirmButton.onClick.AddListener(ConfirmSongInfo);
@@ -43,12 +59,16 @@ public class EditorSongFileLoader : MonoBehaviour
             cancelButton.onClick.AddListener(CancelSongInfoInput);
 
         HideSongMetaInputPanel();
+        SetEditButtonActive(false);
     }
 
     private void OnDestroy()
     {
         if (loadSongButton != null)
             loadSongButton.onClick.RemoveListener(OpenSongFile);
+
+        if (editInfoButton != null)
+            editInfoButton.onClick.RemoveListener(OpenEditSongInfoPanel);
 
         if (confirmButton != null)
             confirmButton.onClick.RemoveListener(ConfirmSongInfo);
@@ -79,13 +99,29 @@ public class EditorSongFileLoader : MonoBehaviour
         }
 
         pendingSourcePath = sourcePath;
-        ShowSongMetaInputPanel(sourcePath);
+        inputMode = SongMetaInputMode.ImportNewSong;
+
+        ShowSongMetaInputPanelForImport(sourcePath);
 #else
         Debug.LogWarning("This file loading method only works in the Unity Editor.");
 #endif
     }
 
-    private void ShowSongMetaInputPanel(string sourcePath)
+    public void OpenEditSongInfoPanel()
+    {
+        if (currentSongData == null)
+        {
+            SetError("No song loaded.");
+            return;
+        }
+
+        pendingSourcePath = "";
+        inputMode = SongMetaInputMode.EditCurrentSong;
+
+        ShowSongMetaInputPanelForEdit();
+    }
+
+    private void ShowSongMetaInputPanelForImport(string sourcePath)
     {
         if (songMetaInputPanel != null)
             songMetaInputPanel.SetActive(true);
@@ -104,6 +140,23 @@ public class EditorSongFileLoader : MonoBehaviour
         SetError("");
     }
 
+    private void ShowSongMetaInputPanelForEdit()
+    {
+        if (songMetaInputPanel != null)
+            songMetaInputPanel.SetActive(true);
+
+        if (songNameInput != null)
+            songNameInput.text = currentSongData.songName;
+
+        if (artistInput != null)
+            artistInput.text = currentSongData.artistName;
+
+        if (bpmInput != null)
+            bpmInput.text = currentSongData.bpm.ToString("0.##");
+
+        SetError("");
+    }
+
     private void HideSongMetaInputPanel()
     {
         if (songMetaInputPanel != null)
@@ -114,48 +167,110 @@ public class EditorSongFileLoader : MonoBehaviour
 
     private void ConfirmSongInfo()
     {
+        string songName = songNameInput != null ? songNameInput.text.Trim() : "";
+        string artistName = artistInput != null ? artistInput.text.Trim() : "";
+        string bpmString = bpmInput != null ? bpmInput.text.Trim() : "";
+
+        if (!ValidateSongMetaInput(songName, artistName, bpmString, out float bpm))
+            return;
+
+        if (string.IsNullOrEmpty(artistName))
+            artistName = defaultArtistName;
+
+        switch (inputMode)
+        {
+            case SongMetaInputMode.ImportNewSong:
+                ConfirmImportSong(songName, artistName, bpm);
+                break;
+
+            case SongMetaInputMode.EditCurrentSong:
+                ConfirmEditSongInfo(songName, artistName, bpm);
+                break;
+
+            default:
+                SetError("Invalid input mode.");
+                break;
+        }
+    }
+
+    private bool ValidateSongMetaInput(string songName, string artistName, string bpmString, out float bpm)
+    {
+        bpm = 0f;
+
+        if (string.IsNullOrEmpty(songName))
+        {
+            SetError("Please enter a song name.");
+            return false;
+        }
+
+        if (!float.TryParse(bpmString, out bpm))
+        {
+            SetError("Please enter BPM as a number.");
+            return false;
+        }
+
+        if (bpm <= 0f)
+        {
+            SetError("BPM must be greater than 0.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ConfirmImportSong(string songName, string artistName, float bpm)
+    {
         if (string.IsNullOrEmpty(pendingSourcePath))
         {
             SetError("No audio file selected.");
             return;
         }
 
-        string songName = songNameInput != null ? songNameInput.text.Trim() : "";
-        string artistName = artistInput != null ? artistInput.text.Trim() : "";
-        string bpmString = bpmInput != null ? bpmInput.text.Trim() : "";
-
-        if (string.IsNullOrEmpty(songName))
-        {
-            SetError("Please enter a song name.");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(artistName))
-        {
-            artistName = defaultArtistName;
-        }
-
-        if (!float.TryParse(bpmString, out float bpm))
-        {
-            SetError("Please enter BPM as a number.");
-            return;
-        }
-
-        if (bpm <= 0f)
-        {
-            SetError("BPM must be greater than 0.");
-            return;
-        }
-
         ImportSongFile(pendingSourcePath, songName, artistName, bpm);
 
         pendingSourcePath = "";
+        inputMode = SongMetaInputMode.None;
         HideSongMetaInputPanel();
+    }
+
+    private void ConfirmEditSongInfo(string songName, string artistName, float bpm)
+    {
+        if (currentSongData == null)
+        {
+            SetError("No song loaded.");
+            return;
+        }
+
+        currentSongData.songName = songName;
+        currentSongData.artistName = artistName;
+        currentSongData.bpm = bpm;
+        currentSongData.selectedDifficultyIndex = songInfoUI != null ? songInfoUI.CurrentDifficultyIndex : 0;
+        currentSongData.selectedDifficultyName = songInfoUI != null ? songInfoUI.CurrentDifficultyName : "Easy";
+
+        SaveCurrentSongInfoJson();
+
+        if (songInfoUI != null)
+        {
+            songInfoUI.SetSongInfo(
+                currentSongData.songName,
+                currentSongData.artistName,
+                currentSongData.bpm
+            );
+        }
+
+        OnSongLoadedOrUpdated?.Invoke(currentSongData);
+
+        inputMode = SongMetaInputMode.None;
+        HideSongMetaInputPanel();
+
+        Debug.Log("Song info updated.");
     }
 
     private void CancelSongInfoInput()
     {
         pendingSourcePath = "";
+        inputMode = SongMetaInputMode.None;
+
         HideSongMetaInputPanel();
 
         Debug.Log("Song info input canceled.");
@@ -181,10 +296,14 @@ public class EditorSongFileLoader : MonoBehaviour
             songName = songName,
             artistName = artistName,
             bpm = bpm,
+
             audioFileName = audioFileName,
             audioLocalPath = savedAudioPath,
+            songFolderPath = songFolderPath,
+
             selectedDifficultyIndex = songInfoUI != null ? songInfoUI.CurrentDifficultyIndex : 0,
             selectedDifficultyName = songInfoUI != null ? songInfoUI.CurrentDifficultyName : "Easy",
+
             importedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
         };
 
@@ -199,7 +318,24 @@ public class EditorSongFileLoader : MonoBehaviour
             );
         }
 
+        SetEditButtonActive(true);
+
+        OnSongLoadedOrUpdated?.Invoke(currentSongData);
+
         Debug.Log("Song loaded: " + savedAudioPath);
+    }
+
+    private void SaveCurrentSongInfoJson()
+    {
+        if (currentSongData == null)
+            return;
+
+        string folderPath = currentSongData.songFolderPath;
+
+        if (string.IsNullOrEmpty(folderPath))
+            folderPath = Path.GetDirectoryName(currentSongData.audioLocalPath);
+
+        SaveSongInfoJson(folderPath, currentSongData);
     }
 
     private void SaveSongInfoJson(string songFolderPath, EditorLoadedSongData songData)
@@ -248,6 +384,12 @@ public class EditorSongFileLoader : MonoBehaviour
         return fileName;
     }
 
+    private void SetEditButtonActive(bool isActive)
+    {
+        if (editInfoButton != null)
+            editInfoButton.interactable = isActive;
+    }
+
     private void SetError(string message)
     {
         if (errorText != null)
@@ -264,6 +406,7 @@ public class EditorLoadedSongData
 
     public string audioFileName;
     public string audioLocalPath;
+    public string songFolderPath;
 
     public int selectedDifficultyIndex;
     public string selectedDifficultyName;
