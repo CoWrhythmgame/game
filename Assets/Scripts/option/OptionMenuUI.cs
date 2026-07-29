@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Audio;
+
 public class OptionMenuUI : MonoBehaviour
 {
     public static bool IsOptionOpen { get; private set; }
@@ -22,25 +23,35 @@ public class OptionMenuUI : MonoBehaviour
     [Header("Audio Mixer")]
     [SerializeField] private AudioMixer audioMixer;
 
+    [Header("Key Setting")]
+    [SerializeField] private KeySettingManager keySettingManager;
+
+    private const int LaneKeyOptionStartIndex = 8;
+    private const int LaneKeyOptionCount = 4;
     private int currentIndex = 0;
+    private bool wasWaitingForKey = false;
 
     private readonly string[] optionNames =
     {
-        "Full Scene",
+        "Full Screen",
         "Frame",
         "Master Volume",
         "Music Volume",
         "Sound Effect",
         "Key Volume",
         "Scroll Speed",
-        "Note Offset"
+        "Note Offset",
+        "Lane 1 Key",
+        "Lane 2 Key",
+        "Lane 3 Key",
+        "Lane 4 Key"
     };
 
     private bool isFullScreen = true;
 
     private int frameIndex = 1;
-    private readonly int[] frameValues = { 30, 60, 120, 144, -1 };
-    private readonly string[] frameTexts = { "30", "60", "120", "144", "Unlimited" };
+    private readonly int[] frameValues = { 60, 120 };
+    private readonly string[] frameTexts = { "60", "120" };
 
     private int masterVolume = 100;
     private int musicVolume = 100;
@@ -49,13 +60,8 @@ public class OptionMenuUI : MonoBehaviour
 
     private float scrollSpeed = 1.0f;
     private float noteOffset = 0.0f;
-    private float VolumeToDb(int volume)
-    {
-        if (volume <= 0)
-            return -80f;
 
-        return Mathf.Log10(volume / 100f) * 20f;
-    }
+    
     private void Awake()
     {
         LoadOptions();
@@ -66,6 +72,19 @@ public class OptionMenuUI : MonoBehaviour
     {
         CloseOption();
         RefreshUI();
+    }
+
+    private void OnDisable()
+    {
+        IsOptionOpen = false;
+
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        IsOptionOpen = false;
     }
 
     private void Update()
@@ -81,6 +100,21 @@ public class OptionMenuUI : MonoBehaviour
 
         if (!IsOptionOpen)
             return;
+
+        bool isWaitingForKey = keySettingManager != null && keySettingManager.IsWaitingForKey;
+
+        if (isWaitingForKey)
+        {
+            wasWaitingForKey = true;
+            RefreshUI();
+            return;
+        }
+
+        if (wasWaitingForKey)
+        {
+            wasWaitingForKey = false;
+            RefreshUI();
+        }
 
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
@@ -106,8 +140,51 @@ public class OptionMenuUI : MonoBehaviour
             ChangeValue(1);
         }
     }
+    private void ApplyOptions()
+    {
+        ApplyFullScreen();
+        ApplyFrameRate();
 
-    private void ToggleOption()
+        if (audioMixer == null)
+        {
+            Debug.LogWarning("OptionMenuUI: AudioMixerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
+            return;
+        }
+
+        SetMixerVolume("MasterVolume", masterVolume);
+        SetMixerVolume("MusicVolume", musicVolume);
+        SetMixerVolume("SFXVolume", soundEffectVolume);
+        SetMixerVolume("KeySoundVolume", keyVolume);
+    }
+
+    private void ApplyFullScreen()
+    {
+        if (isFullScreen)
+        {
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            Screen.fullScreen = true;
+        }
+        else
+        {
+            Screen.fullScreen = false;
+        }
+
+        Debug.Log("Full Screen = " + isFullScreen);
+    }
+
+    private void ApplyFrameRate()
+    {
+        if (frameIndex < 0 || frameIndex >= frameValues.Length)
+        {
+            frameIndex = 0;
+        }
+
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = frameValues[frameIndex];
+
+        Debug.Log("Frame Rate = " + frameValues[frameIndex]);
+    }
+    public void ToggleOption()
     {
         if (IsOptionOpen)
             CloseOption();
@@ -115,7 +192,7 @@ public class OptionMenuUI : MonoBehaviour
             OpenOption();
     }
 
-    private void OpenOption()
+    public void OpenOption()
     {
         IsOptionOpen = true;
         currentIndex = 0;
@@ -124,14 +201,18 @@ public class OptionMenuUI : MonoBehaviour
             optionPanel.SetActive(true);
 
         RefreshUI();
+
+        Debug.Log("Option Open");
     }
 
-    private void CloseOption()
+    public void CloseOption()
     {
         IsOptionOpen = false;
 
         if (optionPanel != null)
             optionPanel.SetActive(false);
+
+        Debug.Log("Option Close");
     }
 
     private void MoveCursor(int direction)
@@ -153,7 +234,7 @@ public class OptionMenuUI : MonoBehaviour
     {
         switch (currentIndex)
         {
-            case 0: // Full Scene
+            case 0: // Full Screen
                 isFullScreen = !isFullScreen;
                 break;
 
@@ -194,6 +275,12 @@ public class OptionMenuUI : MonoBehaviour
                 noteOffset = Mathf.Clamp(noteOffset, -5.0f, 5.0f);
                 noteOffset = Mathf.Round(noteOffset * 10f) / 10f;
                 break;
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+                StartLaneKeyChange(currentIndex - LaneKeyOptionStartIndex);
+                return;
         }
 
         ApplyOptions();
@@ -213,23 +300,12 @@ public class OptionMenuUI : MonoBehaviour
 
         Debug.Log(parameterName + " = " + volume + " / " + dbValue + " dB");
     }
-    private void ApplyOptions()
+    private float VolumeToDb(int volume)
     {
-        Screen.fullScreen = isFullScreen;
+        if (volume <= 0)
+            return -80f;
 
-        if (frameIndex >= 0 && frameIndex < frameValues.Length)
-        {
-            Application.targetFrameRate = frameValues[frameIndex];
-        }
-        if (audioMixer == null)
-        {
-            Debug.LogWarning("OptionMenuUI: AudioMixer°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
-            return;
-        }
-        SetMixerVolume("MasterVolume", masterVolume);
-        SetMixerVolume("MusicVolume", musicVolume);
-        SetMixerVolume("SFXVolume", soundEffectVolume);
-        SetMixerVolume("KeySoundVolume", keyVolume);
+        return Mathf.Log10(volume / 100f) * 20f;
     }
 
     private void SaveOptions()
@@ -251,7 +327,7 @@ public class OptionMenuUI : MonoBehaviour
     private void LoadOptions()
     {
         isFullScreen = PlayerPrefs.GetInt("Option_IsFullScreen", 1) == 1;
-        frameIndex = PlayerPrefs.GetInt("Option_FrameIndex", 1);
+        frameIndex = PlayerPrefs.GetInt("Option_FrameIndex", 0);
 
         masterVolume = PlayerPrefs.GetInt("Option_MasterVolume", 100);
         musicVolume = PlayerPrefs.GetInt("Option_MusicVolume", 100);
@@ -289,7 +365,6 @@ public class OptionMenuUI : MonoBehaviour
                 continue;
 
             string optionName = GetOptionName(i);
-
             nameTexts[i].text = optionName;
 
             if (i == currentIndex)
@@ -312,6 +387,19 @@ public class OptionMenuUI : MonoBehaviour
         SetValueText(5, keyVolume.ToString());
         SetValueText(6, scrollSpeed.ToString("0.0"));
         SetValueText(7, noteOffset.ToString("0.0"));
+        for (int i = 0; i < LaneKeyOptionCount; i++)
+        {
+            int optionIndex = LaneKeyOptionStartIndex + i;
+
+            if (keySettingManager == null)
+            {
+                SetValueText(optionIndex, "-");
+            }
+            else
+            {
+                SetValueText(optionIndex, keySettingManager.GetLaneKeyDisplayName(i));
+            }
+        }
     }
 
     private void SetValueText(int index, string value)
@@ -334,5 +422,16 @@ public class OptionMenuUI : MonoBehaviour
             return optionNames[index];
 
         return "Option " + index;
+    }
+    private void StartLaneKeyChange(int laneIndex)
+    {
+        if (keySettingManager == null)
+        {
+            Debug.LogWarning("OptionMenuUI: KeySettingManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
+            return;
+        }
+
+        keySettingManager.BeginChangeLaneKey(laneIndex);
+        RefreshUI();
     }
 }

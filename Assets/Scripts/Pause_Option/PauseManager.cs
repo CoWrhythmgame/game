@@ -1,0 +1,185 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+
+public class PauseManager : MonoBehaviour
+{
+    public static bool IsPaused { get; private set; }
+
+    [Header("UI")]
+    [SerializeField] private GameObject pausePanel;
+
+    [Header("Menu Texts")]
+    [SerializeField] private TextMeshProUGUI[] menuTexts;
+
+    [Header("Menu Colors")]
+    [SerializeField] private Color normalColor = Color.white;
+    [SerializeField] private Color selectedColor = Color.yellow;
+
+    [Header("Input")]
+    [SerializeField] private InputActionReference pauseAction;
+
+    [Header("Scene")]
+    [SerializeField] private string songSelectSceneName = "TestSongSelectScene";
+
+    private int currentIndex = 0;
+    private float previousTimeScale = 1f;
+
+    private void Awake()
+    {
+        IsPaused = false;
+        Time.timeScale = 1f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        RefreshMenuUI();
+    }
+
+    private void OnEnable()
+    {
+        if (pauseAction != null && pauseAction.action != null)
+        {
+            pauseAction.action.performed += OnPauseInput;
+            pauseAction.action.Enable();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (pauseAction != null && pauseAction.action != null)
+        {
+            pauseAction.action.performed -= OnPauseInput;
+            pauseAction.action.Disable();
+        }
+    }
+
+    private void Update()
+    {
+        if (!IsPaused)
+            return;
+
+        if (Keyboard.current == null)
+            return;
+
+        if (Keyboard.current.upArrowKey.wasPressedThisFrame)
+        {
+            MoveCursor(-1);
+        }
+        else if (Keyboard.current.downArrowKey.wasPressedThisFrame)
+        {
+            MoveCursor(1);
+        }
+
+        if (Keyboard.current.enterKey.wasPressedThisFrame ||
+            Keyboard.current.numpadEnterKey.wasPressedThisFrame)
+        {
+            ExecuteCurrentMenu();
+        }
+    }
+
+    private void OnPauseInput(InputAction.CallbackContext context)
+    {
+        // ESC 동작
+        // 게임 중이면 일시정지
+        // 일시정지 중이면 Continue와 동일하게 재개
+        if (IsPaused)
+            ResumeGame();
+        else
+            PauseGame();
+    }
+
+    public void PauseGame()
+    {
+        if (IsPaused)
+            return;
+
+        IsPaused = true;
+        currentIndex = 0;
+
+        previousTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
+
+        RefreshMenuUI();
+    }
+
+    public void ResumeGame()
+    {
+        if (!IsPaused)
+            return;
+
+        IsPaused = false;
+        Time.timeScale = previousTimeScale <= 0f ? 1f : previousTimeScale;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+    }
+
+    public void RestartGame()
+    {
+        IsPaused = false;
+        Time.timeScale = 1f;
+
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+    }
+
+    public void ExitToSongSelect()
+    {
+        IsPaused = false;
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(songSelectSceneName);
+    }
+
+    private void MoveCursor(int direction)
+    {
+        if (menuTexts == null || menuTexts.Length == 0)
+            return;
+
+        currentIndex += direction;
+
+        if (currentIndex < 0)
+            currentIndex = menuTexts.Length - 1;
+        else if (currentIndex >= menuTexts.Length)
+            currentIndex = 0;
+
+        RefreshMenuUI();
+    }
+
+    private void ExecuteCurrentMenu()
+    {
+        switch (currentIndex)
+        {
+            case 0:
+                ResumeGame();
+                break;
+
+            case 1:
+                RestartGame();
+                break;
+
+            case 2:
+                ExitToSongSelect();
+                break;
+        }
+    }
+
+    private void RefreshMenuUI()
+    {
+        if (menuTexts == null)
+            return;
+
+        for (int i = 0; i < menuTexts.Length; i++)
+        {
+            if (menuTexts[i] == null)
+                continue;
+
+            menuTexts[i].color = i == currentIndex ? selectedColor : normalColor;
+        }
+    }
+}

@@ -100,6 +100,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Summit"",
+                    ""type"": ""Button"",
+                    ""id"": ""a965b037-9136-4deb-bf1c-b17edce6495e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -157,6 +166,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aae9d217-7eff-456e-955f-965cf89892f5"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Summit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -165,10 +185,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             ""id"": ""73d62c4b-abdc-4f8f-86f8-1fd183b9fcf6"",
             ""actions"": [
                 {
-                    ""name"": ""Lane"",
+                    ""name"": ""Sound"",
                     ""type"": ""PassThrough"",
                     ""id"": ""1d0e151f-700c-4e54-b6c6-2bb2194f95c0"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""77d8003a-fad7-4824-bfc2-38af66232357"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Lane"",
+                    ""type"": ""Button"",
+                    ""id"": ""9790b4d3-6282-47a0-b390-e667c479735a"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -182,7 +220,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PC"",
-                    ""action"": ""Lane"",
+                    ""action"": ""Sound"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -193,7 +231,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PC"",
-                    ""action"": ""Lane"",
+                    ""action"": ""Sound"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -204,7 +242,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PC"",
-                    ""action"": ""Lane"",
+                    ""action"": ""Sound"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -215,6 +253,61 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PC"",
+                    ""action"": ""Sound"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4fb14c4a-fc7a-42c6-a391-d22a8bba53ff"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""108acbc5-fb5e-4bbe-93c1-4902d0b5b507"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lane"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d8cba996-cbcd-4677-8f40-042932cc1882"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lane"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2743b90f-203d-4584-8d3f-7861e82f2bdc"",
+                    ""path"": ""<Keyboard>/semicolon"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lane"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7cba21ad-8e5f-4cf0-8712-0a270600aa6a"",
+                    ""path"": ""<Keyboard>/quote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Lane"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -304,8 +397,11 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Move = m_UI.FindAction("Move", throwIfNotFound: true);
+        m_UI_Summit = m_UI.FindAction("Summit", throwIfNotFound: true);
         // GamePlay
         m_GamePlay = asset.FindActionMap("GamePlay", throwIfNotFound: true);
+        m_GamePlay_Sound = m_GamePlay.FindAction("Sound", throwIfNotFound: true);
+        m_GamePlay_Pause = m_GamePlay.FindAction("Pause", throwIfNotFound: true);
         m_GamePlay_Lane = m_GamePlay.FindAction("Lane", throwIfNotFound: true);
     }
 
@@ -389,6 +485,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_Move;
+    private readonly InputAction m_UI_Summit;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -404,6 +501,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/Move".
         /// </summary>
         public InputAction @Move => m_Wrapper.m_UI_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/Summit".
+        /// </summary>
+        public InputAction @Summit => m_Wrapper.m_UI_Summit;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -433,6 +534,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @Summit.started += instance.OnSummit;
+            @Summit.performed += instance.OnSummit;
+            @Summit.canceled += instance.OnSummit;
         }
 
         /// <summary>
@@ -447,6 +551,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @Summit.started -= instance.OnSummit;
+            @Summit.performed -= instance.OnSummit;
+            @Summit.canceled -= instance.OnSummit;
         }
 
         /// <summary>
@@ -484,6 +591,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     // GamePlay
     private readonly InputActionMap m_GamePlay;
     private List<IGamePlayActions> m_GamePlayActionsCallbackInterfaces = new List<IGamePlayActions>();
+    private readonly InputAction m_GamePlay_Sound;
+    private readonly InputAction m_GamePlay_Pause;
     private readonly InputAction m_GamePlay_Lane;
     /// <summary>
     /// Provides access to input actions defined in input action map "GamePlay".
@@ -496,6 +605,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
         public GamePlayActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Sound".
+        /// </summary>
+        public InputAction @Sound => m_Wrapper.m_GamePlay_Sound;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Pause".
+        /// </summary>
+        public InputAction @Pause => m_Wrapper.m_GamePlay_Pause;
         /// <summary>
         /// Provides access to the underlying input action "GamePlay/Lane".
         /// </summary>
@@ -526,6 +643,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_GamePlayActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_GamePlayActionsCallbackInterfaces.Add(instance);
+            @Sound.started += instance.OnSound;
+            @Sound.performed += instance.OnSound;
+            @Sound.canceled += instance.OnSound;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
             @Lane.started += instance.OnLane;
             @Lane.performed += instance.OnLane;
             @Lane.canceled += instance.OnLane;
@@ -540,6 +663,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="GamePlayActions" />
         private void UnregisterCallbacks(IGamePlayActions instance)
         {
+            @Sound.started -= instance.OnSound;
+            @Sound.performed -= instance.OnSound;
+            @Sound.canceled -= instance.OnSound;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
             @Lane.started -= instance.OnLane;
             @Lane.performed -= instance.OnLane;
             @Lane.canceled -= instance.OnLane;
@@ -668,6 +797,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Summit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSummit(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "GamePlay" which allows adding and removing callbacks.
@@ -676,6 +812,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     /// <seealso cref="GamePlayActions.RemoveCallbacks(IGamePlayActions)" />
     public interface IGamePlayActions
     {
+        /// <summary>
+        /// Method invoked when associated input action "Sound" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSound(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPause(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Lane" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
