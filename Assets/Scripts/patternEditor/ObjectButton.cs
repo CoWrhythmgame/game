@@ -1,13 +1,16 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class AddMeasureButton : MonoBehaviour
+public class ObjectButton : MonoBehaviour
 {
-    [SerializeField] private MeasureList measureList;
     private Transform _transform;
     private SpriteRenderer _spriteRenderer;
     private Color _color;
     private Vector3 _mousePos;
+
+    public Action OnButtonClicked;
+
     void Awake()
     {
         _transform = transform.GetComponent<Transform>();
@@ -27,12 +30,18 @@ public class AddMeasureButton : MonoBehaviour
         }
         _spriteRenderer.color = _color;
     }
+
+    private void OnClickHandler()
+    {
+        OnButtonClicked.Invoke();
+    }
+
     private void OnOverMouse()
     {
         _color = new Color(.75f,.75f,.75f,1f);
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            measureList.AddMeasure();
+            OnClickHandler();
         }
     }
     private void OnOffMouse()
@@ -53,9 +62,9 @@ public class AddMeasureButton : MonoBehaviour
     }
     private bool IsMouseOn()
     {
-        if(Mathf.Abs(_transform.position.x-_mousePos.x) < _transform.localScale.x / 2)
+        if(Mathf.Abs(_transform.position.x-_mousePos.x) < _spriteRenderer.bounds.size.x / 2)
         {
-            if(Mathf.Abs(_mousePos.y - _transform.position.y) < _transform.localScale.y/2)
+            if(Mathf.Abs(_mousePos.y - _transform.position.y) < _spriteRenderer.bounds.size.y/2)
             {
                 return true;
             }

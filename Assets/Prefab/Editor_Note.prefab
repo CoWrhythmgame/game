@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9112778743441507334}
   - component: {fileID: 6083527562854936667}
-  - component: {fileID: 8446624676919631106}
   - component: {fileID: 8176454812970521146}
   m_Layer: 0
   m_Name: Editor_Note
@@ -94,24 +93,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1818360610 &8446624676919631106
-ScaleConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7304791166683003562}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Weight: 1
-  m_ScaleAtRest: {x: 0.25, y: 0.25, z: 1}
-  m_ScaleOffset: {x: 1, y: 1, z: 1}
-  m_AffectScalingX: 1
-  m_AffectScalingY: 1
-  m_AffectScalingZ: 1
-  m_Active: 1
-  m_IsLocked: 0
-  m_Sources: []
 --- !u!114 &8176454812970521146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,6 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7a0453c1811c9247a3667301cd3a40d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EditorNote
+  _laneIndex: 0
   _signature: 1
   _currentBeat: 1
   _noteType: 0
