@@ -17,9 +17,10 @@ public class MeasureList : MonoBehaviour
     [SerializeField] private int _measureIndex = 0;
     [SerializeField] private int _signature = 4;
     [SerializeField] private NoteType _noteType = NoteType.single;
+    [SerializeField] private List<GameObject> _currentMeasures = new List<GameObject>();
 
     [Header("CameraData")]
-    [SerializeField] private int _currentMeasure = 0;
+    [SerializeField] private int _currentMeasureIndex = 0;
     [SerializeField] private float _cameraMaxLength = 0;
 
     [Header("SongData")]
@@ -27,9 +28,9 @@ public class MeasureList : MonoBehaviour
     
 
     [Header("Debug")]
-    [SerializeField] private bool Debug_Increase = false;
-    [SerializeField] private bool Debug_Decrease = false;
-    [SerializeField] private bool Debug_Remove = false;
+    // [SerializeField] private bool Debug_Increase = false;
+    // [SerializeField] private bool Debug_Decrease = false;
+    // [SerializeField] private bool Debug_Remove = false;
 
     private List<GameObject> _measures;
     #endregion
@@ -53,21 +54,22 @@ public class MeasureList : MonoBehaviour
         {
             OnScroll(scrollData);
         }
-        if (Debug_Increase)
-        {
-            ScaleIncrease();
-            Debug_Increase = false;
-        }
-        if (Debug_Decrease)
-        {
-            ScaleDecrease();
-            Debug_Decrease = false;
-        }
-        if (Debug_Remove)
-        {
-            DeleteMeasure(1);
-            Debug_Remove = false;
-        }
+        //! 툴바가 완성되었으므로 사용하지 않음
+        // if (Debug_Increase)
+        // {
+        //     ScaleIncrease();
+        //     Debug_Increase = false;
+        // }
+        // if (Debug_Decrease)
+        // {
+        //     ScaleDecrease();
+        //     Debug_Decrease = false;
+        // }
+        // if (Debug_Remove)
+        // {
+        //     DeleteMeasure(1);
+        //     Debug_Remove = false;
+        // }
     }
     #endregion
     #region Callbacks
@@ -111,6 +113,7 @@ public class MeasureList : MonoBehaviour
         measure.transform.localScale = new Vector3(4,4f*_scale, 1);
         measure.GetComponent<Measure>().Initialize(_measureIndex, _bpm);
         _measures.Add(measure);
+        _currentMeasures.Add(measure);
 
         _measureIndex++;
         CheckMaxLength();
@@ -124,7 +127,8 @@ public class MeasureList : MonoBehaviour
     {
         if(_measureIndex < index) return;
         if(_measureIndex <= 1) return;
-        if(_measureIndex-1 == _currentMeasure) _currentMeasure--;
+        if(_measureIndex-1 == _currentMeasureIndex) _currentMeasureIndex--;
+        _currentMeasures.Remove(_measures[index]);
         Destroy(_measures[index].transform.parent.gameObject);
         _measures.RemoveAt(index);
         for(int i = index; i < _measures.Count; i++)
@@ -132,7 +136,7 @@ public class MeasureList : MonoBehaviour
             _measures[i].GetComponent<Measure>().OnIndexChanged(i);
         }
         _measureIndex--;
-        if(Mathf.Abs(_currentMeasure-index) <= 2) {
+        if(Mathf.Abs(_currentMeasureIndex-index) <= 2) {
             RenderMeasure();
         }
         OnMeasureChanged();
@@ -142,9 +146,9 @@ public class MeasureList : MonoBehaviour
     /// </summary>
     private void CurrentChange()
     {
-        for(int i = -2; i < 3; i++)
+        foreach(GameObject measure in _currentMeasures)
         {
-            _measures[Mathf.Clamp(_currentMeasure+i,0,_measureIndex-1)].GetComponent<Measure>().OnMeasureChanged();
+            measure.GetComponent<Measure>().OnMeasureChanged();
         }
     }
     /// <summary>
@@ -152,9 +156,9 @@ public class MeasureList : MonoBehaviour
     /// </summary>
     private void CurrentSync()
     {
-        for(int i = -2; i < 3; i++)
+        foreach(GameObject measure in _currentMeasures)
         {
-            _measures[Mathf.Clamp(_currentMeasure+i,0,_measureIndex-1)].GetComponent<Measure>().OnToolbarChanged();
+            measure.GetComponent<Measure>().OnToolbarChanged();
         }
     }
     /// <summary>
@@ -162,14 +166,31 @@ public class MeasureList : MonoBehaviour
     /// </summary>
     private void RenderMeasure()
     {
-        _currentMeasure = (int)Mathf.Clamp(MathF.Floor((_camera.transform.position.y+4f)/(4f*_scale)),0,_measureIndex-1);
-        foreach(GameObject measure in _measures)
+        _currentMeasureIndex = (int)Mathf.Clamp(MathF.Floor((_camera.transform.position.y+4f)/(4f*_scale)),0,_measureIndex-1);
+        _currentMeasures.Clear();
+        for(int i = 0; i < _measures.Count; i++)
         {
-            measure.SetActive(false);
+            //롱노트가 보이는 위치에 있으면 해당 롱노트를 가진 마디도 렌더링 해줘야함.
+            //롱노트를 놓는 중이면 보여야함.
+            if(_currentMeasureIndex > i){
+                if(Mathf.Abs(_currentMeasureIndex-i)>2)
+                {
+                    if(i + _measures[i].GetComponent<Measure>().GetHoldMaxLength() - (_currentMeasureIndex - 2) > 0 || _measures[i].GetComponent<Measure>().GetIsHold())
+                    {
+                        _currentMeasures.Add(_measures[i]);
+                    }
+                }
+            }
+            _measures[i].SetActive(false);
+
         }
         for(int i = -2; i < 3; i++)
         {
-            _measures[Mathf.Clamp(_currentMeasure+i,0,_measureIndex-1)].SetActive(true);
+            _currentMeasures.Add(_measures[Mathf.Clamp(_currentMeasureIndex+i,0,_measureIndex-1)]);
+        }
+        foreach(GameObject measure in _currentMeasures)
+        {
+            measure.SetActive(true);
         }
     }
     /// <summary>
@@ -207,7 +228,7 @@ public class MeasureList : MonoBehaviour
     private void RePositionCamera()
     {
         //-0.01f 해준 이유는 스크롤 길이가 1일때 render 돌때 _currentMeasure가 자동으로 1씩 증가했기 때문(이 함수를 돌았을때 floor 내부 값이 1이 되는 문제)
-        _camera.transform.position = new Vector3(0,4*_scale*_currentMeasure-0.01f, _camera.transform.position.z);
+        _camera.transform.position = new Vector3(0,4*_scale*_currentMeasureIndex-0.01f, _camera.transform.position.z);
     }
     /// <summary>
     /// 마디선 추가, 삭제시 보면의 길이를 찾음

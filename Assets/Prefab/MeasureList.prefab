@@ -105,7 +105,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb26dee1eb4af5540b2a9dcc6d8696af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AddMeasureButton
-  measureList: {fileID: 4536170104193946328}
 --- !u!1 &4840694951386616298
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,6 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3370628072203257890}
   - component: {fileID: 4536170104193946328}
+  - component: {fileID: 9032034067347719186}
   m_Layer: 0
   m_Name: MeasureList
   m_TagString: Untagged
@@ -154,10 +154,27 @@ MonoBehaviour:
   _measurePrefab: {fileID: 3962269179906564181, guid: f2e78c27d43317a4980efcc48bf57e09, type: 3}
   _addButton: {fileID: 929936391272511006}
   _camera: {fileID: 0}
+  _inspector: {fileID: 0}
   _scale: 1
   _measureIndex: 0
-  _currentMeasure: 0
+  _signature: 4
+  _noteType: 0
+  _currentMeasures: []
+  _currentMeasureIndex: 0
   _cameraMaxLength: 0
   _bpm: 120
-  Debug_Increase: 0
-  Debug_Decrease: 0
+--- !u!114 &9032034067347719186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4840694951386616298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32185d4499287f847b93d8a2a4e6f1ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MouseManager
+  _noteLayerMask:
+    serializedVersion: 2
+    m_Bits: 128

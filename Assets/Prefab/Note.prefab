@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9112778743441507334}
   - component: {fileID: 6083527562854936667}
   - component: {fileID: 7154544121348377699}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Note
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,3 +109,4 @@ MonoBehaviour:
   - {fileID: 4025159193867184526, guid: 0d4d699cdf606e04ebbee95d43418fca, type: 3}
   - {fileID: 4025159193867184526, guid: 3fa9f60e6dc58ac4186e101f0c8ea724, type: 3}
   _travelheight: 34
+  _traveldistance: 0

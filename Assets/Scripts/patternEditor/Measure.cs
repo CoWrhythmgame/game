@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
@@ -13,7 +14,7 @@ public class Measure : MonoBehaviour
     [SerializeField] private GameObject _noteListObject;
     //// [SerializeField] private GameObject _ConstraintObject; 더이상 사용하지 않음.
     [SerializeField] private GameObject _shadeNote;
-    [SerializeField] private ObjectButton _inspectorButton;
+    [SerializeField] private GameObject _inspectorButton;
     [SerializeField] private TMPro.TMP_Text _text;
     [SerializeField] private Inspector _inspector;
 
@@ -33,25 +34,33 @@ public class Measure : MonoBehaviour
     [SerializeField] List<GameObject> _notes;
 
     [Header("Debug")]
-    [SerializeField] private bool Debug_Increase = false;
-    [SerializeField] private bool Debug_Decrease = false;
+    // ! 툴바가 완성되었으므로 사용하지 않음
+    //// [SerializeField] private bool Debug_Increase = false;
+    //// [SerializeField] private bool Debug_Decrease = false;
+    [SerializeField] private bool _isHold = false;
+    [SerializeField] private bool _isMouseOverNote = false;
+    [SerializeField] private float _holdMaxLangth = 0;
     [SerializeField] private int _MeasureIndex = 0;
     private Transform _transform;
+    private Transform _shadenoteTransform;
     private Vector3 _mousePos;
+    private Vector3 _longNotePos;
     //// private ConstraintSource _source;
     private MeasureList _measureList;
+    private bool _isQuitting = false;
     #endregion
 
     #region LifeCycle
     private void Awake()
     {
         _transform = transform.GetComponent<Transform>();
+        _shadenoteTransform = _shadeNote.transform;
         _notes = new List<GameObject>();
         _measureList = transform.parent.parent.GetComponent<MeasureList>();
 
         _inspector = GameObject.FindGameObjectWithTag("Inspector").GetComponent<Inspector>();
 
-        _inspectorButton.OnButtonClicked += ShowInspector;
+        _inspectorButton.GetComponent<ObjectButton>().OnButtonClicked += ShowInspector;
 
         // ! constraint 제거 더이상 사용하지 않음.
         //// _source = new ConstraintSource
@@ -68,8 +77,15 @@ public class Measure : MonoBehaviour
         _BPM = bpm;
         OnMeasureChanged();
     }
+    private void OnDisable()
+    {
+        //게임 종료, 씬 전환시 바로 리턴
+        if(_isQuitting || !gameObject.scene.isLoaded) return;
+        if(_inspectorButton != null)_inspectorButton.SetActive(false);
+    }
     private void OnEnable()
     {
+        if(_inspectorButton != null)_inspectorButton.SetActive(true);
         OnMeasureChanged();
         OnToolbarChanged();
     }
@@ -77,7 +93,7 @@ public class Measure : MonoBehaviour
     private void Update()
     {
         _mousePos = GetMouseWorldPosition();
-        if (IsMouseOn())
+        if (IsMouseOn() || _isHold)
         {
             OnOverMouse();
         }
@@ -85,16 +101,22 @@ public class Measure : MonoBehaviour
         {
             OnOffMouse();
         }
-        if (Debug_Increase)
-        {
-            Debug_SizeIncrease();
-            Debug_Increase=false;
-        }
-        if (Debug_Decrease)
-        {
-            Debug_SizeDecrease();
-            Debug_Decrease=false;
-        }
+        // ! 툴바가 만들어졌으므로 사용하지 않음.
+        // if (Debug_Increase)
+        // {
+        //     Debug_SizeIncrease();
+        //     Debug_Increase=false;
+        // }
+        // if (Debug_Decrease)
+        // {
+        //     Debug_SizeDecrease();
+        //     Debug_Decrease=false;
+        // }
+    }
+
+    private void OnApplicationQuit()
+    {
+        _isQuitting = true;
     }
     #endregion
 
@@ -111,20 +133,40 @@ public class Measure : MonoBehaviour
     }
     private void OnOverMouse()
     {
-        _shadeNote.SetActive(true);
-        _shadeNote.transform.localPosition = GetGridVector3(_mousePos);
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if(!_isMouseOverNote)_shadeNote.SetActive(true);
+        if(!_isHold) _shadenoteTransform.localPosition = GetGridVector3(_mousePos);
+        if (Mouse.current.leftButton.wasPressedThisFrame && _noteType == NoteType.single)
         {
             AddNote();
         }
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        //롱노트 로직
+        else if(Mouse.current.leftButton.wasPressedThisFrame && _noteType == NoteType.hold)
         {
-            DeleteNote();
+            _longNotePos = _shadenoteTransform.localPosition;
+            _isHold = true;
+        }
+        if (Mouse.current.leftButton.isPressed && _isHold == true)
+        {
+            SetShadenoteHoldSize();
+        }
+        else if(Mouse.current.leftButton.wasReleasedThisFrame && _isHold == true)
+        {
+            AddNote();
         }
     }
     private void OnOffMouse()
     {
         _shadeNote.SetActive(false);
+    }
+    private void OnMouseOverNote()
+    {
+        _shadeNote.SetActive(false);
+        _isMouseOverNote = true;
+    }
+    private void OnMouseOffNote()
+    {
+        _shadeNote.SetActive(true);
+        _isMouseOverNote = false;
     }
     /// <summary>
     /// 확대, 축소, 삭제시 호출되는 함수(최적화를 위해 활성화되었을때 호출)
@@ -155,29 +197,55 @@ public class Measure : MonoBehaviour
     private void AddNote()
     {
         Vector3 notePos = GetGridVector3(_mousePos);
+        if(_isMouseOverNote) return;
         if(_notes.Any(note => note.transform.localPosition == notePos))return;
 
-        GameObject note = Instantiate(_notePrefab, _noteListObject.transform);
-        // note.GetComponent<ScaleConstraint>().AddSource(_source);
-        note.transform.localPosition = notePos;
-        note.transform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
 
-        note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _noteType);
-        
+        GameObject note = Instantiate(_notePrefab, _noteListObject.transform);
+        //// note.GetComponent<ScaleConstraint>().AddSource(_source);
+        note.transform.localPosition = notePos;
+        if(_noteType == NoteType.single){
+            note.transform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
+            note.GetComponent<SpriteRenderer>().sortingLayerName = "Note_Single";
+            note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _noteType);
+        }
+        else if(_noteType == NoteType.hold)
+        {
+            float length = Mathf.Clamp(_mousePos.y-_shadenoteTransform.position.y, 0.25f, float.MaxValue)/_transform.localScale.y;
+            Debug.Log(length);
+            note.transform.localScale = new Vector3(0.25f, Mathf.Clamp(_mousePos.y-_shadenoteTransform.position.y, 0.25f, float.MaxValue), 1f);
+            note.transform.localPosition = _longNotePos;
+
+            if(_holdMaxLangth < length)
+            {
+                _holdMaxLangth = length;
+            }
+            
+            note.GetComponent<SpriteRenderer>().sortingLayerName = "Note_Hold";
+            note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _noteType, length);
+            _isHold = false;
+            _shadenoteTransform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
+        }
+
+        note.GetComponent<EditorNote>().OnNoteDelete += DeleteNote;
+        note.GetComponent<EditorNote>().OnMouseOverNote += OnMouseOverNote;
+        note.GetComponent<EditorNote>().OnMouseOffNote += OnMouseOffNote;
         _notes.Add(note);
     }
     /// <summary>
     /// 마우스 위치의 노트 삭제
     /// </summary>
-    private void DeleteNote()
+    private void DeleteNote(GameObject note)
     {
-        Debug.Log("delete");
-        Vector3 notePos = GetGridVector3(_mousePos);
-        if(!_notes.Any(note => note.transform.localPosition == notePos))return;
-        GameObject note = _notes.FirstOrDefault(note => note.transform.localPosition == notePos);
-        Debug.Log(note);
         _notes.Remove(note);
         Destroy(note);
+    }
+    /// <summary>
+    /// 롱노트를 놓을 때 놓일 노트의 길이를 미리보기 위해 shadenote의 길이를 늘리는 함수
+    /// </summary>
+    private void SetShadenoteHoldSize()
+    {
+        _shadenoteTransform.localScale = new Vector3(0.25f, Mathf.Clamp(_mousePos.y-_shadenoteTransform.position.y, 0.25f, float.MaxValue), 1f);
     }
     /// <summary>
     /// 확대, 축소시 모든 노트 크기 조절
@@ -191,9 +259,10 @@ public class Measure : MonoBehaviour
             {
                 note.transform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
             }
-            //TODO: 여기에 롱노트 로직 넣어야함.
+            // * 롱노트는 마디 크기 비율 그대로 따라감
             
         }
+        _shadenoteTransform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
     }
     #endregion
     #region Measure Logic
@@ -325,16 +394,35 @@ public class Measure : MonoBehaviour
         return false;
     }
     #endregion
+    #region getter/setter
+    /// <summary>
+    /// 렌더링을 위하여 롱노트 최대 길이를 반환하는 함수
+    /// </summary>
+    /// <returns>롱노트 최대 길이</returns>
+    public float GetHoldMaxLength()
+    {
+        return _holdMaxLangth;
+    }
+    /// <summary>
+    /// 롱노트를 놓는 중인지 반환하는 함수
+    /// </summary>
+    /// <returns>롱노트 놓는지 여부</returns>
+    public bool GetIsHold()
+    {
+        return _isHold;
+    }
+    #endregion
     #region Debug
-    private void Debug_SizeIncrease()
-    {
-        _transform.localScale = new Vector3(_transform.localScale.x, _transform.localScale.y*2, 0);
-        OnMeasureChanged();
-    }
-    private void Debug_SizeDecrease()
-    {
-        _transform.localScale = new Vector3(_transform.localScale.x, _transform.localScale.y/2, 0);
-        OnMeasureChanged();
-    }
+    // ! 툴바 완성으로 인해 사용하지 않음
+    // private void Debug_SizeIncrease()
+    // {
+    //     _transform.localScale = new Vector3(_transform.localScale.x, _transform.localScale.y*2, 0);
+    //     OnMeasureChanged();
+    // }
+    // private void Debug_SizeDecrease()
+    // {
+    //     _transform.localScale = new Vector3(_transform.localScale.x, _transform.localScale.y/2, 0);
+    //     OnMeasureChanged();
+    // }
     #endregion
 }

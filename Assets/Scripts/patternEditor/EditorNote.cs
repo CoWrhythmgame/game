@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EditorNote : MonoBehaviour
@@ -8,6 +9,10 @@ public class EditorNote : MonoBehaviour
     [SerializeField]private int _currentBeat = 1;
     [SerializeField]private NoteType _noteType = NoteType.single;
     [SerializeField]private float _longNoteLength = 1f;
+    public Action<GameObject> OnNoteDelete;
+    public Action OnMouseOverNote;
+    public Action OnMouseOffNote;
+    #region LifeCycle
     public void Initialize(int laneIndex, int signature, int currentBeat, NoteType noteType)
     {
         _laneIndex = laneIndex;
@@ -23,6 +28,26 @@ public class EditorNote : MonoBehaviour
         _noteType = noteType;
         _longNoteLength = longNoteLength;
     }
+    public void DeleteNote()
+    {
+        OnMouseOffNote.Invoke();
+        OnNoteDelete.Invoke(gameObject);
+    }
+    #endregion
+    #region Callback
+    public void OnOverMouse()
+    {
+        Color color = new Color(0.5f,1f,0.5f,0.75f);
+        transform.GetComponent<SpriteRenderer>().color = color;
+        OnMouseOverNote.Invoke();
+    }
+    public void OnOffMouse()
+    {
+        Color color = new Color(1,1,1,1);
+        transform.GetComponent<SpriteRenderer>().color = color;
+        OnMouseOffNote();
+    }
+    #endregion
     public NoteType GetNoteType()
     {
         return _noteType;
