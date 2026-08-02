@@ -39,7 +39,53 @@ public class EditorSongFileLoader : MonoBehaviour
 
     private EditorLoadedSongData currentSongData;
 
-    public EditorLoadedSongData CurrentSongData => currentSongData;
+    public bool IsSongLoaded()
+    {
+        return currentSongData != null;
+    }
+
+    public EditorLoadedSongData GetCurrentSongData()
+    {
+        return currentSongData;
+    }
+
+    public bool TryGetCurrentSongData(out EditorLoadedSongData songData)
+    {
+        songData = currentSongData;
+        return songData != null;
+    }
+
+    public float GetCurrentBpm()
+    {
+        if (currentSongData == null)
+            return 0f;
+
+        return currentSongData.bpm;
+    }
+
+    public string GetCurrentSongName()
+    {
+        if (currentSongData == null)
+            return "";
+
+        return currentSongData.songName;
+    }
+
+    public string GetCurrentArtistName()
+    {
+        if (currentSongData == null)
+            return "";
+
+        return currentSongData.artistName;
+    }
+
+    public string GetCurrentAudioPath()
+    {
+        if (currentSongData == null)
+            return "";
+
+        return currentSongData.audioLocalPath;
+    }
     public bool HasLoadedSong => currentSongData != null;
 
     public event Action<EditorLoadedSongData> OnSongLoadedOrUpdated;

@@ -27,7 +27,8 @@ public class EditorMeasurePlaybackSync : MonoBehaviour
         if (syncOnlyWhilePlaying && !audioController.IsPlaying)
             return;
 
-        float bpm = songFileLoader.CurrentSongData.bpm;
+
+        float bpm = songFileLoader.GetCurrentBpm();
         float songTime = audioController.CurrentTime;
 
         measureList.SyncCameraToSongTime(songTime, bpm);
