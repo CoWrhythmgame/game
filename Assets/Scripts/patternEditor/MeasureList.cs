@@ -244,6 +244,31 @@ public class MeasureList : MonoBehaviour
     {
         return _noteType;
     }
-    
+    public void SyncCameraToSongTime(float songTime, float bpm) // 김종면 함수 1개 추가했습니다.
+    {
+        if (_camera == null)
+            return;
+
+        if (bpm <= 0f)
+            return;
+
+        float secondsPerBeat = 60f / bpm;
+        float currentBeat = songTime / secondsPerBeat;
+
+        // 현재 구조는 4비트 = 1마디 기준
+        float currentMeasureProgress = currentBeat / 4f;
+
+        float targetY = currentMeasureProgress * 4f * _scale;
+
+        targetY = Mathf.Clamp(targetY, 0f, _cameraMaxLength);
+
+        _camera.transform.position = new Vector3(
+            _camera.transform.position.x,
+            targetY,
+            _camera.transform.position.z
+        );
+
+        RenderMeasure();
+    }
     #endregion
 }

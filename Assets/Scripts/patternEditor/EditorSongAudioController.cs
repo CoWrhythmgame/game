@@ -31,6 +31,20 @@ public class EditorSongAudioController : MonoBehaviour
 
     private bool isLoadingClip = false;
 
+    public AudioSource AudioSource => audioSource;
+
+    public bool IsPlaying => audioSource != null && audioSource.isPlaying;
+
+    public float CurrentTime
+    {
+        get
+        {
+            if (audioSource == null)
+                return 0f;
+
+            return audioSource.time;
+        }
+    }
     private void Awake()
     {
         SetupAudioSource();
