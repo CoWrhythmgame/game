@@ -2258,10 +2258,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeasureList
       objectReference: {fileID: 0}
-    - target: {fileID: 9032034067347719186, guid: 891bc6d3b6f2023408ab5e0566378282, type: 3}
-      propertyPath: _noteLayerMask.m_Bits
-      value: 128
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

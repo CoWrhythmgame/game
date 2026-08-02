@@ -52,5 +52,22 @@ public class EditorNote : MonoBehaviour
     {
         return _noteType;
     }
+    public Note GetNoteData()
+    {
+        Note note = new Note
+        {
+            lane = _laneIndex,
+            time = (double)_currentBeat/ _signature * 4,
+            noteType = _noteType,
+        };
+        if(_noteType == NoteType.single)
+        {
+            note.releaseTime = 0;
+        }else if(_noteType == NoteType.hold)
+        {
+            note.releaseTime = _longNoteLength;
+        }
+        return note;
+    }
 
 }

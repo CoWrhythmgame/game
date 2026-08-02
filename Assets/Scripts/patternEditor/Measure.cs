@@ -48,6 +48,7 @@ public class Measure : MonoBehaviour
     //// private ConstraintSource _source;
     private MeasureList _measureList;
     private bool _isQuitting = false;
+    private Vector3 _notesize;
     #endregion
 
     #region LifeCycle
@@ -59,6 +60,8 @@ public class Measure : MonoBehaviour
         _measureList = transform.parent.parent.GetComponent<MeasureList>();
 
         _inspector = GameObject.FindGameObjectWithTag("Inspector").GetComponent<Inspector>();
+
+        _notesize = _notePrefab.GetComponent<SpriteRenderer>().bounds.size;
 
         _inspectorButton.GetComponent<ObjectButton>().OnButtonClicked += ShowInspector;
 
@@ -134,7 +137,7 @@ public class Measure : MonoBehaviour
     private void OnOverMouse()
     {
         if(!_isMouseOverNote)_shadeNote.SetActive(true);
-        if(!_isHold) _shadenoteTransform.localPosition = GetGridVector3(_mousePos);
+        if(!_isHold) _shadenoteTransform.localPosition = GetMouseGridVector3(_mousePos);
         if (Mouse.current.leftButton.wasPressedThisFrame && _noteType == NoteType.single)
         {
             AddNote();
@@ -196,7 +199,7 @@ public class Measure : MonoBehaviour
     /// </summary>
     private void AddNote()
     {
-        Vector3 notePos = GetGridVector3(_mousePos);
+        Vector3 notePos = GetMouseGridVector3(_mousePos);
         if(_isMouseOverNote) return;
         if(_notes.Any(note => note.transform.localPosition == notePos))return;
 
@@ -211,9 +214,9 @@ public class Measure : MonoBehaviour
         }
         else if(_noteType == NoteType.hold)
         {
-            float length = Mathf.Clamp(_mousePos.y-_shadenoteTransform.position.y, 0.25f, float.MaxValue)/_transform.localScale.y;
+            float length = Mathf.Clamp(GetGridY(_mousePos.y-_shadenoteTransform.position.y)*4f, 0.25f, float.MaxValue)/_transform.localScale.y;
             Debug.Log(length);
-            note.transform.localScale = new Vector3(0.25f, Mathf.Clamp(_mousePos.y-_shadenoteTransform.position.y, 0.25f, float.MaxValue), 1f);
+            note.transform.localScale = new Vector3(0.25f, Mathf.Clamp(GetGridY(_mousePos.y-_shadenoteTransform.position.y)*4f, 0.25f, float.MaxValue), 1f);
             note.transform.localPosition = _longNotePos;
 
             if(_holdMaxLangth < length)
@@ -245,7 +248,7 @@ public class Measure : MonoBehaviour
     /// </summary>
     private void SetShadenoteHoldSize()
     {
-        _shadenoteTransform.localScale = new Vector3(0.25f, Mathf.Clamp(_mousePos.y-_shadenoteTransform.position.y, 0.25f, float.MaxValue), 1f);
+        _shadenoteTransform.localScale = new Vector3(0.25f, Mathf.Clamp(GetGridY(_mousePos.y-_shadenoteTransform.position.y)*4f, 0.25f, float.MaxValue), 1f);
     }
     /// <summary>
     /// 확대, 축소시 모든 노트 크기 조절
@@ -336,6 +339,10 @@ public class Measure : MonoBehaviour
     {
         _transform.position = new Vector3(0,_MeasureIndex*_transform.localScale.y-4f,0);
     }
+    
+    #endregion
+    #region MouseLogic
+    
     /// <summary>
     /// 마우스 위치를 반환
     /// </summary>
@@ -352,16 +359,12 @@ public class Measure : MonoBehaviour
         
         return worldPos;
     }
-    
-    #endregion
-    #region MouseLogic
-    
     /// <summary>
     /// 벡터를 가져와서 마디선 그리드에 맞는(snap) 벡터를 반환
     /// </summary>
     /// <param name="mousePos">마우스 위치 벡터</param>
     /// <returns>그리드에 스냅된 벡터</returns>
-    private Vector3 GetGridVector3(Vector3 mousePos)
+    private Vector3 GetMouseGridVector3(Vector3 mousePos)
     {
         float x = (MathF.Floor(mousePos.x)+1f/2)/_transform.localScale.x;
         float y;
@@ -375,8 +378,27 @@ public class Measure : MonoBehaviour
         }
 
 
-
         return new Vector3(x,y,0);
+    }
+    /// <summary>
+    /// 직접 y값을 그리드에 맞추는 함수
+    /// </summary>
+    /// <param name="posY">y값(마디선에 맞추지 않으므로 직접 벡터 시작점 잡아줄 필요 있음.)</param>
+    /// <returns>마디선 기준으로 그리드에 대응되는 Y값</returns>
+    private float GetGridY(float posY)
+    {
+        float retY;
+
+        //offgrid
+        if(_signature == 1) {
+            retY = posY/_transform.localScale.y;
+        }
+        else{
+            retY = Mathf.Floor(posY*_signature/_transform.localScale.y)/_signature;
+        }
+
+
+        return retY;
     }
     /// <summary>
     /// 마우스가 이 오브젝트 위에 있는지 여부를 반환
@@ -410,6 +432,26 @@ public class Measure : MonoBehaviour
     public bool GetIsHold()
     {
         return _isHold;
+    }
+    public int GetIndex(){
+        return _MeasureIndex;
+    }
+    public double Getbpm()
+    {
+        return _BPM;
+    }
+    public List<Note> GetNotes()
+    {
+        List<Note> notes = new List<Note>();
+        foreach(GameObject note in _notes)
+        {
+            Note notedata = note.GetComponent<EditorNote>().GetNoteData();
+            notedata.time = notedata.time/_BPM*60;
+            notedata.releaseTime = notedata.releaseTime/_BPM*60*4+notedata.time;
+            notedata.bpm = _BPM;
+            notes.Add(notedata);
+        }
+        return notes;
     }
     #endregion
     #region Debug

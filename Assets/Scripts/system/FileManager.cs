@@ -8,7 +8,7 @@ public class FileManager
 {
     private static readonly string[] _filenames = new string[4]{"1-Easy","2-Normal","3-Hard","4-Extreme"};
 
-    #region 실제 사용 함수
+    #region 외부 접근 함수
     public static List<Song> LoadSong()
     {
         Debug.Log("LoadSong");
@@ -28,7 +28,7 @@ public class FileManager
             patternInfosJson = GetPatternInfoJson(songnames[i]);
             recordsJson = GetRecordJson(songnames[i], LocalPath);
             Debug.Log(patternInfosJson[0]);
-            songs.Add(GetSongFromJson(songJson, patternInfosJson, recordsJson));
+            songs.Add(GetSongFromString(songJson, patternInfosJson, recordsJson));
         }
         return songs;
     }
@@ -37,8 +37,15 @@ public class FileManager
         Pattern pattern;
         string patternJson;
         patternJson = GetPatternJson(songData.patternInfo[difficultyIndex].patternPath);
-        pattern = GetPatternFromJson(patternJson);
+        pattern = GetPatternFromString(patternJson);
         return pattern;
+    }
+    public static void Editor_SavePattern(Song songInfo , PatternInfo patternInfo, Pattern pattern, int patternIndex)
+    {
+        string songname = songInfo.songname;
+        SetFileFromSong(songname, GetStringFromSong(songInfo));
+        SetFileFromPatternInfo(songname, patternIndex, GetStringFromPatternInfo(songname,patternIndex , patternInfo));
+        SetFileFromPattern(songname, patternIndex, GetStringFromPattern(pattern));
     }
     #endregion
 
@@ -73,9 +80,9 @@ public class FileManager
     }
     #endregion
 
-    #region json to class 변환
+    #region string to class 변환
     //json을 song으로 변환
-    private static Song GetSongFromJson(string songJson, List<string> patternInfosJson, List<string> recordsJson)
+    private static Song GetSongFromString(string songJson, List<string> patternInfosJson, List<string> recordsJson)
     {
         Song song = JsonUtility.FromJson<Song>(songJson);
         List<PatternInfo> patternInfos = new List<PatternInfo>();
@@ -113,7 +120,7 @@ public class FileManager
         song.record = records;
         return song;
     }
-    private static Pattern GetPatternFromJson(string patternJson)
+    private static Pattern GetPatternFromString(string patternJson)
     {
         Pattern pattern = JsonUtility.FromJson<Pattern>(patternJson);
         return pattern;
@@ -121,6 +128,7 @@ public class FileManager
     #endregion
     
     #region json file to string
+    //HACK: 이거 아예 하나의 함수로 모든 json파일 가져올 수 있을거같이 보임. 나중에 리펙터링 할것
     private static List<string> GetPatternInfoJson(string songname)
     {
         List<string> patternsJson = new List<string>();
@@ -168,6 +176,75 @@ public class FileManager
         return patternJson;
     }
     #endregion
+    #region class to String
+    private static string GetStringFromPattern(Pattern pattern)
+    {
+        return JsonUtility.ToJson(pattern, true);
+    }
+    private static string GetStringFromSong(Song songInfo)
+    {
+        string path = GetStreamingAssetsPath();
+        //TODO: preview 경로 물어봐야함
+        songInfo.songPath = path+"/Song/"+songInfo.songname+"/"+songInfo.songname+".mp3";
+        // songInfo.previewPath = path+"/SongInfo/"+songInfo.songname+"/"+songInfo.songname+".mp3";
+        
+        return JsonUtility.ToJson(songInfo, true);
+    }
+    private static string GetStringFromPatternInfo(string songname,  int patternIndex, PatternInfo patternInfo)
+    {
+        string path = GetStreamingAssetsPath();
+        patternInfo.patternPath = path+"/Pattern/"+songname+"/"+_filenames[patternIndex];
+        
+        return JsonUtility.ToJson(patternInfo, true);
+    }
+    #endregion
+    #region String to json
+    //HACK: 나중에 리펙터링 할 것.
+    private static void SetFileFromPattern(string songName, int patternIndex, string PatternJson)
+    {
+        string path = GetStreamingAssetsPath()+"/Pattern/"+songName;
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+        path += "/" + _filenames[patternIndex]+".json";
+        if (File.Exists(path))
+        {
+            Debug.LogWarning("파일을 교체합니다.");
+        }
+        File.WriteAllText(path, PatternJson);
+        
+
+    }
+    private static void SetFileFromSong(string songName, string SongJson)
+    {
+        string path = GetStreamingAssetsPath()+"/SongInfo/"+songName;
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+        path += "/0-Info"+".json";
+        if (File.Exists(path))
+        {
+            Debug.LogWarning("파일을 교체합니다.");
+        }
+        File.WriteAllText(path, SongJson);
+    }
+    private static void SetFileFromPatternInfo(string songName,int patternIndex , string patternInfoJson)
+    {
+        string path = GetStreamingAssetsPath()+"/SongInfo/"+songName;
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+        path += "/"+_filenames[patternIndex]+".json";
+        if (File.Exists(path))
+        {
+            Debug.LogWarning("파일을 교체합니다.");
+        }
+        File.WriteAllText(path, patternInfoJson);
+    }
+    #endregion
     #region 테스트용 함수
     /// <summary>
     /// 패턴파일 경로는 pattern/TestSong/1-Easy.json 입니다.
@@ -175,7 +252,7 @@ public class FileManager
     public static Pattern TestPatternLoad()
     {
         Pattern pattern;
-        pattern = GetPatternFromJson(GetPatternJson(GetStreamingAssetsPath() + "/Pattern/TestSong/" + _filenames[0] + ".json"));
+        pattern = GetPatternFromString(GetPatternJson(GetStreamingAssetsPath() + "/Pattern/TestSong/" + _filenames[0] + ".json"));
         return pattern;
     }
     #endregion

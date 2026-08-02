@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -28,11 +29,13 @@ public class MeasureList : MonoBehaviour
     
 
     [Header("Debug")]
+    [SerializeField] private bool Debug_Pattern = false;
     // [SerializeField] private bool Debug_Increase = false;
     // [SerializeField] private bool Debug_Decrease = false;
     // [SerializeField] private bool Debug_Remove = false;
 
     private List<GameObject> _measures;
+    private BeatmapTimer _beatMapTimer;
     #endregion
 
     #region LifeCycle
@@ -40,6 +43,8 @@ public class MeasureList : MonoBehaviour
     {
         _measures = new List<GameObject>();
         _camera = Camera.main.gameObject;
+        
+        _beatMapTimer = transform.GetComponent<BeatmapTimer>(); 
 
         _addButton.GetComponent<ObjectButton>().OnButtonClicked += AddMeasure;
         _inspector.OnDeleteButtonClicked += DeleteMeasure;
@@ -70,6 +75,11 @@ public class MeasureList : MonoBehaviour
         //     DeleteMeasure(1);
         //     Debug_Remove = false;
         // }
+        if (Debug_Pattern)
+        {
+            GetPattern();
+            Debug_Pattern = false;
+        }
     }
     #endregion
     #region Callbacks
@@ -265,6 +275,26 @@ public class MeasureList : MonoBehaviour
     {
         return _noteType;
     }
-    
+    public Pattern GetPattern()
+    {
+        _beatMapTimer.SetTimingPoints(_measures);
+        Pattern pattern = new Pattern
+        {
+            notes = new List<Note>()
+        };
+        foreach (GameObject measure in _measures)
+        {
+            List<Note> notes = measure.GetComponent<Measure>().GetNotes();
+            double startTime = _beatMapTimer.GetMeasureTime(measure.GetComponent<Measure>().GetIndex());
+            foreach(Note note in notes)
+            {
+                note.time += startTime;
+                note.releaseTime += startTime;
+            }
+            pattern.notes = pattern.notes.Concat(notes).ToList();
+        }
+        Debug.Log(JsonUtility.ToJson(pattern));
+        return pattern;
+    }
     #endregion
 }

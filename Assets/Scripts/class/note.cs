@@ -13,6 +13,6 @@ public class Note
     public NoteType noteType = NoteType.single;
     public double releaseTime = 0;
     public float bpm = 1;
-    public EditorOnlyNote editorOnlyNote;
+    // public EditorOnlyNote editorOnlyNote;
     
 }
