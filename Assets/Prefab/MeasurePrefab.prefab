@@ -117,7 +117,7 @@ MonoBehaviour:
   _notePrefab: {fileID: 7304791166683003562, guid: 78f5f66193664ad4aae02c7eee32fa1f, type: 3}
   _noteListObject: {fileID: 6329429037501895005}
   _shadeNote: {fileID: 385248946971473840}
-  _inspectorButton: {fileID: 2906766952331104712}
+  _inspectorButton: {fileID: 4190052809115608476}
   _text: {fileID: 4667932387752393766}
   _inspector: {fileID: 0}
   _Lines_4:
@@ -153,8 +153,9 @@ MonoBehaviour:
   _noteType: 0
   _BPM: 120
   _notes: []
-  Debug_Increase: 0
-  Debug_Decrease: 0
+  _isHold: 0
+  _isMouseOverNote: 0
+  _holdMaxLangth: 0
   _MeasureIndex: 0
 --- !u!1 &385248946971473840
 GameObject:
@@ -184,7 +185,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.375, y: 0.00255, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
+  m_LocalScale: {x: 0.25, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 240477868033083337}
@@ -235,7 +236,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1314622695
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4025159193867184526, guid: 0d4d699cdf606e04ebbee95d43418fca, type: 3}
@@ -256,7 +257,7 @@ ScaleConstraint:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385248946971473840}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Weight: 1
   m_ScaleAtRest: {x: 0.25, y: 0.25, z: 1}
@@ -1821,7 +1822,7 @@ Transform:
   m_GameObject: {fileID: 4190052809115608476}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.90625, y: -0.91537, z: 0}
+  m_LocalPosition: {x: 1.9064999, y: -0.925, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1897,13 +1898,13 @@ ScaleConstraint:
   m_Enabled: 1
   serializedVersion: 2
   m_Weight: 1
-  m_ScaleAtRest: {x: 0.5, y: 0.5, z: 1}
+  m_ScaleAtRest: {x: 0.125, y: 0.125, z: 1}
   m_ScaleOffset: {x: 0.5, y: 0.5, z: 1}
   m_AffectScalingX: 1
   m_AffectScalingY: 1
   m_AffectScalingZ: 1
   m_Active: 1
-  m_IsLocked: 0
+  m_IsLocked: 1
   m_Sources:
   - sourceTransform: {fileID: 865478900564702331}
     weight: 1
@@ -1917,8 +1918,8 @@ PositionConstraint:
   m_Enabled: 1
   serializedVersion: 2
   m_Weight: 1
-  m_TranslationAtRest: {x: 1.90625, y: -0.91537, z: 0}
-  m_TranslationOffset: {x: 2.25, y: 1, z: 0}
+  m_TranslationAtRest: {x: 1.9065, y: -0.925, z: 0}
+  m_TranslationOffset: {x: 2.2502499, y: 0.99037, z: 0}
   m_AffectTranslationX: 1
   m_AffectTranslationY: 1
   m_AffectTranslationZ: 1

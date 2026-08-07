@@ -90,7 +90,7 @@ public class EditorSongInfoUI : MonoBehaviour
 
         Debug.Log("Selected Difficulty : " + CurrentDifficultyName);
 
-        // ³ªÁß¿¡ ³­ÀÌµµ º¯°æ ½Ã Ã¤º¸ ºÒ·¯¿À±â´Â ¿©±â ¿¬°á
+        // ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã¤ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         // LoadPatternByDifficulty(currentDifficultyIndex);
     }
 
@@ -127,5 +127,9 @@ public class EditorSongInfoUI : MonoBehaviour
             return;
 
         text.text = value;
+    }
+    public int GetDifficultyIndex()
+    {
+        return currentDifficultyIndex;
     }
 }

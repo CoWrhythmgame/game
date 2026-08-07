@@ -13,6 +13,7 @@ EditorBuildSettings:
     guid: a5ed26b32b5393f43858bd0931e0fe38
   - enabled: 1
     path: Assets/Scenes/TestSongSelectScene.unity
+<<<<<<< HEAD
     guid: 1665aab7fd7c2784fa9f2fe8601e6063
   - enabled: 1
     path: Assets/Scenes/InGameScene.unity
@@ -26,6 +27,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestEditorMeasure.unity
     guid: b506a2976c9973b46acd6aeff25dfa21
+=======
+    guid: 9be86899bf4c8f94e9bb39d7394a02f6
+>>>>>>> origin/main
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 464130af16a0a6543a25eabc1fb8a59e, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
