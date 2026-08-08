@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class SongList : MonoBehaviour
 {
@@ -15,9 +17,11 @@ public class SongList : MonoBehaviour
     public GameObject DifficultyL;
     public GameObject DifficultyR;
 
+    [SerializeField] private DataMaster _dataMaster;
     // public KeySetting keySetting;
     InputSystem_Actions inputSystem_Actions;
     InputAction cursorAction;
+    InputAction _cursorSummit;
     private Vector2 songtragetPos = new Vector2(0, 0);
     private Vector2 difficultytragetPos = new Vector2(0, 0);
     private SongIndicator songIndicator;
@@ -101,11 +105,27 @@ public class SongList : MonoBehaviour
         Debug.Log(JsonUtility.ToJson(temp,true));
         Debug.Log(Application.streamingAssetsPath);
         inputSystem_Actions = new InputSystem_Actions();
-        cursorAction = inputSystem_Actions.UI.Move;
-        cursorAction.Enable();
+
+        _dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();
+        
+
         songcontentRect = songContentPannel.GetComponent<RectTransform>();
         difficultycontentRect = DifficultyContentPannel.GetComponent<RectTransform>();
         MakeSelectors(songs);
+    }
+    void OnEnable()
+    {
+        
+        cursorAction = inputSystem_Actions.UI.Move;
+        _cursorSummit = inputSystem_Actions.UI.Summit;
+        cursorAction.Enable();
+        _cursorSummit.Enable();
+    }
+    void OnDisable()
+    {
+        
+        cursorAction.Disable();
+        _cursorSummit.Disable();
     }
 
     // Update is called once per frame
@@ -119,6 +139,10 @@ public class SongList : MonoBehaviour
         if (cursorAction.WasPressedThisFrame())
         {
             CursorMove(input);
+        }
+        if (_cursorSummit.WasCompletedThisFrame())
+        {
+            CursorSummit();
         }
     }
     void FixedUpdate()
@@ -222,6 +246,11 @@ public class SongList : MonoBehaviour
             SetDifficulty(difficultyIndex - 1);
         }
         songtragetPos = new Vector2(0, (SSheight+10) * songIndex);
+    }
+    private void CursorSummit()
+    {
+        _dataMaster.SetSongData(currentSongData, difficultyIndex);
+        SceneManager.LoadScene("InGameScene");
     }
     #endregion
     #region 테스트용 함수

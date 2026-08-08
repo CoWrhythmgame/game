@@ -36,6 +36,8 @@ public class FileManager
     {
         Pattern pattern;
         string patternJson;
+        Debug.Log($"Load Pattern - difficultyIndex:{difficultyIndex}");
+        Debug.Log($"patternpath:{songData.patternInfo[difficultyIndex].patternPath}");
         patternJson = GetPatternJson(songData.patternInfo[difficultyIndex].patternPath);
         pattern = GetPatternFromString(patternJson);
         return pattern;
@@ -137,7 +139,6 @@ public class FileManager
         string[] songpaths = Directory.GetFiles(AssetPath+"/SongInfo"+songname)
         .Where(file => file.EndsWith(".json")).ToArray();
         
-        Debug.Log("patternpaths: " + songpaths[3]);
         foreach(string path in songpaths)
         {
             if(path.Contains("Info.json")) continue;
@@ -181,19 +182,17 @@ public class FileManager
     {
         return JsonUtility.ToJson(pattern, true);
     }
-    private static string GetStringFromSong(Song songInfo)
+    public static string GetStringFromSong(Song songInfo)
     {
-        string path = GetStreamingAssetsPath();
         //TODO: preview 경로 물어봐야함
-        songInfo.songPath = path+"/Song/"+songInfo.songname+"/"+songInfo.songname+".mp3";
+        songInfo.songPath = "EditorSongs/"+songInfo.songname+"/"+songInfo.songname+".mp3";
         // songInfo.previewPath = path+"/SongInfo/"+songInfo.songname+"/"+songInfo.songname+".mp3";
         
         return JsonUtility.ToJson(songInfo, true);
     }
-    private static string GetStringFromPatternInfo(string songname,  int patternIndex, PatternInfo patternInfo)
+    public static string GetStringFromPatternInfo(string songname,  int patternIndex, PatternInfo patternInfo)
     {
-        string path = GetStreamingAssetsPath();
-        patternInfo.patternPath = path+"/Pattern/"+songname+"/"+_filenames[patternIndex];
+        patternInfo.patternPath = "Pattern/"+songname+"/"+_filenames[patternIndex];
         
         return JsonUtility.ToJson(patternInfo, true);
     }
