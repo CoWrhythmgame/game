@@ -421,4 +421,62 @@ public class FileManager
 
         return fileName;
     }
+
+    public static bool Editor_TryLoadSongInfo(string songName, out Song song) // json 파일 읽어오기
+    {
+        song = null;
+
+        string path = Application.streamingAssetsPath + "/SongInfo/" + songName + "/0-Info.json";
+
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning("Song info file not found: " + path);
+            return false;
+        }
+
+        string json = File.ReadAllText(path);
+        song = JsonUtility.FromJson<Song>(json);
+
+        return song != null;
+    }
+
+    public static bool Editor_TryLoadPatternInfo(string songName, int patternIndex, out PatternInfo patternInfo) // 난이도 정보 읽어오기
+    {
+        patternInfo = null;
+
+        string[] filenames = { "1-Easy", "2-Normal", "3-Hard", "4-Extreme" };
+
+        if (patternIndex < 0 || patternIndex >= filenames.Length)
+            return false;
+
+        string path = Application.streamingAssetsPath + "/SongInfo/" + songName + "/" + filenames[patternIndex] + ".json";
+
+        if (!File.Exists(path))
+            return false;
+
+        string json = File.ReadAllText(path);
+        patternInfo = JsonUtility.FromJson<PatternInfo>(json);
+
+        return patternInfo != null;
+    }
+
+    public static bool Editor_TryLoadPattern(string songName, int patternIndex, out Pattern pattern) // 패턴 읽어오기
+    {
+        pattern = null;
+
+        string[] filenames = { "1-Easy", "2-Normal", "3-Hard", "4-Extreme" };
+
+        if (patternIndex < 0 || patternIndex >= filenames.Length)
+            return false;
+
+        string path = Application.streamingAssetsPath + "/Pattern/" + songName + "/" + filenames[patternIndex] + ".json";
+
+        if (!File.Exists(path))
+            return false;
+
+        string json = File.ReadAllText(path);
+        pattern = JsonUtility.FromJson<Pattern>(json);
+
+        return pattern != null;
+    }
 }

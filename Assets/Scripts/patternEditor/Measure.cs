@@ -49,6 +49,7 @@ public class Measure : MonoBehaviour
     private MeasureList _measureList;
     private bool _isQuitting = false;
     private Vector3 _notesize;
+    private DirtyState _dirtyState;
     #endregion
 
     #region LifeCycle
@@ -65,6 +66,7 @@ public class Measure : MonoBehaviour
 
         _inspectorButton.GetComponent<ObjectButton>().OnButtonClicked += ShowInspector;
 
+        _dirtyState = FindFirstObjectByType<DirtyState>();
         // ! constraint 제거 더이상 사용하지 않음.
         //// _source = new ConstraintSource
         //// {
@@ -234,6 +236,9 @@ public class Measure : MonoBehaviour
         note.GetComponent<EditorNote>().OnMouseOverNote += OnMouseOverNote;
         note.GetComponent<EditorNote>().OnMouseOffNote += OnMouseOffNote;
         _notes.Add(note);
+
+        if (_dirtyState != null)
+            _dirtyState.MarkDirty();
     }
     /// <summary>
     /// 마우스 위치의 노트 삭제
@@ -242,6 +247,8 @@ public class Measure : MonoBehaviour
     {
         _notes.Remove(note);
         Destroy(note);
+        if (_dirtyState != null)
+            _dirtyState.MarkDirty();
     }
     /// <summary>
     /// 롱노트를 놓을 때 놓일 노트의 길이를 미리보기 위해 shadenote의 길이를 늘리는 함수
@@ -452,6 +459,62 @@ public class Measure : MonoBehaviour
             notes.Add(notedata);
         }
         return notes;
+    }
+    public void ClearNotes() // 해당 마디 안의 노트를 전부 삭제
+    {
+        foreach (GameObject note in _notes)
+        {
+            if (note != null)
+                Destroy(note);
+        }
+
+        _notes.Clear();
+        _holdMaxLangth = 0f;
+        _isHold = false;
+
+        if (_shadeNote != null)
+            _shadeNote.SetActive(false);
+    }
+
+    public void AddNoteFromPatternData(int laneIndex, double localBeatPosition, NoteType noteType, float longNoteLength = 0f) // 패턴 데이터를 기반으로 노트를 생성하는 함수
+    {
+        if (_notePrefab == null || _noteListObject == null)
+            return;
+
+        GameObject note = Instantiate(_notePrefab, _noteListObject.transform);
+
+        float x = laneIndex * 0.25f - 0.375f;
+        float y = (float)(localBeatPosition / 4.0);
+
+        note.transform.localPosition = new Vector3(x, y, 0f);
+
+        EditorNote editorNote = note.GetComponent<EditorNote>();
+
+        int currentBeat = Mathf.RoundToInt((float)(y * _signature));
+
+        if (noteType == NoteType.single)
+        {
+            note.transform.localScale = new Vector3(0.25f, 1f / _transform.localScale.y, 1f);
+            note.GetComponent<SpriteRenderer>().sortingLayerName = "Note_Single";
+
+            editorNote.Initialize(laneIndex, _signature, currentBeat, noteType);
+        }
+        else if (noteType == NoteType.hold)
+        {
+            note.transform.localScale = new Vector3(0.25f, Mathf.Max(longNoteLength * 4f, 0.25f), 1f);
+            note.GetComponent<SpriteRenderer>().sortingLayerName = "Note_Hold";
+
+            editorNote.Initialize(laneIndex, _signature, currentBeat, noteType, longNoteLength);
+
+            if (_holdMaxLangth < longNoteLength)
+                _holdMaxLangth = longNoteLength;
+        }
+
+        editorNote.OnNoteDelete += DeleteNote;
+        editorNote.OnMouseOverNote += OnMouseOverNote;
+        editorNote.OnMouseOffNote += OnMouseOffNote;
+
+        _notes.Add(note);
     }
     #endregion
     #region Debug

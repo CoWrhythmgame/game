@@ -118,8 +118,8 @@ public class EditorSongAudioController : MonoBehaviour
         if (frontButton != null)
             frontButton.onClick.AddListener(Forward5Seconds);
 
-        if (saveButton != null)
-            saveButton.onClick.AddListener(SaveChartPlaceholder);
+        //if (saveButton != null)
+        //    saveButton.onClick.AddListener(SaveChartPlaceholder);
     }
 
     private void UnregisterButtons()
@@ -136,8 +136,8 @@ public class EditorSongAudioController : MonoBehaviour
         if (frontButton != null)
             frontButton.onClick.RemoveListener(Forward5Seconds);
 
-        if (saveButton != null)
-            saveButton.onClick.RemoveListener(SaveChartPlaceholder);
+        //if (saveButton != null)
+        //    saveButton.onClick.RemoveListener(SaveChartPlaceholder);
     }
 
     private void OnSongLoadedOrUpdated(EditorLoadedSongData songData)
@@ -268,10 +268,10 @@ public class EditorSongAudioController : MonoBehaviour
         RefreshTimeText();
     }
 
-    private void SaveChartPlaceholder()
+    /*private void SaveChartPlaceholder()
     {
         Debug.Log("Save button clicked. Chart saving is not implemented yet.");
-    }
+    }*/
 
     private bool HasAudioClip()
     {

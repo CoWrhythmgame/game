@@ -328,5 +328,72 @@ public class MeasureList : MonoBehaviour
         Debug.Log(JsonUtility.ToJson(pattern));
         return pattern;
     }
+    public void ClearPattern()
+    {
+        foreach (GameObject measure in _measures)
+        {
+            if (measure == null)
+                continue;
+
+            Measure measureComponent = measure.GetComponent<Measure>();
+
+            if (measureComponent != null)
+                measureComponent.ClearNotes();
+        }
+    }
+
+    public void LoadPattern(Pattern pattern)
+    {
+        ClearPattern();
+
+        if (pattern == null || pattern.notes == null)
+            return;
+
+        if (_beatMapTimer != null)
+            _beatMapTimer.SetTimingPoints(_measures);
+
+        foreach (Note note in pattern.notes)
+        {
+            double measureProgress = 0.0;
+
+            if (_beatMapTimer != null)
+                measureProgress = _beatMapTimer.GetMeasureProgressByTime(note.time);
+
+            int measureIndex = Mathf.FloorToInt((float)measureProgress);
+
+            if (measureIndex < 0)
+                measureIndex = 0;
+
+            while (_measures.Count <= measureIndex)
+            {
+                AddMeasure();
+            }
+
+            double localMeasureProgress = measureProgress - measureIndex;
+            double localBeatPosition = localMeasureProgress * 4.0;
+
+            Measure measureComponent = _measures[measureIndex].GetComponent<Measure>();
+
+            float longNoteLength = 0f;
+
+            if (note.noteType == NoteType.hold)
+            {
+                double durationSeconds = note.releaseTime - note.time;
+                double bpm = measureComponent.Getbpm();
+
+                if (bpm > 0.0)
+                    longNoteLength = (float)(durationSeconds * bpm / 60.0 / 4.0);
+            }
+
+            measureComponent.AddNoteFromPatternData(
+                note.lane,
+                localBeatPosition,
+                note.noteType,
+                longNoteLength
+            );
+        }
+
+        RenderMeasure();
+    }
     #endregion
 }

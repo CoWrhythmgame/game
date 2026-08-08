@@ -437,6 +437,33 @@ public class EditorSongFileLoader : MonoBehaviour
         if (errorText != null)
             errorText.text = message;
     }
+
+    public void SetCurrentSongDataFromImport(Song song)
+    {
+        if (song == null)
+        {
+            Debug.LogWarning("Import song data is null.");
+            return;
+        }
+
+        currentSongData = new EditorLoadedSongData
+        {
+            songName = song.songname,
+            artistName = song.artist,
+            bpm = song.bpm,
+
+            selectedDifficultyIndex = songInfoUI != null ? songInfoUI.CurrentDifficultyIndex : 0,
+            selectedDifficultyName = songInfoUI != null ? songInfoUI.CurrentDifficultyName : "Easy",
+
+            importedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+        };
+
+        SetEditButtonActive(true);
+
+        OnSongLoadedOrUpdated?.Invoke(currentSongData);
+
+        Debug.Log("Current song data set from import: " + currentSongData.songName);
+    }
 }
 
 [Serializable]
