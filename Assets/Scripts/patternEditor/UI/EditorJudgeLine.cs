@@ -60,4 +60,9 @@ public class EditorJudgeLine : MonoBehaviour
         lineRenderer.SetPosition(0, new Vector3(leftX, judgeY, zPosition));
         lineRenderer.SetPosition(1, new Vector3(rightX, judgeY, zPosition));
     }
+
+    public float GetLocalYOffset()
+    {
+        return localYOffset;
+    }
 }

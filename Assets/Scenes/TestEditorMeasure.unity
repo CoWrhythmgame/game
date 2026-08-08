@@ -4515,6 +4515,7 @@ GameObject:
   - component: {fileID: 953900060}
   - component: {fileID: 953900059}
   - component: {fileID: 953900063}
+  - component: {fileID: 953900064}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4625,6 +4626,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuntimeSongFilePicker
   songFileLoader: {fileID: 926148147}
+--- !u!114 &953900064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953900058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab82e00435330624ba6b8f93d3d06847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeatmapTimer
 --- !u!1 &1018547908
 GameObject:
   m_ObjectHideFlags: 0
@@ -5052,6 +5065,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f2e78c27d43317a4980efcc48bf57e09, type: 3}
+--- !u!114 &1166486492 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6742413270390314659, guid: 891bc6d3b6f2023408ab5e0566378282, type: 3}
+  m_PrefabInstance: {fileID: 2736226941193104915}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab82e00435330624ba6b8f93d3d06847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeatmapTimer
 --- !u!1 &1184421793
 GameObject:
   m_ObjectHideFlags: 0
@@ -9790,6 +9814,8 @@ MonoBehaviour:
   audioController: {fileID: 250468426}
   songFileLoader: {fileID: 926148147}
   measureList: {fileID: 680288079}
+  beatmapTimer: {fileID: 1166486492}
+  judgeLine: {fileID: 1914554313}
   syncOnlyWhilePlaying: 1
 --- !u!114 &1914554313
 MonoBehaviour:
