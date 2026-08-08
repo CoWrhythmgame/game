@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +11,6 @@ public class SaveManager : MonoBehaviour
 
     public void SavePattern()
     {
-        DataMaster dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();
         try{
             EditorLoadedSongData editorLoadedSongData = _editorSongFileLoader.GetCurrentSongData();
             Pattern pattern = _measureList.GetPattern();
@@ -26,9 +26,6 @@ public class SaveManager : MonoBehaviour
                 totalNoteCount = pattern.notes.Count
             };
             FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
-            song = FileManager.LoadSong().Where(x => x.songname == song.songname).ToArray()[0];
-            dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
-            dataMaster.SetIsTestPlay(true);
         }
         catch
         {
@@ -53,6 +50,11 @@ public class SaveManager : MonoBehaviour
                 totalNoteCount = pattern.notes.Count
             };
             FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
+            
+            //FIXME: 파일 저장 경로 싹 바꿀것
+            //HACK: AssetDataBase는 UnityEditor 클래스의 메서드라서 에디터에서만 사용 가능함.
+            AssetDatabase.Refresh();
+
             song = FileManager.LoadSong().Where(x => x.songname == song.songname).ToArray()[0];
             
             dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
