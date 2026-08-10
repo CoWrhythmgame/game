@@ -2,13 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.SceneManagement;
 
 public class PatternManager : MonoBehaviour
 {
     [SerializeField] private NotePoolManager notePoolManager;
+    [SerializeField] private InfoPannel _infoPannel;
     [SerializeField] private float _scrollSpeed = 1f;
     [SerializeField] private float _noteOffset = 0f;
-    private GameObject dataMaster;
+    private DataMaster dataMaster;
     private GameObject judgementManager;
     private PlayOption _playOption;
     private Song _songData;
@@ -28,7 +30,7 @@ public class PatternManager : MonoBehaviour
     private void SetUp()
     {
         notePoolManager = transform.GetComponent<NotePoolManager>();
-        dataMaster = GameObject.FindGameObjectWithTag("DataMaster");
+        dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();
         judgementManager = GameObject.FindGameObjectWithTag("JudgementManager");
         _noteQueue = new Queue<Note>[4];
         for (int i = 0; i < 4; i++)
@@ -37,17 +39,21 @@ public class PatternManager : MonoBehaviour
         }
         GetDataFromMaster();
 
-        // _scrolSpeed = _playOption.scrollSpeed;
+
+        //HACK: 로드 시스템 만들면 주석 풀기
+        _infoPannel.SetSongInfo(_songData);
+
+        // _scrollSpeed = _playOption.scrollSpeed;
         // _noteOffset = _playOption.noteOffset;
-        // _songBPM = _songData.bpm;
+        _songBPM = _songData.bpm;
         _tripTime = 2d/_scrollSpeed;
     }
     //datamaster에서 가져옴
     private void GetDataFromMaster()
     {
-        _songData = dataMaster.GetComponent<DataMaster>().GetSong();
-        _difficultyIndex = dataMaster.GetComponent<DataMaster>().GetDifficultyIndex();
-        _playOption = dataMaster.GetComponent<DataMaster>().GetPlayOption();
+        _songData = dataMaster.GetSong();
+        _difficultyIndex = dataMaster.GetDifficultyIndex();
+        _playOption = dataMaster.GetPlayOption();
     }
     private void StartSong()
     {
@@ -62,15 +68,16 @@ public class PatternManager : MonoBehaviour
     }
     private void ReadPattern()
     {
-        //이곳에 pattern.json 읽는 함수 호출
-        // Pattern pattern = FileManager.LoadPattern(_songData, _difficultyIndex);
+        // * 이곳에 pattern.json 읽는 함수 호출
+        Pattern pattern = FileManager.LoadPattern(_songData, _difficultyIndex);
         _noteList = new List<Note>();
 
-        // _noteList = pattern.notes;
+        _noteList = pattern.notes;
 
-        _noteList = FileManager.TestPatternLoad().notes;
+        // // 테스트용임. datamaster에서 값 가져오면 이거 주석처리할것.
+        // _noteList = FileManager.TestPatternLoad().notes;
 
-        TestFillList(0, 9, NoteType.hold, 11);
+        // TestFillList(0, 9, NoteType.hold, 11);
 
         FillQueue();
     }
@@ -80,6 +87,9 @@ public class PatternManager : MonoBehaviour
         _noteList = _noteList.OrderBy(s => s.time).ToList();
         for(int i = 0; i < _noteList.Count; i++)
         {
+            _noteList[i].time += _tripTime*_noteList[i].bpm/_songBPM;
+            _noteList[i].releaseTime += _tripTime*_noteList[i].bpm/_songBPM;
+
             _noteQueue[_noteList[i].lane].Enqueue(_noteList[i]);
         }
     }
@@ -93,13 +103,29 @@ public class PatternManager : MonoBehaviour
         if(notecount == 0)
         {
             PlayData playdata = judgementManager.GetComponent<JudgementManager>().OnPatternEnd();
+            if(playdata == null) return;
             Debug.Log(JsonUtility.ToJson(playdata, true));
-            dataMaster.GetComponent<DataMaster>().SetPlayData(playdata);
+            dataMaster.SetPlayData(playdata);
 
 
             // ingame 작업중에는 song값을 불러오지 않으므로 비활성화
-            // Record newrecord = UpdateRecord(playdata);
-            // dataMaster.GetComponent<DataMaster>().SetRecord(newrecord, newrecord != _songData.record[_difficultyIndex]);
+            Record newrecord = UpdateRecord(playdata);
+            dataMaster.SetRecord(newrecord, newrecord != _songData.record[_difficultyIndex]);
+            // HACK: 오디오 사용해서 조건 넣기
+            // if(마무리 조건(노래가 끝났을 때 같은거))
+            Invoke("OnChangeScene",2f);
+        }
+    }
+
+    private void OnChangeScene()
+    {
+        if (dataMaster.GetIsTestPlay())
+        {
+            dataMaster.SetIsTestPlay(false);
+            SceneManager.LoadScene("EditorScene");
+        }
+        else{
+            SceneManager.LoadScene("ResultScene");
         }
     }
 
@@ -137,9 +163,9 @@ public class PatternManager : MonoBehaviour
         {
             if(_noteQueue[i].Count > 0){
                 Note note = _noteQueue[i].Peek();
-                
                 if(currentTime >= note.time - _tripTime*note.bpm/_songBPM)
                 {
+
                     notePoolManager.SpawnNote(note, _scrollSpeed, note.bpm/_songBPM);
                     _noteQueue[i].Dequeue();
                 }

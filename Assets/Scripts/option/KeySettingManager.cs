@@ -45,7 +45,7 @@ public class KeySettingManager : MonoBehaviour
         waitingLaneIndex = laneIndex;
         waitingStartFrame = Time.frameCount;
 
-        Debug.Log($"Lane {laneIndex + 1} Å° ÀÔ·Â ´ë±â Áß...");
+        Debug.Log($"Lane {laneIndex + 1} í‚¤ ì…ë ¥ ëŒ€ê¸° ì¤‘...");
     }
 
     public void CancelChangeLaneKey()
@@ -73,7 +73,7 @@ public class KeySettingManager : MonoBehaviour
         if (Keyboard.current == null)
             return;
 
-        // Å° º¯°æÀ» ½ÃÀÛÇÑ ¹Ù·Î ±× ÇÁ·¹ÀÓÀÇ ÀÔ·ÂÀº ¹«½Ã
+        //  í‚¤ ë³€ê²½ì„ ì‹œì‘í•œ ë°”ë¡œ ê·¸ í”„ë ˆì„ì˜ ì…ë ¥ì€ ë¬´ì‹œ
         if (Time.frameCount == waitingStartFrame)
             return;
 
@@ -92,7 +92,7 @@ public class KeySettingManager : MonoBehaviour
 
             if (IsDuplicateKey(newPath, waitingLaneIndex))
             {
-                Debug.LogWarning("ÀÌ¹Ì ´Ù¸¥ ·¹ÀÎ¿¡¼­ »ç¿ë ÁßÀÎ Å°ÀÔ´Ï´Ù.");
+                Debug.LogWarning("ì´ë¯¸ ë‹¤ë¥¸ ë ˆì¸ì—ì„œ ì‚¬ìš© ì¤‘ì¸ í‚¤ì…ë‹ˆë‹¤.");
                 CancelChangeLaneKey();
                 return;
             }
@@ -142,7 +142,7 @@ public class KeySettingManager : MonoBehaviour
     {
         if (laneActionReference == null || laneActionReference.action == null)
         {
-            Debug.LogWarning("KeySettingManager: Lane Action Reference°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("KeySettingManager: Lane Action Referenceê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -151,7 +151,7 @@ public class KeySettingManager : MonoBehaviour
 
         if (bindingIndex < 0)
         {
-            Debug.LogWarning($"KeySettingManager: Lane {laneIndex + 1}¿¡ ÇØ´çÇÏ´Â Keyboard BindingÀ» Ã£Áö ¸øÇß½À´Ï´Ù.");
+            Debug.LogWarning($"KeySettingManager: Lane {laneIndex + 1}ì— í•´ë‹¹í•˜ëŠ” Keyboard Bindingì„ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
             return;
         }
 

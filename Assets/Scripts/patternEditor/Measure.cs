@@ -33,22 +33,27 @@ public class Measure : MonoBehaviour
     [SerializeField] private float _BPM = 120;
     [SerializeField] List<GameObject> _notes;
 
+    [Header("MeasureData")]
+    [SerializeField] private Color _originalColor;
+    [SerializeField] private Color _noticeColor;
+    [SerializeField] private bool _isHold = false;
+    [SerializeField] private bool _isMouseOverNote = false;
+    [SerializeField] private bool _isBpmAdjusted = false;
+    [SerializeField] private float _holdMaxLangth = 0;
+    [SerializeField] private int _MeasureIndex = 0;
     [Header("Debug")]
     // ! 툴바가 완성되었으므로 사용하지 않음
     //// [SerializeField] private bool Debug_Increase = false;
     //// [SerializeField] private bool Debug_Decrease = false;
-    [SerializeField] private bool _isHold = false;
-    [SerializeField] private bool _isMouseOverNote = false;
-    [SerializeField] private float _holdMaxLangth = 0;
-    [SerializeField] private int _MeasureIndex = 0;
     private Transform _transform;
     private Transform _shadenoteTransform;
+    private SpriteRenderer _spriteRenderer;
     private Vector3 _mousePos;
     private Vector3 _longNotePos;
+    // private Vector3 _notesize;
     //// private ConstraintSource _source;
     private MeasureList _measureList;
     private bool _isQuitting = false;
-    private Vector3 _notesize;
     private DirtyState _dirtyState;
     #endregion
 
@@ -56,13 +61,14 @@ public class Measure : MonoBehaviour
     private void Awake()
     {
         _transform = transform.GetComponent<Transform>();
+        _spriteRenderer = transform.GetComponent<SpriteRenderer>();
         _shadenoteTransform = _shadeNote.transform;
         _notes = new List<GameObject>();
         _measureList = transform.parent.parent.GetComponent<MeasureList>();
 
         _inspector = GameObject.FindGameObjectWithTag("Inspector").GetComponent<Inspector>();
 
-        _notesize = _notePrefab.GetComponent<SpriteRenderer>().bounds.size;
+        // _notesize = _notePrefab.GetComponent<SpriteRenderer>().bounds.size;
 
         _inspectorButton.GetComponent<ObjectButton>().OnButtonClicked += ShowInspector;
 
@@ -80,6 +86,8 @@ public class Measure : MonoBehaviour
         _MeasureIndex = index;
         _text.text = _MeasureIndex.ToString();
         _BPM = bpm;
+        _isBpmAdjusted = false;
+        _spriteRenderer.color = _originalColor;
         OnMeasureChanged();
     }
     private void OnDisable()
@@ -135,6 +143,8 @@ public class Measure : MonoBehaviour
     public void OnInspectorBpmChanged(float BPM)
     {
         _BPM = BPM;
+        _isBpmAdjusted = true;
+        _spriteRenderer.color = _noticeColor;
     }
     private void OnOverMouse()
     {
@@ -180,6 +190,13 @@ public class Measure : MonoBehaviour
     {
         MeasureRePosition();
         NoteReSize();
+    }
+    /// <summary>
+    /// 렌더링되지 않은 마디선까지 모든 마디선이 정보를 갱신할 때 호출되는 함수
+    /// </summary>
+    public void OnEveryMeasrueChanged()
+    {
+        SyncWithSongBPM();
     }
     /// <summary>
     /// MeasureList에서 저장하고 있는 툴바 정보를 가져옴
@@ -276,6 +293,20 @@ public class Measure : MonoBehaviour
     }
     #endregion
     #region Measure Logic
+    /// <summary>
+    /// 마디선 BPM을 노래 BPM에 맞춤
+    /// </summary>
+    /// <param name="ignoreAdjusted">마디의 bpm이 변경되었음을 무시하고 초기화</param>
+    public void SyncWithSongBPM(bool ignoreAdjusted = false)
+    {
+        if(ignoreAdjusted) {
+            _isBpmAdjusted = false;
+            _spriteRenderer.color = _originalColor;
+            }
+
+
+        if(!_isBpmAdjusted) _BPM = _measureList.GetBpm();
+    }
     /// <summary>
     /// 비트 값을 받아서 그 약수에 맞는 비트 가이드라인을 보여줌. 가이드라인은 필요시 더 추가할것.
     /// </summary>

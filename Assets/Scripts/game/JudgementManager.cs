@@ -6,6 +6,7 @@ using UnityEngine.PlayerLoop;
 
 public class JudgementManager : MonoBehaviour
 {
+    [SerializeField] private InfoPannel _infoPannel;
     private ScoreManager scoreManager;
     private PatternManager patternManager;
     // 4버튼 기준, 레인별로 노트를 담아둘 큐 배열
@@ -39,6 +40,8 @@ public class JudgementManager : MonoBehaviour
         _FSList = new int[2]{0,0};
         scoreManager = transform.GetComponent<ScoreManager>();
         patternManager = GameObject.FindGameObjectWithTag("NoteManager").GetComponent<PatternManager>();
+
+        _infoPannel.SetJudgeCount(_judgeCount);
     }
 
     // 1. 노트 스포너가 노트를 생성할 때 버퍼에 등록합니다.
@@ -144,7 +147,8 @@ public class JudgementManager : MonoBehaviour
         }
         if(!note.GetIsLong()) buffer.Dequeue(); // 롱노트가 아니면 버퍼에서 제거
         note.OnHit(_startAudioTime);     // 타격 이펙트 재생 및 Pool로 반환
-        
+        _infoPannel.SetJudgeCount(_judgeCount);
+
         //이거때문에 note메니저랑 judgement메니저끼리 상호간섭함
         //더 좋은 방안이 없을까
         patternManager.CheckPatternEnd();
@@ -154,6 +158,7 @@ public class JudgementManager : MonoBehaviour
     {
         buffer.Dequeue();
         note.OnRelease();
+        patternManager.CheckPatternEnd();
     }
     private void ProcessFS(bool isFast)
     {
@@ -195,8 +200,8 @@ public class JudgementManager : MonoBehaviour
                 {
                     Debug.Log("Miss! (놓침)");
 
-                    _laneBuffers[i].Dequeue();
                     targetNote.OnMiss(); // Pool로 반환
+                    ProcessHit(_laneBuffers[i], targetNote, "Miss");
                 }
                 // 롱노트인데 늦었으면
                 if (currentTime - targetNote.GetReleaseTime() > _longPerfectWindow && targetNote.GetIsLong())
@@ -213,6 +218,12 @@ public class JudgementManager : MonoBehaviour
     #region GameEnd
     public PlayData OnPatternEnd()
     {
+        int notecount = 0;
+        foreach(Queue<NoteObject> buffer in _laneBuffers)
+        {
+            notecount+=buffer.Count;
+        }
+        if(notecount != 0) return null;
         PlayData playData = scoreManager.OnPatternEnd();
         playData.fscount = _FSList;
         playData.noteCount = _judgeCount;
