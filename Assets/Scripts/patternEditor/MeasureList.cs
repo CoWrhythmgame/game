@@ -341,6 +341,31 @@ public class MeasureList : MonoBehaviour
     {
         return _bpm;
     }
+    public void SyncCameraToMeasureProgress(double measureProgress, float judgeLineLocalYOffset) // 김종면 함수 1개 추가했습니다.
+    {
+        if (_camera == null)
+            return;
+
+        float measureHeight = 4f * _scale;
+
+        float targetWorldY = (float)(measureProgress * measureHeight) - 4f;
+        float targetCameraY = targetWorldY - judgeLineLocalYOffset;
+
+        targetCameraY = Mathf.Clamp(targetCameraY, 0f, _cameraMaxLength);
+
+        _camera.transform.position = new Vector3(
+            _camera.transform.position.x,
+            targetCameraY,
+            _camera.transform.position.z
+        );
+
+        RenderMeasure();
+    }
+    public List<GameObject> GetMeasures()
+    {
+        return _measures;
+    }
+
     /// <summary>
     /// 저장할때 찍은 패턴을 가져오는 함수
     /// </summary>
@@ -348,23 +373,97 @@ public class MeasureList : MonoBehaviour
     public Pattern GetPattern()
     {
         _beatMapTimer.SetTimingPoints(_measures);
+
         Pattern pattern = new Pattern
         {
             notes = new List<Note>()
         };
+
         foreach (GameObject measure in _measures)
         {
-            List<Note> notes = measure.GetComponent<Measure>().GetNotes();
-            double startTime = _beatMapTimer.GetMeasureTime(measure.GetComponent<Measure>().GetIndex());
-            foreach(Note note in notes)
+            Measure measureComponent = measure.GetComponent<Measure>();
+
+            List<Note> notes = measureComponent.GetNotes();
+            double startTime = _beatMapTimer.GetMeasureTime(measureComponent.GetIndex());
+
+            foreach (Note note in notes)
             {
                 note.time += startTime;
                 note.releaseTime += startTime;
             }
+
             pattern.notes = pattern.notes.Concat(notes).ToList();
-        }
+        }  
+
         Debug.Log(JsonUtility.ToJson(pattern));
         return pattern;
+    }
+    public void ClearPattern()
+    {
+        foreach (GameObject measure in _measures)
+        {
+            if (measure == null)
+                continue;
+
+            Measure measureComponent = measure.GetComponent<Measure>();
+
+            if (measureComponent != null)
+                measureComponent.ClearNotes();
+        }
+    }
+
+    public void LoadPattern(Pattern pattern)
+    {
+        ClearPattern();
+
+        if (pattern == null || pattern.notes == null)
+            return;
+
+        if (_beatMapTimer != null)
+            _beatMapTimer.SetTimingPoints(_measures);
+
+        foreach (Note note in pattern.notes)
+        {
+            double measureProgress = 0.0;
+
+            if (_beatMapTimer != null)
+                measureProgress = _beatMapTimer.GetMeasureProgressByTime(note.time);
+
+            int measureIndex = Mathf.FloorToInt((float)measureProgress);
+
+            if (measureIndex < 0)
+                measureIndex = 0;
+
+            while (_measures.Count <= measureIndex)
+            {
+                AddMeasure();
+            }
+
+            double localMeasureProgress = measureProgress - measureIndex;
+            double localBeatPosition = localMeasureProgress * 4.0;
+
+            Measure measureComponent = _measures[measureIndex].GetComponent<Measure>();
+
+            float longNoteLength = 0f;
+
+            if (note.noteType == NoteType.hold)
+            {
+                double durationSeconds = note.releaseTime - note.time;
+                double bpm = measureComponent.Getbpm();
+
+                if (bpm > 0.0)
+                    longNoteLength = (float)(durationSeconds * bpm / 60.0 / 4.0);
+            }
+
+            measureComponent.AddNoteFromPatternData(
+                note.lane,
+                localBeatPosition,
+                note.noteType,
+                longNoteLength
+            );
+        }
+
+        RenderMeasure();
     }
     #endregion
 }

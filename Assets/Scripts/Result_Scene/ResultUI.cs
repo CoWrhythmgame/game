@@ -131,12 +131,22 @@ public class ResultUI : MonoBehaviour
 
     private void OnLeftInput(InputAction.CallbackContext context)
     {
-        MoveCursor(-1);
+        Vector2 input = context.ReadValue<Vector2>();
+
+        if (input.x < -0.5f || input.y > 0.5f)
+        {
+            MoveCursor(-1);
+        }
     }
 
     private void OnRightInput(InputAction.CallbackContext context)
     {
-        MoveCursor(1);
+        Vector2 input = context.ReadValue<Vector2>();
+
+        if (input.x > 0.5f || input.y < -0.5f)
+        {
+            MoveCursor(1);
+        }
     }
 
     private void OnSubmitInput(InputAction.CallbackContext context)

@@ -57,7 +57,8 @@ public class EditorNote : MonoBehaviour
         Note note = new Note
         {
             lane = _laneIndex,
-            time = (double)_currentBeat/ _signature * 4,
+            //time = (double)_currentBeat/ _signature * 4,
+            time = transform.localPosition.y * 4.0,
             noteType = _noteType,
         };
         if(_noteType == NoteType.single)
