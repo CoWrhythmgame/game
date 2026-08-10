@@ -10,7 +10,7 @@ public class SaveManager : MonoBehaviour
     [SerializeField] EditorSongInfoUI _editorSongInfoUI;
     [SerializeField] private EditorDifficultyUI editorDifficultyUI;
     [SerializeField] private DirtyState dirtyState;
-    public bool SavePattern()
+    public void New_SavePattern()
     {
         try{
             EditorLoadedSongData editorLoadedSongData = _editorSongFileLoader.GetCurrentSongData();
@@ -74,7 +74,7 @@ public class SaveManager : MonoBehaviour
             SceneManager.LoadScene("InGameScene");
         }
     }
-    public void SavePatternOld()
+    public bool SavePattern()
     {
         if (_editorSongFileLoader == null)
         {

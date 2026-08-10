@@ -125,11 +125,6 @@ public class MeasureList : MonoBehaviour
     }
     #endregion
     #region Core Logic
-    public void LoadPattern(Pattern pattern)
-    {
-        Reset();
-        
-    }
     private void Reset()
     {
         _measureIndex = 0;
