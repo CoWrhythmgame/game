@@ -11,6 +11,7 @@ public class Inspector : MonoBehaviour
     [SerializeField] private TextPannel _measureIndexTextPannel;
     [SerializeField] private InputPannel _BPMInputPannel;
     [SerializeField] private Button _deleteButton;
+    [SerializeField] private Button _ResetButton;
     [Header("Data Area")]
     [SerializeField] private int _measureIndex = -1;
     [SerializeField] private float _BPM = -1;
@@ -19,6 +20,7 @@ public class Inspector : MonoBehaviour
     /// index를 매개변수로 호출하는 이벤트
     /// </summary>
     public Action<int> OnDeleteButtonClicked;
+    public Action<int> OnResetButtonClicked;
     #endregion
 
 
@@ -26,6 +28,7 @@ public class Inspector : MonoBehaviour
     void Start()
     {
         _deleteButton.onClick.AddListener(DeleteButtonHandler);
+        _ResetButton.onClick.AddListener(ResetButtonHandler);
         _BPMInputPannel.OnInputSubmitted += SetBpmFromInputField;
         Hide();
     }
@@ -37,6 +40,14 @@ public class Inspector : MonoBehaviour
     private void DeleteButtonHandler()
     {
         OnDeleteButtonClicked?.Invoke(_measureIndex);
+        Hide();
+    }
+    /// <summary>
+    /// 인스펙터의 Reset버튼을 누르면 호출되는 함수
+    /// </summary>
+    private void ResetButtonHandler()
+    {
+        OnResetButtonClicked?.Invoke(_measureIndex);
         Hide();
     }
     private void SetBpmFromInputField(string BPM)

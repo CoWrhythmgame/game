@@ -1,0 +1,67 @@
+{
+    "notes": [
+        {
+            "lane": 0,
+            "time": 0.0,
+            "noteType": 0,
+            "releaseTime": 0.0,
+            "bpm": 180.0
+        },
+        {
+            "lane": 0,
+            "time": 0.33333333333333339,
+            "noteType": 0,
+            "releaseTime": 0.33333333333333339,
+            "bpm": 180.0
+        },
+        {
+            "lane": 0,
+            "time": 0.6666666666666667,
+            "noteType": 0,
+            "releaseTime": 0.6666666666666667,
+            "bpm": 180.0
+        },
+        {
+            "lane": 0,
+            "time": 1.0,
+            "noteType": 0,
+            "releaseTime": 1.0,
+            "bpm": 180.0
+        },
+        {
+            "lane": 0,
+            "time": 1.3333333333333333,
+            "noteType": 0,
+            "releaseTime": 1.3333333333333333,
+            "bpm": 180.0
+        },
+        {
+            "lane": 1,
+            "time": 1.6666666666666666,
+            "noteType": 0,
+            "releaseTime": 1.6666666666666666,
+            "bpm": 180.0
+        },
+        {
+            "lane": 2,
+            "time": 2.0,
+            "noteType": 0,
+            "releaseTime": 2.0,
+            "bpm": 180.0
+        },
+        {
+            "lane": 3,
+            "time": 2.333333333333333,
+            "noteType": 0,
+            "releaseTime": 2.333333333333333,
+            "bpm": 180.0
+        },
+        {
+            "lane": 3,
+            "time": 1.6666666666666666,
+            "noteType": 0,
+            "releaseTime": 1.6666666666666666,
+            "bpm": 180.0
+        }
+    ]
+}

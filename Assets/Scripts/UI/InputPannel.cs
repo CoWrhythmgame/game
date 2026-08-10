@@ -14,8 +14,8 @@ public class InputPannel : MonoBehaviour
 
     void Awake()
     {
-        _constText = transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
-        _variableInputField = transform.GetChild(1).GetComponent<TMPro.TMP_InputField>();
+        // _constText = transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
+        // _variableInputField = transform.GetChild(1).GetComponent<TMPro.TMP_InputField>();
         _variableInputField.onSubmit.AddListener(InputSubmitHandler);
         // OnInputSubmitted += x=>Debug.Log(x);
     }

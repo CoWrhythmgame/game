@@ -153,8 +153,11 @@ MonoBehaviour:
   _noteType: 0
   _BPM: 120
   _notes: []
+  _originalColor: {r: 0, g: 0, b: 0, a: 0.78431374}
+  _noticeColor: {r: 0.3137255, g: 0.3137255, b: 0, a: 0.78431374}
   _isHold: 0
   _isMouseOverNote: 0
+  _isBpmAdjusted: 0
   _holdMaxLangth: 0
   _MeasureIndex: 0
 --- !u!1 &385248946971473840
