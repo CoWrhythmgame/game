@@ -30,6 +30,8 @@ public class EditorSongFileLoader : MonoBehaviour
     [Header("Default Values")]
     [SerializeField] private string defaultArtistName = "Unknown Artist";
 
+    [SerializeField] private DirtyState dirtyState;
+
     private string pendingSourcePath = "";
     private SongMetaInputMode inputMode = SongMetaInputMode.None;
 
@@ -369,7 +371,8 @@ public class EditorSongFileLoader : MonoBehaviour
         SetEditButtonActive(true);
 
         OnSongLoadedOrUpdated?.Invoke(currentSongData);
-
+        if (dirtyState != null)
+            dirtyState.ClearDirty();
         Debug.Log("Song loaded: " + savedAudioPath);
     }
 
@@ -452,6 +455,27 @@ public class EditorSongFileLoader : MonoBehaviour
             return;
         }
 
+        if (TryLoadExistingEditorSongByName(song.songname, out EditorLoadedSongData loadedData))
+        {
+            currentSongData.songName = song.songname;
+            currentSongData.artistName = song.artist;
+            currentSongData.bpm = song.bpm;
+
+            if (songInfoUI != null)
+            {
+                songInfoUI.SetSongInfo(
+                    currentSongData.songName,
+                    currentSongData.artistName,
+                    currentSongData.bpm
+                );
+            }
+
+            OnSongLoadedOrUpdated?.Invoke(currentSongData);
+
+            Debug.Log("Current song data set from import with audio: " + currentSongData.songName);
+            return;
+        }
+
         currentSongData = new EditorLoadedSongData
         {
             songName = song.songname,
@@ -468,7 +492,84 @@ public class EditorSongFileLoader : MonoBehaviour
 
         OnSongLoadedOrUpdated?.Invoke(currentSongData);
 
-        Debug.Log("Current song data set from import: " + currentSongData.songName);
+        Debug.LogWarning("Current song data set from import, but audio path was not found: " + currentSongData.songName);
+    }
+    public bool TryLoadExistingEditorSongByName(string songName, out EditorLoadedSongData loadedData)
+    {
+        loadedData = null;
+
+        if (string.IsNullOrWhiteSpace(songName))
+        {
+            Debug.LogWarning("Song name is empty.");
+            return false;
+        }
+
+        string safeSongName = MakeSafeFileName(songName);
+        string songFolderPath = Path.Combine(GetEditorSongRootPath(), safeSongName);
+        string jsonPath = Path.Combine(songFolderPath, "song_info.json");
+
+        if (!File.Exists(jsonPath))
+        {
+            Debug.LogWarning("Editor song_info.json을 찾지 못했습니다: " + jsonPath);
+            return false;
+        }
+
+        string json = File.ReadAllText(jsonPath);
+        loadedData = JsonUtility.FromJson<EditorLoadedSongData>(json);
+
+        if (loadedData == null)
+        {
+            Debug.LogWarning("Editor song_info.json 파싱 실패: " + jsonPath);
+            return false;
+        }
+
+        loadedData.songFolderPath = songFolderPath;
+
+        if (string.IsNullOrEmpty(loadedData.audioLocalPath))
+        {
+            if (!string.IsNullOrEmpty(loadedData.audioFileName))
+            {
+                loadedData.audioLocalPath = Path.Combine(songFolderPath, loadedData.audioFileName);
+            }
+            else
+            {
+                string[] audioFiles = Directory.GetFiles(songFolderPath);
+
+                foreach (string file in audioFiles)
+                {
+                    if (IsSupportedAudioFile(file))
+                    {
+                        loadedData.audioLocalPath = file;
+                        loadedData.audioFileName = Path.GetFileName(file);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (string.IsNullOrEmpty(loadedData.audioLocalPath) || !File.Exists(loadedData.audioLocalPath))
+        {
+            Debug.LogWarning("오디오 파일을 찾지 못했습니다: " + songFolderPath);
+            return false;
+        }
+
+        currentSongData = loadedData;
+
+        if (songInfoUI != null)
+        {
+            songInfoUI.SetSongInfo(
+                currentSongData.songName,
+                currentSongData.artistName,
+                currentSongData.bpm
+            );
+        }
+
+        SetEditButtonActive(true);
+
+        OnSongLoadedOrUpdated?.Invoke(currentSongData);
+
+        Debug.Log("Existing editor song loaded: " + currentSongData.songName);
+        return true;
     }
 }
 

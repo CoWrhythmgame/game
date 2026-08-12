@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/ResultScene.unity
     guid: 052f48581157a674c9b74c7212f38bf6
   - enabled: 1
-    path: Assets/Scenes/EditorScene.unity
+    path: Assets/Scenes/TestEditorMeasure.unity
     guid: b506a2976c9973b46acd6aeff25dfa21
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 464130af16a0a6543a25eabc1fb8a59e, type: 2}

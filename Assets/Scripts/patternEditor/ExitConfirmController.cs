@@ -21,12 +21,14 @@ public class ExitConfirmController : MonoBehaviour
     {
         if (dirtyState == null)
         {
+            Debug.LogWarning("DirtyState가 연결되지 않았습니다. 바로 나갑니다.");
             LoadTargetScene();
             return;
         }
 
         if (!dirtyState.IsDirty)
         {
+            Debug.Log("변경사항이 없으므로 바로 나갑니다.");
             LoadTargetScene();
             return;
         }

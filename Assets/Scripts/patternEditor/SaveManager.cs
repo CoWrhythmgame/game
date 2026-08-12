@@ -137,4 +137,8 @@ public class SaveManager : MonoBehaviour
 
         return true;
     }
+    public void SavePatternFromButton()
+    {
+        SavePattern();
+    }
 }

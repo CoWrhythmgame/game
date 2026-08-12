@@ -2564,19 +2564,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 284860397}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1643355681}
-        m_TargetAssemblyTypeName: EditorPatternImporter, Assembly-CSharp
-        m_MethodName: ImportPattern
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &284860397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7264,6 +7252,7 @@ MonoBehaviour:
   confirmButton: {fileID: 672627627}
   cancelButton: {fileID: 1569406135}
   defaultArtistName: Unknown Artist
+  dirtyState: {fileID: 0}
 --- !u!114 &926148148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7755,6 +7744,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuntimeSongFilePicker
   songFileLoader: {fileID: 926148147}
+  importButton: {fileID: 284860396}
+  patternImporter: {fileID: 1643355681}
 --- !u!114 &953900064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12360,7 +12351,7 @@ MonoBehaviour:
   beatmapTimer: {fileID: 1502741739}
   dirtyState: {fileID: 1426757514}
   editorSongFileLoader: {fileID: 926148147}
-  importSongName: "IROCD-007 - 04 - Freezer feat.\u5983\u82FA - \u7DCB\u7E8F\u3044\u306E\u5BB5"
+  importSongName: 111222
 --- !u!224 &1643355682
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15060,7 +15051,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1135131609}
         m_TargetAssemblyTypeName: SaveManager, Assembly-CSharp
-        m_MethodName: SavePattern
+        m_MethodName: SavePatternFromButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

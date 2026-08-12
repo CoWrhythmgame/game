@@ -7,18 +7,18 @@ public class DirtyState : MonoBehaviour
     public void MarkDirty()
     {
         IsDirty = true;
-        Debug.Log("Editor dirty.");
+        Debug.Log("DirtyState: true");
     }
 
     public void MarkSaved()
     {
         IsDirty = false;
-        Debug.Log("Editor saved.");
+        Debug.Log("DirtyState: false - saved");
     }
 
     public void ClearDirty()
     {
         IsDirty = false;
-        Debug.Log("Editor dirty cleared.");
+        Debug.Log("DirtyState: false - cleared");
     }
 }
