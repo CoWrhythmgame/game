@@ -158,7 +158,9 @@ public class PatternManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        double currentTime = AudioSettings.dspTime-_startAudioTime;
+        if (PauseManager.IsPaused)
+            return;
+        double currentTime = AudioSettings.dspTime- PauseManager.TotalPausedDspTime - _startAudioTime;
         for(int i = 0; i < 4; i++)
         {
             if(_noteQueue[i].Count > 0){

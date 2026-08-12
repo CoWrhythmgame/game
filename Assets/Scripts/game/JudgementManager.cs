@@ -54,6 +54,9 @@ public class JudgementManager : MonoBehaviour
     public void OnLaneInputFired(int laneIndex, double inputTime)
     {
         Queue<NoteObject> buffer = _laneBuffers[laneIndex];
+        if (PauseManager.IsPaused) 
+            return;
+        double adjustedInputTime = inputTime - PauseManager.TotalPausedInputTime; // 멈춘 시간만큼 정지
         // 해당 레인에 쳐야 할 노트가 없으면 무시
         if (buffer.Count == 0) return;
 
@@ -61,7 +64,7 @@ public class JudgementManager : MonoBehaviour
         NoteObject targetNote = buffer.Peek();
 
         // 오차 시간 계산
-        double timeDiff = targetNote.GetTargetTime() - inputTime+_offset;
+        double timeDiff = targetNote.GetTargetTime() - adjustedInputTime + _offset;
         
         bool isFast = false;
         if(timeDiff > 0) isFast = true;
@@ -80,7 +83,7 @@ public class JudgementManager : MonoBehaviour
         {
             ProcessHit(buffer, targetNote, "Good");
         }
-        else if (targetNote.GetTargetTime() > inputTime-_startInputTime && timeDiff <= _missWindow)
+        else if (targetNote.GetTargetTime() > adjustedInputTime - _startInputTime && timeDiff <= _missWindow)
         {
             // 너무 일찍 친 경우 (Fast Miss)
             ProcessHit(buffer, targetNote, "Miss");
@@ -97,6 +100,8 @@ public class JudgementManager : MonoBehaviour
     public void OnLaneReleaseFired(int laneIndex, double inputTime)
     {
         Queue<NoteObject> buffer = _laneBuffers[laneIndex];
+        if (PauseManager.IsPaused)
+            return;
         // 해당 레인에 쳐야 할 노트가 없으면 무시
         if (buffer.Count == 0) return;
 
@@ -106,8 +111,11 @@ public class JudgementManager : MonoBehaviour
         //노트가 롱노트이면서 판정중이 아니라면
         if(!(targetNote.GetIsLong() && targetNote.GetIsHolding())) return;
 
+        // 멈춘 시간만큼 정지
+        double adjustedInputTime = inputTime - PauseManager.TotalPausedInputTime;
+
         // 오차 시간 계산
-        double timeDiff = targetNote.GetReleaseTime() - inputTime+_offset;
+        double timeDiff = targetNote.GetReleaseTime() - adjustedInputTime + _offset;
     
         timeDiff = Math.Abs(timeDiff);
         Debug.Log("입력 오차: "+timeDiff);
@@ -185,10 +193,12 @@ public class JudgementManager : MonoBehaviour
 
     private void Update()
     {
+        if (PauseManager.IsPaused)
+            return;
         // 3. 유저가 치지 않고 놓친 노트(Miss) 처리
         // Time.time 대신 반드시 음악의 현재 위치(DSP 타임 등)를 가져와야 합니다.
-        double currentTime = AudioSettings.dspTime-_startAudioTime; 
-        
+        double currentTime = AudioSettings.dspTime - PauseManager.TotalPausedDspTime - _startAudioTime;
+
         //이거 좀 위험해보임
         for (int i = 0; i < _laneBuffers.Length; i++)
         {

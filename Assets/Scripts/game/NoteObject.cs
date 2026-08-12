@@ -58,9 +58,11 @@ public class NoteObject : MonoBehaviour
 
     private void Update()
     {
+        if (PauseManager.IsPaused)
+            return;
         if (_isHolding)
         {
-            double currentTime = AudioSettings.dspTime-_startTime;
+            double currentTime = AudioSettings.dspTime - PauseManager.TotalPausedDspTime - _startTime;
             _tempVector.x = 1;
             _tempVector.y = Mathf.Clamp((float)(_targetReleaseTime-currentTime)*_noteSpeed*_travelheight/_traveldistance,0,float.MaxValue);
             _transform.localScale = _tempVector;
