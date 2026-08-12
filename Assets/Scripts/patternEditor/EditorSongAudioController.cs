@@ -5,9 +5,13 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Audio;
+using System.Collections.Generic;
+using System.Linq;
 public class EditorSongAudioController : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private MeasureList _measureList;
+    [SerializeField] private SEManager _SEManager;
     [SerializeField] private EditorSongFileLoader songFileLoader;
     [SerializeField] private AudioSource audioSource;
 
@@ -29,7 +33,9 @@ public class EditorSongAudioController : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float seekSeconds = 5f;
 
+    private Queue<Note> _currentPattern;
     private bool isLoadingClip = false;
+    
 
     public AudioSource AudioSource => audioSource;
 
@@ -82,6 +88,17 @@ public class EditorSongAudioController : MonoBehaviour
         if (!audioSource.isPlaying && audioSource.time >= audioSource.clip.length)
         {
             StopSongInternal();
+        }
+        //* í‚¤ìŒ ì¬ìƒ
+        if (audioSource.isPlaying)
+        {
+            if(_currentPattern.Count != 0){
+                if(_currentPattern.Peek().time <= audioSource.time)
+                {
+                    _currentPattern.Dequeue();
+                    _SEManager.PlayHitSound();  
+                }
+            }
         }
     }
 
@@ -218,6 +235,8 @@ public class EditorSongAudioController : MonoBehaviour
 
         if (audioSource.time >= audioSource.clip.length)
             audioSource.time = 0f;
+
+        _currentPattern = new Queue<Note>(_measureList.GetPattern().notes.OrderBy(x => x.time));
 
         audioSource.Play();
         SetPlayButtonText("Pause");
@@ -368,7 +387,7 @@ public class EditorSongAudioController : MonoBehaviour
         }
         else
         {
-            // Mixer°¡ ¿¬°á ¾È µÆÀ» ¶§ ÃÖ¼ÒÇÑ MusicVolume¸¸ AudioSource¿¡ Àû¿ë
+            // Mixerê°€ ì—°ê²° ì•ˆ ëì„ ë•Œ ìµœì†Œí•œ MusicVolumeë§Œ AudioSourceì— ì ìš©
             if (audioSource != null)
                 audioSource.volume = Mathf.Clamp01(musicVolume / 100f);
         }

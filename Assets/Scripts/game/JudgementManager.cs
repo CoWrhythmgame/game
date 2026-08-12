@@ -7,6 +7,7 @@ using UnityEngine.PlayerLoop;
 public class JudgementManager : MonoBehaviour
 {
     [SerializeField] private InfoPannel _infoPannel;
+    [SerializeField] private ToastText _judgeText;
     private ScoreManager scoreManager;
     private PatternManager patternManager;
     // 4버튼 기준, 레인별로 노트를 담아둘 큐 배열
@@ -87,6 +88,8 @@ public class JudgementManager : MonoBehaviour
         }
         // 허용 범위 밖으로 너무 일찍 눌렀다면 아무 반응도 하지 않고 남겨둡니다 (허공 치기)
 
+        Debug.Log("time: " + inputTime+" target: " + targetNote.GetTargetTime());
+
         //페슬
         if(timeDiff > _FSwindow)
         {
@@ -137,6 +140,7 @@ public class JudgementManager : MonoBehaviour
     private void ProcessHit(Queue<NoteObject> buffer, NoteObject note, string judgment)
     {
         Debug.Log($"판정: {judgment}");
+        _judgeText.ShowToast(judgment, 0.5f);
         scoreManager.AddJudgment(judgment);
         switch (judgment)
         {

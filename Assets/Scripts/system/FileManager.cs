@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class FileManager
 {
@@ -49,6 +51,41 @@ public class FileManager
         SetFileFromPatternInfo(songname, patternIndex, GetStringFromPatternInfo(songname,patternIndex , patternInfo));
         SetFileFromPattern(songname, patternIndex, GetStringFromPattern(pattern));
     }
+    public static async Awaitable<AudioClip> LoadMusic(Song song, bool isBuiltin, CancellationToken? externalToken = null)
+    {
+        string filePath;
+        string dir;
+
+        if(isBuiltin)
+        {
+            dir = Path.Combine(GetStreamingAssetsPath(),"Song" , song.songname).Replace("\\", "/");
+        }
+        else
+        {
+            dir = Path.Combine(GetLocalPath(),"EditorSongs" , song.songname).Replace("\\", "/");
+        }
+        filePath = Directory.GetFiles(dir)
+            .FirstOrDefault(file => !file.EndsWith(".meta"));
+
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException($"곡 파일을 찾을 수 없습니다: {filePath}");
+
+        AudioType audioType = GetAudioType(filePath);
+        string url = "file://" + filePath;
+
+        using UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip(url, audioType);
+        await req.SendWebRequest(); //! unity 6 기능임 다른 API와 호환이 안될 수 있음.
+
+        if (req.result != UnityWebRequest.Result.Success)
+            throw new Exception($"오디오 로드 실패 [{filePath}]: {req.error}");
+
+        AudioClip clip = DownloadHandlerAudioClip.GetContent(req);
+        clip.name = Path.GetFileNameWithoutExtension(filePath);
+
+        return clip;
+    }
+
+    
     #endregion
 
     #region 기본 파일 경로 관련
@@ -67,6 +104,7 @@ public class FileManager
             folderPath += "/My Games/RythmGame/";
         #else
                 folderPath = Application.persistentDataPath + "/";
+                folderPath += "RythmGame/";
         #endif
         return folderPath;
     }
@@ -79,6 +117,17 @@ public class FileManager
             songnames[i] = songnames[i].Replace(AssetPath+"/SongInfo", "");
         }
         return songnames;
+    }
+    private static AudioType GetAudioType(string path)
+    {
+        return Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".mp3" => AudioType.MPEG,
+            ".wav" => AudioType.WAV,
+            ".ogg" => AudioType.OGGVORBIS,
+            ".aiff" or ".aif" => AudioType.AIFF,
+            _ => AudioType.UNKNOWN
+        };
     }
     #endregion
 
@@ -184,10 +233,6 @@ public class FileManager
     }
     public static string GetStringFromSong(Song songInfo)
     {
-        //TODO: preview 경로 물어봐야함
-        songInfo.songPath = "EditorSongs/"+songInfo.songname+"/"+songInfo.songname+".mp3";
-        // songInfo.previewPath = path+"/SongInfo/"+songInfo.songname+"/"+songInfo.songname+".mp3";
-        
         return JsonUtility.ToJson(songInfo, true);
     }
     public static string GetStringFromPatternInfo(string songname,  int patternIndex, PatternInfo patternInfo)

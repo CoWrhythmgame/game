@@ -260,8 +260,6 @@ public class SongList : MonoBehaviour
             songname = songname,
             artist = artist,
             bpm = bpm,
-            songPath = "Assets/Resources/Songs/test/test.mp3",
-            previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
             patternInfo = new List<PatternInfo>(){
                 new PatternInfo(){
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
@@ -285,8 +283,6 @@ public class SongList : MonoBehaviour
             songname = songname,
             artist = artist,
             bpm = bpm,
-            songPath = "Assets/Resources/Songs/test/test.mp3",
-            previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
             patternInfo = patterns,
             record = records
         });

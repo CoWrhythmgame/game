@@ -11,6 +11,8 @@ public class PatternManager : MonoBehaviour
     [SerializeField] private float _scrollSpeed = 1f;
     [SerializeField] private float _noteOffset = 0f;
     private DataMaster dataMaster;
+    private AudioSource _audioSource;
+    private AudioClip _music;
     private GameObject judgementManager;
     private PlayOption _playOption;
     private Song _songData;
@@ -21,6 +23,7 @@ public class PatternManager : MonoBehaviour
     private double _startInputTime = 0d;
     private double _tripTime = 0d;
     private float _songBPM = 1;
+    private bool _isLoaded=false;
     void Start()
     {
         SetUp();
@@ -29,10 +32,14 @@ public class PatternManager : MonoBehaviour
     }
     private void SetUp()
     {
-        notePoolManager = transform.GetComponent<NotePoolManager>();
+        _isLoaded = false;
+        notePoolManager = GetComponent<NotePoolManager>();
+        _audioSource = GetComponent<AudioSource>();
         dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();
         judgementManager = GameObject.FindGameObjectWithTag("JudgementManager");
         _noteQueue = new Queue<Note>[4];
+
+
         for (int i = 0; i < 4; i++)
         {
             _noteQueue[i] = new Queue<Note>();
@@ -47,6 +54,7 @@ public class PatternManager : MonoBehaviour
         // _noteOffset = _playOption.noteOffset;
         _songBPM = _songData.bpm;
         _tripTime = 2d/_scrollSpeed;
+        _audioSource.clip = _music;
     }
     //datamaster에서 가져옴
     private void GetDataFromMaster()
@@ -54,9 +62,11 @@ public class PatternManager : MonoBehaviour
         _songData = dataMaster.GetSong();
         _difficultyIndex = dataMaster.GetDifficultyIndex();
         _playOption = dataMaster.GetPlayOption();
+        _music = dataMaster.GetMusic();
     }
     private void StartSong()
     {
+        _isLoaded = true;
         _startAudioTime = AudioSettings.dspTime;
         _startInputTime = InputState.currentTime;
         
@@ -87,8 +97,8 @@ public class PatternManager : MonoBehaviour
         _noteList = _noteList.OrderBy(s => s.time).ToList();
         for(int i = 0; i < _noteList.Count; i++)
         {
-            _noteList[i].time += _tripTime*_noteList[i].bpm/_songBPM;
-            _noteList[i].releaseTime += _tripTime*_noteList[i].bpm/_songBPM;
+            _noteList[i].time += 2;
+            _noteList[i].releaseTime += 2;
 
             _noteQueue[_noteList[i].lane].Enqueue(_noteList[i]);
         }
@@ -159,6 +169,14 @@ public class PatternManager : MonoBehaviour
     void Update()
     {
         double currentTime = AudioSettings.dspTime-_startAudioTime;
+        if(_isLoaded)
+        {
+            if(currentTime >= 2 && !_audioSource.isPlaying)
+            {
+                Debug.Log("current time: " + currentTime);
+                _audioSource.Play();
+            }
+        }
         for(int i = 0; i < 4; i++)
         {
             if(_noteQueue[i].Count > 0){
