@@ -51,6 +51,15 @@ public class FileManager
         SetFileFromPatternInfo(songname, patternIndex, GetStringFromPatternInfo(songname,patternIndex , patternInfo));
         SetFileFromPattern(songname, patternIndex, GetStringFromPattern(pattern));
     }
+    /// <summary>
+    /// 곡 파일을 로드합니다. 곡 파일은 Song/{song.songname}에 있어야 합니다.
+    /// </summary>
+    /// <param name="song">곡 정보</param>
+    /// <param name="isBuiltin">내장 곡인지 여부</param>
+    /// <param name="externalToken">외부 토큰</param>
+    /// <returns>곡 audioclip</returns>
+    /// <exception cref="FileNotFoundException">곡을 찾지 못함</exception>
+    /// <exception cref="Exception">기타 예외</exception>
     public static async Awaitable<AudioClip> LoadMusic(Song song, bool isBuiltin, CancellationToken? externalToken = null)
     {
         string filePath;

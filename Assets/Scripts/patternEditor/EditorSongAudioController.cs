@@ -55,7 +55,7 @@ public class EditorSongAudioController : MonoBehaviour
     {
         SetupAudioSource();
         RegisterButtons();
-
+        
         SetControlButtonsActive(false);
         SetPlayButtonText("Play");
         RefreshTimeText();

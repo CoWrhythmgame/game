@@ -247,9 +247,11 @@ public class SongList : MonoBehaviour
         }
         songtragetPos = new Vector2(0, (SSheight+10) * songIndex);
     }
-    private void CursorSummit()
+    private async void CursorSummit()
     {
         _dataMaster.SetSongData(currentSongData, difficultyIndex);
+        AudioClip musicClip = await FileManager.LoadMusic(currentSongData, false);
+        _dataMaster.SetMusic(musicClip);
         SceneManager.LoadScene("InGameScene");
     }
     #endregion
