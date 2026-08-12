@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ExitConfirmController : MonoBehaviour
@@ -32,14 +32,17 @@ public class ExitConfirmController : MonoBehaviour
         }
 
         if (confirmPanel != null)
+        {
             confirmPanel.SetActive(true);
+            EditorInputBlocker.SetBlocked(true);
+        }
     }
 
     public void SaveAndExit()
     {
         if (saveManager == null)
         {
-            Debug.LogWarning("SaveManager°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("SaveManagerê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -47,15 +50,17 @@ public class ExitConfirmController : MonoBehaviour
 
         if (!saved)
         {
-            Debug.LogWarning("ÀúÀå¿¡ ½ÇÆĞÇØ¼­ ³ª°¡±â¸¦ Áß´ÜÇÕ´Ï´Ù.");
+            Debug.LogWarning("ì €ì¥ì— ì‹¤íŒ¨í•´ì„œ ë‚˜ê°€ê¸°ë¥¼ ì¤‘ë‹¨í•©ë‹ˆë‹¤.");
             return;
         }
 
+        EditorInputBlocker.SetBlocked(false);
         LoadTargetScene();
     }
 
     public void ExitWithoutSave()
     {
+        EditorInputBlocker.SetBlocked(false);
         LoadTargetScene();
     }
 
@@ -63,6 +68,8 @@ public class ExitConfirmController : MonoBehaviour
     {
         if (confirmPanel != null)
             confirmPanel.SetActive(false);
+
+        EditorInputBlocker.SetBlocked(false);
     }
 
     private void LoadTargetScene()

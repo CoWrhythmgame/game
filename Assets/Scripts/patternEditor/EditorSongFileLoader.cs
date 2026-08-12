@@ -168,6 +168,8 @@ public class EditorSongFileLoader : MonoBehaviour
         if (songMetaInputPanel != null)
             songMetaInputPanel.SetActive(true);
 
+        EditorInputBlocker.SetBlocked(true);
+        
         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sourcePath);
 
         if (songNameInput != null)
@@ -187,6 +189,8 @@ public class EditorSongFileLoader : MonoBehaviour
         if (songMetaInputPanel != null)
             songMetaInputPanel.SetActive(true);
 
+        EditorInputBlocker.SetBlocked(true);
+
         if (songNameInput != null)
             songNameInput.text = currentSongData.songName;
 
@@ -203,6 +207,8 @@ public class EditorSongFileLoader : MonoBehaviour
     {
         if (songMetaInputPanel != null)
             songMetaInputPanel.SetActive(false);
+
+        EditorInputBlocker.SetBlocked(false);
 
         SetError("");
     }

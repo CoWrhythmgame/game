@@ -138,7 +138,12 @@ public class Measure : MonoBehaviour
     }
     private void OnOverMouse()
     {
-        if(!_isMouseOverNote)_shadeNote.SetActive(true);
+        if (EditorInputBlocker.IsBlocked) // 다른 판넬 열려있으면 막는 로직
+        {
+            _shadeNote.SetActive(false);
+            return;
+        }
+        if (!_isMouseOverNote)_shadeNote.SetActive(true);
         if(!_isHold) _shadenoteTransform.localPosition = GetMouseGridVector3(_mousePos);
         if (Mouse.current.leftButton.wasPressedThisFrame && _noteType == NoteType.single)
         {
