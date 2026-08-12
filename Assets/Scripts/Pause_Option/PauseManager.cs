@@ -81,9 +81,9 @@ public class PauseManager : MonoBehaviour
 
     private void OnPauseInput(InputAction.CallbackContext context)
     {
-        // ESC µ¿ÀÛ
-        // °ÔÀÓ ÁßÀÌ¸é ÀÏ½ÃÁ¤Áö
-        // ÀÏ½ÃÁ¤Áö ÁßÀÌ¸é Continue¿Í µ¿ÀÏÇÏ°Ô Àç°³
+        // ESC ï¿½ï¿½ï¿½ï¿½
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ Continueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ç°³
         if (IsPaused)
             ResumeGame();
         else
@@ -133,7 +133,17 @@ public class PauseManager : MonoBehaviour
         IsPaused = false;
         Time.timeScale = 1f;
 
-        SceneManager.LoadScene(songSelectSceneName);
+        DataMaster dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();
+        if (dataMaster.GetIsTestPlay())
+        {
+            dataMaster.SetIsTestPlay(false);
+            SceneManager.LoadScene("EditorScene");
+        }
+        else
+        {
+            SceneManager.LoadScene(songSelectSceneName);
+        }
+
     }
 
     private void MoveCursor(int direction)

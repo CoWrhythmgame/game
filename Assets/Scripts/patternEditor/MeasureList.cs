@@ -12,6 +12,7 @@ public class MeasureList : MonoBehaviour
     [SerializeField] private GameObject _addButton;
     [SerializeField] private GameObject _camera;
     [SerializeField] private Inspector _inspector;
+    [SerializeField] private EditorSongFileLoader _songFileLoader;
 
     [Header("MeasureData")]
     [SerializeField] private int _scale = 1;
@@ -48,6 +49,9 @@ public class MeasureList : MonoBehaviour
 
         _addButton.GetComponent<ObjectButton>().OnButtonClicked += AddMeasure;
         _inspector.OnDeleteButtonClicked += DeleteMeasure;
+        _inspector.OnResetButtonClicked += ResetMeasure;
+
+        _songFileLoader.OnSongLoadedOrUpdated += OnSongDataChanged;
 
         AddMeasure();
     }
@@ -97,6 +101,15 @@ public class MeasureList : MonoBehaviour
         RenderMeasure();
     }
     /// <summary>
+    /// 곡 정보가 갱신될 때 호출됨
+    /// </summary>
+    /// <param name="songData">곡의 정보</param>
+    private void OnSongDataChanged(EditorLoadedSongData songData)
+    {
+        _bpm = songData.bpm;
+        EveryMeasureChange();
+    }
+    /// <summary>
     /// 확대, 축소, 삭제시 호출
     /// </summary>
     private void OnMeasureChanged()
@@ -112,6 +125,17 @@ public class MeasureList : MonoBehaviour
     }
     #endregion
     #region Core Logic
+    private void Reset()
+    {
+        _measureIndex = 0;
+        int listcount = _measures.Count;
+        for(int i = 0; i < listcount; i++)
+        {
+            Destroy(_measures[i]);
+        }
+        _measures.Clear();
+        OnMeasureChanged();
+    }
     /// <summary>
     /// 마디선 추가 함수
     /// </summary>
@@ -152,6 +176,27 @@ public class MeasureList : MonoBehaviour
         OnMeasureChanged();
     }
     /// <summary>
+    /// 마디선 초기화 함수
+    /// </summary>
+    /// <param name="index">초기화할 마디선 인덱스</param>
+    public void ResetMeasure(int index)
+    {
+        if(_measureIndex < index) return;
+        if(_measureIndex <= 1) return;
+        
+        GameObject selectedMeasure = _measures[index];
+        if (selectedMeasure.activeSelf)
+        {
+            selectedMeasure.GetComponent<Measure>().SyncWithSongBPM(true);
+        }
+        else
+        {
+            selectedMeasure.SetActive(true);
+            selectedMeasure.GetComponent<Measure>().SyncWithSongBPM(true);
+            selectedMeasure.SetActive(false);
+        }
+    }
+    /// <summary>
     /// 렌더된 measure만 OnMeasureChanged() 호출
     /// </summary>
     private void CurrentChange()
@@ -170,6 +215,18 @@ public class MeasureList : MonoBehaviour
         {
             measure.GetComponent<Measure>().OnToolbarChanged();
         }
+    }
+    /// <summary>
+    /// 렌더되지 않은 measure까지 모든 measure가 OnEveryMeasureChanged() 호출
+    /// </summary>
+    private void EveryMeasureChange()
+    {
+        foreach(GameObject measure in _measures)
+        {
+            measure.SetActive(true);
+            measure.GetComponent<Measure>().OnEveryMeasrueChanged();
+        }
+        RenderMeasure();
     }
     /// <summary>
     /// 현제 카메라 메인 마디선 주위 상하 2개의 마디선만 active함
@@ -275,6 +332,10 @@ public class MeasureList : MonoBehaviour
     {
         return _noteType;
     }
+    public float GetBpm()
+    {
+        return _bpm;
+    }
     public void SyncCameraToMeasureProgress(double measureProgress, float judgeLineLocalYOffset) // 김종면 함수 1개 추가했습니다.
     {
         if (_camera == null)
@@ -300,6 +361,10 @@ public class MeasureList : MonoBehaviour
         return _measures;
     }
 
+    /// <summary>
+    /// 저장할때 찍은 패턴을 가져오는 함수
+    /// </summary>
+    /// <returns>지금까지 작성된 패턴</returns>
     public Pattern GetPattern()
     {
         _beatMapTimer.SetTimingPoints(_measures);

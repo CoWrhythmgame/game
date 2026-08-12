@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
+
+    [SerializeField] private InfoPannel _infoPannel;
+
     // 판정별 가중치를 무조건 '정수'로 둡니다 (부동소수점 오차 원천 차단)
     private const int WEIGHT_PERFECT = 100;
     private const int WEIGHT_GREAT = 80;
@@ -9,6 +12,9 @@ public class ScoreManager : MonoBehaviour
     private const int WEIGHT_MISS = 0;
 
     private const long MAX_SCORE = 1000000; // 100만점
+    
+    private int _noteCount;
+
 
     private long _maxPossibleWeight; // 이번 곡에서 얻을 수 있는 이론상 최대 가중치
     private long _currentAccumulatedWeight; // 유저가 현재까지 획득한 가중치 총합
@@ -23,6 +29,8 @@ public class ScoreManager : MonoBehaviour
         _currentAccumulatedWeight = 0;
         _combo = 0;
         _maxCombo = 0;
+        _noteCount = 0;
+        _infoPannel.SetScore(0,0);
     }
 
     // 노트 판정이 발생할 때마다 호출
@@ -52,7 +60,13 @@ public class ScoreManager : MonoBehaviour
 
         Debug.Log($"현재 점수: {currentScore} / {MAX_SCORE}");
         
+        _noteCount++;
+        
+        double prate = (100f * _currentAccumulatedWeight) / (WEIGHT_PERFECT*_noteCount);
+
         // 이 currentScore를 UI Canvas로 보내서 표시해줍니다.
+        _infoPannel.SetScore(currentScore, prate);
+
     }
     public PlayData OnPatternEnd()
     {

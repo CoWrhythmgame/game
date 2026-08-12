@@ -1,4 +1,7 @@
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
@@ -7,29 +10,93 @@ public class SaveManager : MonoBehaviour
     [SerializeField] EditorSongInfoUI _editorSongInfoUI;
     [SerializeField] private EditorDifficultyUI editorDifficultyUI;
     [SerializeField] private DirtyState dirtyState;
+    public void New_SavePattern()
+    {
+        try{
+            EditorLoadedSongData editorLoadedSongData = _editorSongFileLoader.GetCurrentSongData();
+            Pattern pattern = _measureList.GetPattern();
+            Song song = new Song
+            {
+                songname = editorLoadedSongData.songName,
+                bpm = editorLoadedSongData.bpm,
+                artist = editorLoadedSongData.artistName
+            };
+            PatternInfo patternInfo = new PatternInfo
+            {
+                difficulty = 2,
+                totalNoteCount = pattern.notes.Count
+            };
+            FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
+        }
+        catch
+        {
+            Debug.LogWarning("ë…¸ë˜ ì •ë³´ì— ë¬¸ì œê°€ ìƒê²¼ìŠµë‹ˆë‹¤!");
+        }
+    }
+    public bool TrySavePattern()
+    {
+        DataMaster dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();
+        try{
+            EditorLoadedSongData editorLoadedSongData = _editorSongFileLoader.GetCurrentSongData();
+            Pattern pattern = _measureList.GetPattern();
+            Song song = new Song
+            {
+                songname = editorLoadedSongData.songName,
+                bpm = editorLoadedSongData.bpm,
+                artist = editorLoadedSongData.artistName
+            };
+            PatternInfo patternInfo = new PatternInfo
+            {
+                difficulty = 2,
+                totalNoteCount = pattern.notes.Count
+            };
+            FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
+            
+            //FIXME: íŒŒì¼ ì €ì¥ ê²½ë¡œ ì‹¹ ë°”ê¿€ê²ƒ
+            //HACK: AssetDataBaseëŠ” UnityEditor í´ë˜ìŠ¤ì˜ ë©”ì„œë“œë¼ì„œ ì—ë””í„°ì—ì„œë§Œ ì‚¬ìš© ê°€ëŠ¥í•¨.
+            AssetDatabase.Refresh();
+
+            song = FileManager.LoadSong().Where(x => x.songname == song.songname).ToArray()[0];
+            
+            dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
+            dataMaster.SetIsTestPlay(true);
+            return true;
+        }
+        catch
+        {
+            Debug.LogWarning("ë…¸ë˜ ì •ë³´ì— ë¬¸ì œê°€ ìƒê²¼ìŠµë‹ˆë‹¤!");
+            return false;
+        }
+    }
+    public void TestPlay()
+    {
+        if(TrySavePattern()){
+            SceneManager.LoadScene("InGameScene");
+        }
+    }
     public bool SavePattern()
     {
         if (_editorSongFileLoader == null)
         {
-            Debug.LogWarning("EditorSongFileLoader°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("EditorSongFileLoaderê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤..");
             return false;
         }
 
         if (_measureList == null)
         {
-            Debug.LogWarning("MeasureList°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("MeasureListê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return false;
         }
 
         if (editorDifficultyUI == null)
         {
-            Debug.LogWarning("EditorDifficultyUI°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("EditorDifficultyUIê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return false;
         }
 
         if (!editorDifficultyUI.CanSaveCurrentDifficulty())
         {
-            Debug.LogWarning("ÇöÀç ³­ÀÌµµ´Â ÀúÀåÇÒ ¼ö ¾ø½À´Ï´Ù. Ã¼Å© ¿©ºÎ¿Í ³­ÀÌµµ °ªÀ» È®ÀÎÇÏ¼¼¿ä.");
+            Debug.LogWarning("í˜„ì¬ ë‚œì´ë„ëŠ” ì €ì¥í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤. ì²´í¬ ì—¬ë¶€ì™€ ë‚œì´ë„ ê°’ì„ í™•ì¸í•˜ì„¸ìš”.");
             return false;
         }
 
@@ -37,7 +104,7 @@ public class SaveManager : MonoBehaviour
 
         if (editorLoadedSongData == null)
         {
-            Debug.LogWarning("·ÎµåµÈ °î Á¤º¸°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ë¡œë“œëœ ê³¡ ì •ë³´ê°€ ì—†ìŠµë‹ˆë‹¤.");
             return false;
         }
 

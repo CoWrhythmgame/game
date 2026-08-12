@@ -8,8 +8,8 @@ public class TextPannel : MonoBehaviour
 
     void Awake()
     {
-        _constText = transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
-        _variableText = transform.GetChild(1).GetComponent<TMPro.TMP_Text>();
+        // _constText = transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
+        // _variableText = transform.GetChild(1).GetComponent<TMPro.TMP_Text>();
     }
 
     /// <summary>
