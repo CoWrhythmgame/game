@@ -7,6 +7,7 @@ public class Inspector : MonoBehaviour
     #region Variables
     [Header("Connect Area")]
     [SerializeField] private GameObject _contentPannel;
+    [SerializeField] private GameObject _backgroundPannel;
     [SerializeField] private Measure _currentMeasure;
     [SerializeField] private TextPannel _measureIndexTextPannel;
     [SerializeField] private InputPannel _BPMInputPannel;
@@ -30,6 +31,7 @@ public class Inspector : MonoBehaviour
         _deleteButton.onClick.AddListener(DeleteButtonHandler);
         _ResetButton.onClick.AddListener(ResetButtonHandler);
         _BPMInputPannel.OnInputSubmitted += SetBpmFromInputField;
+        _backgroundPannel.GetComponent<Button>().onClick.AddListener(Hide);
         Hide();
     }
     #endregion
@@ -74,10 +76,12 @@ public class Inspector : MonoBehaviour
     {
         _currentMeasure = measure;
         _contentPannel.SetActive(true);
+        _backgroundPannel.SetActive(true);
         _measureIndex = index;
         _BPM = BPM;
         _measureIndexTextPannel.SetContent(_measureIndex.ToString());
         _BPMInputPannel.SetContent(_BPM.ToString());
+
     }
     /// <summary>
     /// 인스펙터를 초기화하고 비활성화 상태로 만듬(숨김).
@@ -90,6 +94,7 @@ public class Inspector : MonoBehaviour
         _measureIndex = -1;
         _BPM = -1;
         _contentPannel.SetActive(false);
+        _backgroundPannel.SetActive(false);
     }
 
     #endregion

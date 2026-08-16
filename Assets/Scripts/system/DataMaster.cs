@@ -7,6 +7,7 @@ public class DataMaster : MonoBehaviour
     private PlayData _playData = new PlayData();
     private PlayOption _playOption = new PlayOption();
     private Song _song = new Song();
+    private AudioClip _music;
     private bool _isNewRecord = false;
     private bool _isTestPlay = false;
     private int _difficultyIndex = 0;
@@ -39,6 +40,10 @@ public class DataMaster : MonoBehaviour
         this._song = song;
         this._difficultyIndex = difficultyIndex;
     }
+    public void SetMusic(AudioClip music)
+    {
+        _music = music;
+    }
     #endregion
     #region InGameScene
     //인게임 씬을 로드할 때 호출
@@ -60,6 +65,10 @@ public class DataMaster : MonoBehaviour
     public PlayOption GetPlayOption()
     {
         return _playOption;
+    }
+    public AudioClip GetMusic()
+    {
+        return _music;
     }
     //게임 끝나고 플레이 데이터 저장할때 호출
     public void SetPlayData(PlayData playData)

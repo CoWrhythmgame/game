@@ -247,9 +247,11 @@ public class SongList : MonoBehaviour
         }
         songtragetPos = new Vector2(0, (SSheight+10) * songIndex);
     }
-    private void CursorSummit()
+    private async void CursorSummit()
     {
         _dataMaster.SetSongData(currentSongData, difficultyIndex);
+        AudioClip musicClip = await FileManager.LoadMusic(currentSongData, false);
+        _dataMaster.SetMusic(musicClip);
         SceneManager.LoadScene("InGameScene");
     }
     #endregion
@@ -260,8 +262,6 @@ public class SongList : MonoBehaviour
             songname = songname,
             artist = artist,
             bpm = bpm,
-            songPath = "Assets/Resources/Songs/test/test.mp3",
-            previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
             patternInfo = new List<PatternInfo>(){
                 new PatternInfo(){
                     patternPath = "Assets/Resources/Songs/test/test_pattern.json",
@@ -285,8 +285,6 @@ public class SongList : MonoBehaviour
             songname = songname,
             artist = artist,
             bpm = bpm,
-            songPath = "Assets/Resources/Songs/test/test.mp3",
-            previewPath = "Assets/Resources/Songs/test/test_preview.mp3",
             patternInfo = patterns,
             record = records
         });

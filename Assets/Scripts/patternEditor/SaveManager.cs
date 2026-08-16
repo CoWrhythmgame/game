@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,7 +35,7 @@ public class SaveManager : MonoBehaviour
             Debug.LogWarning("노래 정보에 문제가 생겼습니다!");
         }
     }
-    public bool TrySavePattern()
+    public async Awaitable<bool> TrySavePattern()
     {
         DataMaster dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();
         try{
@@ -57,21 +59,32 @@ public class SaveManager : MonoBehaviour
             AssetDatabase.Refresh();
 
             song = FileManager.LoadSong().Where(x => x.songname == song.songname).ToArray()[0];
-            
+            AudioClip musicClip = await FileManager.LoadMusic(song, false);
             dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
+
+            dataMaster.SetMusic(musicClip);
             dataMaster.SetIsTestPlay(true);
             return true;
         }
-        catch
+        catch(Exception e)
         {
             Debug.LogWarning("노래 정보에 문제가 생겼습니다!");
+            Debug.LogException(e);
             return false;
         }
     }
-    public void TestPlay()
+    public async void TestPlay()
     {
-        if(TrySavePattern()){
-            SceneManager.LoadScene("InGameScene");
+        try{
+            if(await TrySavePattern()){
+                
+                SceneManager.LoadScene("InGameScene");
+            }
+        }
+        catch(Exception e)
+        {
+            Debug.LogWarning("노래 정보에 문제가 생겼습니다!");
+            Debug.LogException(e);
         }
     }
     public bool SavePattern()
