@@ -105,20 +105,21 @@ public class EditorSongInfoUI : MonoBehaviour
     private void RefreshOneDifficulty(int index, Button button, TextMeshProUGUI text)
     {
         bool isSelected = index == currentDifficultyIndex;
+        
+        // FIXME: 이거 EditorDifficulty UI 스크립트에서 동일한 역할을 하는 중임. 확인 부탁합니다.
+        // if (button != null)
+        // {
+        //     Image buttonImage = button.GetComponent<Image>();
 
-        if (button != null)
-        {
-            Image buttonImage = button.GetComponent<Image>();
+        //     if (buttonImage != null)
+        //         buttonImage.color = isSelected ? selectedButtonColor : normalButtonColor;
+        // }
 
-            if (buttonImage != null)
-                buttonImage.color = isSelected ? selectedButtonColor : normalButtonColor;
-        }
-
-        if (text != null)
-        {
-            text.text = difficultyNames[index];
-            text.color = isSelected ? selectedTextColor : normalTextColor;
-        }
+        // if (text != null)
+        // {
+        //     text.text = difficultyNames[index];
+        //     text.color = isSelected ? selectedTextColor : normalTextColor;
+        // }
     }
 
     private void SetText(TextMeshProUGUI text, string value)

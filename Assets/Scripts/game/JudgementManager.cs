@@ -8,6 +8,7 @@ public class JudgementManager : MonoBehaviour
 {
     [SerializeField] private InfoPannel _infoPannel;
     [SerializeField] private ToastText _judgeText;
+    [SerializeField] private NoteHitEffectPool _noteHitEffectPool;
     private ScoreManager scoreManager;
     private PatternManager patternManager;
     // 4버튼 기준, 레인별로 노트를 담아둘 큐 배열
@@ -19,6 +20,7 @@ public class JudgementManager : MonoBehaviour
     private double _startInputTime;
     private double _offset;
     private float _noteOffset;
+    private float _judgeY;
     // 판정 기준 시간 (단위: 초)
     private readonly double _perfectWindow = 0.05001; // ±50.01ms
     private readonly double _greatWindow = 0.08335;   // ±83.35ms
@@ -41,6 +43,9 @@ public class JudgementManager : MonoBehaviour
         _FSList = new int[2]{0,0};
         scoreManager = transform.GetComponent<ScoreManager>();
         patternManager = GameObject.FindGameObjectWithTag("NoteManager").GetComponent<PatternManager>();
+
+        _judgeY = GameObject.FindGameObjectWithTag("Judgement").transform.position.y;
+
 
         _infoPannel.SetJudgeCount(_judgeCount);
     }
@@ -152,6 +157,8 @@ public class JudgementManager : MonoBehaviour
         if(!note.GetIsLong()) buffer.Dequeue(); // 롱노트가 아니면 버퍼에서 제거
         note.OnHit(_startAudioTime);     // 타격 이펙트 재생 및 Pool로 반환
         _infoPannel.SetJudgeCount(_judgeCount);
+
+        _noteHitEffectPool.PlayHitEffect(judgment, new Vector3(note.GetLaneIndex() - 1.5f, _judgeY, 0f));
 
         //이거때문에 note메니저랑 judgement메니저끼리 상호간섭함
         //더 좋은 방안이 없을까
