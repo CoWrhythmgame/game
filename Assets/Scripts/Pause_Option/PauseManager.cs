@@ -27,6 +27,8 @@ public class PauseManager : MonoBehaviour
     private float previousTimeScale = 1f;
     private static double pauseStartDspTime;
     private static double pauseStartInputTime;
+    public static event System.Action OnGamePaused;
+    public static event System.Action OnGameResumed;
     public static double TotalPausedDspTime { get; private set; }
     public static double TotalPausedInputTime { get; private set; }
     private void Awake()
@@ -114,6 +116,7 @@ public class PauseManager : MonoBehaviour
             pausePanel.SetActive(true);
 
         RefreshMenuUI();
+        OnGamePaused?.Invoke();
     }
 
     public void ResumeGame()
@@ -129,6 +132,7 @@ public class PauseManager : MonoBehaviour
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
+        OnGameResumed?.Invoke();
     }
 
     public void RestartGame()

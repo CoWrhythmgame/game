@@ -19,7 +19,6 @@ public class EditorDifficultyUI : MonoBehaviour
     [Header("References")]
     [SerializeField] private EditorSongFileLoader songFileLoader;
     [SerializeField] private MeasureList measureList;
-    [SerializeField] private DirtyState dirtyState;
 
     [Header("Difficulty Slots")]
     [SerializeField] private DifficultySlot[] slots = new DifficultySlot[4];
@@ -150,9 +149,6 @@ public class EditorDifficultyUI : MonoBehaviour
         if (!isSongLoaded)
             return;
 
-        if (dirtyState != null)
-            dirtyState.MarkDirty();
-
         SetDifficultyEnabled(index, isOn);
 
         if (isOn)
@@ -250,9 +246,6 @@ public class EditorDifficultyUI : MonoBehaviour
 
         if (slots[index].levelInput == null)
             return;
-
-        if (dirtyState != null)
-            dirtyState.MarkDirty();
 
         if (!IsDifficultyEnabled(index))
         {
@@ -464,5 +457,42 @@ public class EditorDifficultyUI : MonoBehaviour
         }
 
         RefreshVisual();
+    }
+    public int DifficultyCount => slots.Length;
+
+    public bool CanSaveDifficulty(int index)
+    {
+        if (!isSongLoaded)
+            return false;
+
+        if (!IsValidIndex(index))
+            return false;
+
+        if (!IsDifficultyEnabled(index))
+            return false;
+
+        float level = GetDifficultyLevel(index);
+        return level >= 1.0f && level <= 15.0f;
+    }
+
+    public Pattern GetPatternForSave(int index)
+    {
+        SaveCurrentEditingPattern();
+
+        if (!IsValidIndex(index))
+            return null;
+
+        if (!IsDifficultyEnabled(index))
+            return null;
+
+        if (!hasEditingPattern[index] || editingPatterns[index] == null)
+        {
+            return new Pattern
+            {
+                notes = new System.Collections.Generic.List<Note>()
+            };
+        }
+
+        return editingPatterns[index];
     }
 }

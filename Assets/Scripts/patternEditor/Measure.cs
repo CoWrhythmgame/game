@@ -54,7 +54,6 @@ public class Measure : MonoBehaviour
     //// private ConstraintSource _source;
     private MeasureList _measureList;
     private bool _isQuitting = false;
-    private DirtyState _dirtyState;
     #endregion
 
     #region LifeCycle
@@ -72,7 +71,6 @@ public class Measure : MonoBehaviour
 
         _inspectorButton.GetComponent<ObjectButton>().OnButtonClicked += ShowInspector;
 
-        _dirtyState = FindFirstObjectByType<DirtyState>();
         // ! constraint 제거 더이상 사용하지 않음.
         //// _source = new ConstraintSource
         //// {
@@ -258,9 +256,6 @@ public class Measure : MonoBehaviour
         note.GetComponent<EditorNote>().OnMouseOverNote += OnMouseOverNote;
         note.GetComponent<EditorNote>().OnMouseOffNote += OnMouseOffNote;
         _notes.Add(note);
-
-        if (_dirtyState != null)
-            _dirtyState.MarkDirty();
     }
     /// <summary>
     /// 마우스 위치의 노트 삭제
@@ -269,8 +264,6 @@ public class Measure : MonoBehaviour
     {
         _notes.Remove(note);
         Destroy(note);
-        if (_dirtyState != null)
-            _dirtyState.MarkDirty();
     }
     /// <summary>
     /// 롱노트를 놓을 때 놓일 노트의 길이를 미리보기 위해 shadenote의 길이를 늘리는 함수

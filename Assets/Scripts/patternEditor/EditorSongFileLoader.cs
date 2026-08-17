@@ -30,8 +30,6 @@ public class EditorSongFileLoader : MonoBehaviour
     [Header("Default Values")]
     [SerializeField] private string defaultArtistName = "Unknown Artist";
 
-    [SerializeField] private DirtyState dirtyState;
-
     private string pendingSourcePath = "";
     private SongMetaInputMode inputMode = SongMetaInputMode.None;
 
@@ -371,8 +369,6 @@ public class EditorSongFileLoader : MonoBehaviour
         SetEditButtonActive(true);
 
         OnSongLoadedOrUpdated?.Invoke(currentSongData);
-        if (dirtyState != null)
-            dirtyState.ClearDirty();
         Debug.Log("Song loaded: " + savedAudioPath);
     }
 

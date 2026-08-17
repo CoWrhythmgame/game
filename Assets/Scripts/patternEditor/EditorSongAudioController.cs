@@ -11,6 +11,7 @@ public class EditorSongAudioController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private MeasureList _measureList;
+    [SerializeField] private BeatmapTimer beatmapTimer;
     [SerializeField] private SEManager _SEManager;
     [SerializeField] private EditorSongFileLoader songFileLoader;
     [SerializeField] private AudioSource audioSource;
@@ -32,6 +33,9 @@ public class EditorSongAudioController : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float seekSeconds = 5f;
+
+    [Header("Hit Sound Sync")]
+    [SerializeField] private float hitSoundLatencyCompensation = 0.03f;
 
     private Queue<Note> _currentPattern;
     private bool isLoadingClip = false;
@@ -65,12 +69,31 @@ public class EditorSongAudioController : MonoBehaviour
     {
         if (songFileLoader != null)
             songFileLoader.OnSongLoadedOrUpdated += OnSongLoadedOrUpdated;
+
+        PauseManager.OnGamePaused += PauseEditorMusic;
+        PauseManager.OnGameResumed += ResumeEditorMusic;
     }
 
     private void OnDisable()
     {
         if (songFileLoader != null)
             songFileLoader.OnSongLoadedOrUpdated -= OnSongLoadedOrUpdated;
+
+        PauseManager.OnGamePaused -= PauseEditorMusic;
+        PauseManager.OnGameResumed -= ResumeEditorMusic;
+    }
+
+    private void PauseEditorMusic()
+    {
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Pause();
+            SetPlayButtonText("Play");
+        }
+    }
+    private void ResumeEditorMusic()
+    {
+        // 에디터에서는 ESC Resume 시 자동 재생을 원하지 않으면 비워둬도 됨.
     }
 
     private void OnDestroy()
@@ -90,14 +113,14 @@ public class EditorSongAudioController : MonoBehaviour
             StopSongInternal();
         }
         //* 키음 재생
-        if (audioSource.isPlaying)
+        if (audioSource.isPlaying && _currentPattern != null && _SEManager != null)
         {
-            if(_currentPattern.Count != 0){
-                if(_currentPattern.Peek().time <= audioSource.time)
-                {
-                    _currentPattern.Dequeue();
-                    _SEManager.PlayHitSound();  
-                }
+            float hitSoundTime = audioSource.time + hitSoundLatencyCompensation;
+
+            while (_currentPattern.Count > 0 && _currentPattern.Peek().time <= hitSoundTime)
+            {
+                _currentPattern.Dequeue();
+                _SEManager.PlayHitSound();
             }
         }
     }
@@ -134,9 +157,6 @@ public class EditorSongAudioController : MonoBehaviour
 
         if (frontButton != null)
             frontButton.onClick.AddListener(Forward5Seconds);
-
-        //if (saveButton != null)
-        //    saveButton.onClick.AddListener(SaveChartPlaceholder);
     }
 
     private void UnregisterButtons()
@@ -152,9 +172,6 @@ public class EditorSongAudioController : MonoBehaviour
 
         if (frontButton != null)
             frontButton.onClick.RemoveListener(Forward5Seconds);
-
-        //if (saveButton != null)
-        //    saveButton.onClick.RemoveListener(SaveChartPlaceholder);
     }
 
     private void OnSongLoadedOrUpdated(EditorLoadedSongData songData)
@@ -236,7 +253,8 @@ public class EditorSongAudioController : MonoBehaviour
         if (audioSource.time >= audioSource.clip.length)
             audioSource.time = 0f;
 
-        _currentPattern = new Queue<Note>(_measureList.GetPattern().notes.OrderBy(x => x.time));
+        RefreshBeatmapTiming();
+        RebuildHitSoundQueue(audioSource.time);
 
         audioSource.Play();
         SetPlayButtonText("Pause");
@@ -257,6 +275,7 @@ public class EditorSongAudioController : MonoBehaviour
 
         audioSource.Stop();
         audioSource.time = 0f;
+        _currentPattern = null;
 
         SetPlayButtonText("Play");
         RefreshTimeText();
@@ -267,7 +286,27 @@ public class EditorSongAudioController : MonoBehaviour
         if (!HasAudioClip())
             return;
 
-        audioSource.time = Mathf.Max(0f, audioSource.time - seekSeconds);
+        RefreshBeatmapTiming();
+
+        if (beatmapTimer == null)
+        {
+            audioSource.time = Mathf.Max(0f, audioSource.time - seekSeconds);
+            RebuildHitSoundQueue(audioSource.time);
+            RefreshTimeText();
+            return;
+        }
+
+        double measureProgress = beatmapTimer.GetMeasureProgressByTime(audioSource.time);
+        int currentMeasure = Mathf.FloorToInt((float)measureProgress);
+        int targetMeasure = Mathf.Max(0, currentMeasure - 1);
+
+        audioSource.time = Mathf.Clamp(
+            (float)beatmapTimer.GetMeasureTime(targetMeasure),
+            0f,
+            audioSource.clip.length
+        );
+
+        RebuildHitSoundQueue(audioSource.time);
         RefreshTimeText();
     }
 
@@ -276,7 +315,26 @@ public class EditorSongAudioController : MonoBehaviour
         if (!HasAudioClip())
             return;
 
-        audioSource.time = Mathf.Min(audioSource.clip.length, audioSource.time + seekSeconds);
+        RefreshBeatmapTiming();
+
+        if (beatmapTimer == null)
+        {
+            audioSource.time = Mathf.Min(audioSource.clip.length, audioSource.time + seekSeconds);
+            RebuildHitSoundQueue(audioSource.time);
+            RefreshTimeText();
+            return;
+        }
+
+        double measureProgress = beatmapTimer.GetMeasureProgressByTime(audioSource.time);
+        int targetMeasure = Mathf.FloorToInt((float)measureProgress) + 1;
+
+        audioSource.time = Mathf.Clamp(
+            (float)beatmapTimer.GetMeasureTime(targetMeasure),
+            0f,
+            audioSource.clip.length
+        );
+
+        RebuildHitSoundQueue(audioSource.time);
 
         if (audioSource.time >= audioSource.clip.length)
         {
@@ -287,10 +345,6 @@ public class EditorSongAudioController : MonoBehaviour
         RefreshTimeText();
     }
 
-    /*private void SaveChartPlaceholder()
-    {
-        Debug.Log("Save button clicked. Chart saving is not implemented yet.");
-    }*/
 
     private bool HasAudioClip()
     {
@@ -411,5 +465,38 @@ public class EditorSongAudioController : MonoBehaviour
             return -80f;
 
         return Mathf.Log10(volume / 100f) * 20f;
+    }
+    private void RebuildHitSoundQueue(float startTime) // 현재 재생 시간 이후의 노트만 키음 큐에 넣음
+    {
+        if (_measureList == null)
+        {
+            _currentPattern = new Queue<Note>();
+            return;
+        }
+
+        Pattern pattern = _measureList.GetPattern();
+
+        if (pattern == null || pattern.notes == null)
+        {
+            _currentPattern = new Queue<Note>();
+            return;
+        }
+
+        _currentPattern = new Queue<Note>(
+            pattern.notes
+                .Where(note => note.time > startTime)
+                .OrderBy(note => note.time)
+        );
+    }
+
+    private void RefreshBeatmapTiming() // 현재 마디 BPM 정보를 BeatmapTimer에 다시 반영
+    {
+        if (beatmapTimer == null)
+            return;
+
+        if (_measureList == null)
+            return;
+
+        beatmapTimer.SetTimingPoints(_measureList.GetMeasures());
     }
 }

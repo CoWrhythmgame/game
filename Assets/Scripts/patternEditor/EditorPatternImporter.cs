@@ -7,7 +7,6 @@ public class EditorPatternImporter : MonoBehaviour
     [SerializeField] private EditorDifficultyUI editorDifficultyUI;
     [SerializeField] private MeasureList measureList;
     [SerializeField] private BeatmapTimer beatmapTimer;
-    [SerializeField] private DirtyState dirtyState;
     [SerializeField] private EditorSongFileLoader editorSongFileLoader;
 
     [Header("Temporary Test")]
@@ -127,10 +126,6 @@ public class EditorPatternImporter : MonoBehaviour
         {
             editorDifficultyUI.SelectImportedDifficulty(firstEnabledIndex);
         }
-
-        if (dirtyState != null)
-            dirtyState.ClearDirty();
-
         Debug.Log("Imported editor song: " + importSongName);
     }
 
@@ -138,5 +133,25 @@ public class EditorPatternImporter : MonoBehaviour
     {
         importSongName = songName;
         ImportPattern();
+    }
+    private void Start()
+    {
+        TryRestoreFromTestPlay();
+    }
+
+    private void TryRestoreFromTestPlay()
+    {
+        if (!EditorReturnContext.ShouldRestore)
+            return;
+
+        string songName = EditorReturnContext.SongName;
+        int difficultyIndex = EditorReturnContext.DifficultyIndex;
+
+        EditorReturnContext.Clear();
+
+        ImportPatternBySongName(songName);
+
+        if (editorDifficultyUI != null)
+            editorDifficultyUI.SelectImportedDifficulty(difficultyIndex);
     }
 }

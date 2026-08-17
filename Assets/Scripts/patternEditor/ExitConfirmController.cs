@@ -5,7 +5,6 @@ public class ExitConfirmController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject confirmPanel;
-    [SerializeField] private DirtyState dirtyState;
     [SerializeField] private SaveManager saveManager;
 
     [Header("Scene")]
@@ -19,25 +18,15 @@ public class ExitConfirmController : MonoBehaviour
 
     public void RequestExit()
     {
-        if (dirtyState == null)
-        {
-            Debug.LogWarning("DirtyState가 연결되지 않았습니다. 바로 나갑니다.");
-            LoadTargetScene();
-            return;
-        }
-
-        if (!dirtyState.IsDirty)
-        {
-            Debug.Log("변경사항이 없으므로 바로 나갑니다.");
-            LoadTargetScene();
-            return;
-        }
-
         if (confirmPanel != null)
         {
             confirmPanel.SetActive(true);
             EditorInputBlocker.SetBlocked(true);
+            return;
         }
+
+        Debug.LogWarning("ConfirmPanel이 연결되지 않았습니다. 바로 나갑니다.");
+        LoadTargetScene();
     }
 
     public void SaveAndExit()

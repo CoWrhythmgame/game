@@ -138,7 +138,26 @@ public class PatternManager : MonoBehaviour
             SceneManager.LoadScene("ResultScene");
         }
     }
-
+    private void OnEnable() // 이벤트 받는 부분
+    {
+        PauseManager.OnGamePaused += PauseMusic;
+        PauseManager.OnGameResumed += ResumeMusic;
+    }
+    private void OnDisable()
+    {
+        PauseManager.OnGamePaused -= PauseMusic;
+        PauseManager.OnGameResumed -= ResumeMusic;
+    }
+    private void PauseMusic()
+    {
+        if (_audioSource != null && _audioSource.isPlaying)
+            _audioSource.Pause();
+    }
+    private void ResumeMusic()
+    {
+        if (_audioSource != null)
+            _audioSource.UnPause();
+    }
     private Record UpdateRecord(PlayData playData)
     {
         Record record = _songData.record[_difficultyIndex];
