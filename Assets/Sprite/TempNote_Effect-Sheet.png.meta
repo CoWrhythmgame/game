@@ -1,0 +1,326 @@
+fileFormatVersion: 2
+guid: 861d449cc3f5bee44874c02d23897de7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5584641517194604050
+    second: TempNote_Effect-Sheet_0
+  - first:
+      213: -911673238032910661
+    second: TempNote_Effect-Sheet_1
+  - first:
+      213: -4576954379367594585
+    second: TempNote_Effect-Sheet_2
+  - first:
+      213: 4611935548106799797
+    second: TempNote_Effect-Sheet_3
+  - first:
+      213: -1192260709027023627
+    second: TempNote_Effect-Sheet_4
+  - first:
+      213: -7876022969203412292
+    second: TempNote_Effect-Sheet_5
+  - first:
+      213: 1057527571538346234
+    second: TempNote_Effect-Sheet_6
+  - first:
+      213: 6213900503621686294
+    second: TempNote_Effect-Sheet_7
+  - first:
+      213: -6095545265816753572
+    second: TempNote_Effect-Sheet_8
+  - first:
+      213: 4116671489999629790
+    second: TempNote_Effect-Sheet_9
+  - first:
+      213: 2075575740077550410
+    second: TempNote_Effect-Sheet_10
+  - first:
+      213: -653856247775664921
+    second: TempNote_Effect-Sheet_11
+  - first:
+      213: -5298087773792421117
+    second: TempNote_Effect-Sheet_12
+  - first:
+      213: -2509465002567348109
+    second: TempNote_Effect-Sheet_13
+  - first:
+      213: 5181692374674779592
+    second: TempNote_Effect-Sheet_14
+  - first:
+      213: -3918521241480642636
+    second: TempNote_Effect-Sheet_15
+  - first:
+      213: -8381036327604586591
+    second: TempNote_Effect-Sheet_16
+  - first:
+      213: 3313084684059767533
+    second: TempNote_Effect-Sheet_17
+  - first:
+      213: 5568454573758667910
+    second: TempNote_Effect-Sheet_18
+  - first:
+      213: 582592196642508562
+    second: TempNote_Effect-Sheet_19
+  - first:
+      213: 2223861008125937729
+    second: TempNote_Effect-Sheet_20
+  - first:
+      213: -8802331866648798723
+    second: TempNote_Effect-Sheet_21
+  - first:
+      213: 7968886682549383609
+    second: TempNote_Effect-Sheet_22
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TempNote_Effect-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21e68460fd1a08d40800000000000000
+      internalID: 5584641517194604050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TempNote_Effect-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb671df25061953f0800000000000000
+      internalID: -911673238032910661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TempNote_Effect-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a540a0ed346b70c0800000000000000
+      internalID: -4576954379367594585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TempNote_Effect-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5baf6e722f2e00040800000000000000
+      internalID: 4611935548106799797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TempNote_Effect-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f4f9c6b33d347fe0800000000000000
+      internalID: -1192260709027023627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TempNote_Effect-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb230d5a6deb2b290800000000000000
+      internalID: -7876022969203412292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 346b6376ffd1ef6428b8bab47c1fb6c6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":128.0,"y":128.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      TempNote_Effect-Sheet_0: 5584641517194604050
+      TempNote_Effect-Sheet_1: -911673238032910661
+      TempNote_Effect-Sheet_2: -4576954379367594585
+      TempNote_Effect-Sheet_3: 4611935548106799797
+      TempNote_Effect-Sheet_4: -1192260709027023627
+      TempNote_Effect-Sheet_5: -7876022969203412292
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

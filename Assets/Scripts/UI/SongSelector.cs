@@ -3,27 +3,45 @@ using UnityEngine.UI;
 
 public class SongSelector : MonoBehaviour
 {
-    Song song;
-    public Text songname;
-    public Text artist;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private Text _songname;
+    [SerializeField] private Text _artist;
+    [SerializeField] private Sprite _normalSprite;
+    [SerializeField] private Sprite _selectedSprite;
+    [SerializeField] private Image _arrowImage;
+    [SerializeField] private Sprite _normalArrowImage;
+    [SerializeField] private Sprite _selectedArrowImage;
+    private Song _song;
+    private Image _image;
+
+
+
     public void Setup(Song song)
     {
-        this.song = song;
-        songname.text = song.songname;
-        artist.text = song.artist;
+        _song = song;
+        _songname.text = _song.songname;
+        _artist.text = _song.artist;
+
+        _image = GetComponent<Image>();
+        _image.sprite = _normalSprite;
+        _arrowImage.sprite = _normalArrowImage;
         OffCursor();
     }
     public Song GetSong()
     {
-        return song;
+        return _song;
     }
     public void OnCursor()
     {
-        GetComponent<Image>().color = Color.white;
+        _image.sprite = _selectedSprite;
+        _arrowImage.sprite = _selectedArrowImage;
+        _image.color = Color.white;
+        _arrowImage.color = Color.white;
     }
     public void OffCursor()
     {
-        GetComponent<Image>().color = Color.gray;
+        _image.sprite = _normalSprite;
+        _arrowImage.sprite = _normalArrowImage;
+        _image.color = Color.gray;
+        _arrowImage.color = Color.gray;
     }
 }

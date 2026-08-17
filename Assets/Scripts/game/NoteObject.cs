@@ -113,4 +113,8 @@ public class NoteObject : MonoBehaviour
     {
         return _isHolding;
     }
+    public int GetLaneIndex()
+    {
+        return _laneIndex;
+    }
 }

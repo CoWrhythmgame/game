@@ -1,13 +1,16 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class ObjectButton : MonoBehaviour
 {
+    [SerializeField] private List<SpriteRenderer> _childObjects = new List<SpriteRenderer>();
     private Transform _transform;
     private SpriteRenderer _spriteRenderer;
     private Color _color;
     private Vector3 _mousePos;
+    private int _count = 0;
 
     public Action OnButtonClicked;
 
@@ -15,6 +18,7 @@ public class ObjectButton : MonoBehaviour
     {
         _transform = transform.GetComponent<Transform>();
         _spriteRenderer = transform.GetComponent<SpriteRenderer>();
+        _count = _childObjects.Count;
     }
 
     private void Update()
@@ -29,6 +33,14 @@ public class ObjectButton : MonoBehaviour
             OnOffMouse();
         }
         _spriteRenderer.color = _color;
+        for (int i = 0; i < _count; i++)
+        {
+            SpriteRenderer child = _childObjects[i];
+            if (child != null)
+            {
+                child.color = _color;
+            }
+        }
     }
 
     private void OnClickHandler()
