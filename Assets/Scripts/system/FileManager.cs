@@ -6,50 +6,59 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 
+// * 곡 정보 종류가 추가되면 반드시 enum에도 추가할것
+public enum SongDataType
+{
+    SongInfo,
+    PatternInfo,
+    Pattern,
+    Record,
+    song,
+    jaket
+}
+
 public class FileManager
 {
     private static readonly string[] _filenames = new string[4]{"1-Easy","2-Normal","3-Hard","4-Extreme"};
+    private static readonly string _info = "0-Info";
 
     #region 외부 접근 함수
-    public static List<Song> LoadSong()
+    public static List<Song> LoadSong(bool isBuiltin)
     {
         Debug.Log("LoadSong");
         List<Song> songs = new List<Song>();
-        string AssetPath = GetStreamingAssetsPath();
-        string LocalPath = GetLocalPath();
+        string Path = isBuiltin ? GetStreamingAssetsPath() : GetLocalPath();
 
 
-        string[] songnames = GetSongNames(AssetPath);
+        string[] songnames = GetSongNames(isBuiltin);
         for(int i = 0; i < songnames.Length; i++)
         {
             string songJson;
             List<string> patternInfosJson;
             List<string> recordsJson;
             
-            songJson = File.ReadAllText(AssetPath+"/SongInfo"+songnames[i]+"/0-Info.json");
-            patternInfosJson = GetPatternInfoJson(songnames[i]);
-            recordsJson = GetRecordJson(songnames[i], LocalPath);
-            Debug.Log(patternInfosJson[0]);
+            songJson = GetDataJson(SongDataType.SongInfo, songnames[i], isBuiltin)[0];
+            patternInfosJson = GetDataJson(SongDataType.PatternInfo, songnames[i], isBuiltin);
+            recordsJson = GetDataJson(SongDataType.Record, songnames[i], isBuiltin);
             songs.Add(GetSongFromString(songJson, patternInfosJson, recordsJson));
         }
         return songs;
     }
-    public static Pattern LoadPattern(Song songData, int difficultyIndex)
+    public static Pattern LoadPattern(Song songData, int difficultyIndex, bool isBuiltin)
     {
         Pattern pattern;
         string patternJson;
         Debug.Log($"Load Pattern - difficultyIndex:{difficultyIndex}");
-        Debug.Log($"patternpath:{songData.patternInfo[difficultyIndex].patternPath}");
-        patternJson = GetPatternJson(songData.patternInfo[difficultyIndex].patternPath);
-        pattern = GetPatternFromString(patternJson);
+        patternJson = GetDataJson(SongDataType.Pattern, songData.songname, isBuiltin)[difficultyIndex];
+        pattern = GetClassFromString<Pattern>(patternJson);
         return pattern;
     }
     public static void Editor_SavePattern(Song songInfo , PatternInfo patternInfo, Pattern pattern, int patternIndex)
     {
         string songname = songInfo.songname;
-        SetFileFromSong(songname, GetStringFromSong(songInfo));
-        SetFileFromPatternInfo(songname, patternIndex, GetStringFromPatternInfo(songname,patternIndex , patternInfo));
-        SetFileFromPattern(songname, patternIndex, GetStringFromPattern(pattern));
+        SetFileFromJson(SongDataType.SongInfo, songname, GetStringFromClass(songInfo), false);
+        SetFileFromJson(SongDataType.PatternInfo, songname, GetStringFromClass(patternInfo), false, patternIndex);
+        SetFileFromJson(SongDataType.Pattern, songname, GetStringFromClass(pattern), false, patternIndex);
     }
     /// <summary>
     /// 곡 파일을 로드합니다. 곡 파일은 Song/{song.songname}에 있어야 합니다.
@@ -65,20 +74,13 @@ public class FileManager
         string filePath;
         string dir;
 
-        if(isBuiltin)
-        {
-            dir = Path.Combine(GetStreamingAssetsPath(),"Song" , song.songname).Replace("\\", "/");
-        }
-        else
-        {
-            dir = Path.Combine(GetLocalPath(),"EditorSongs" , song.songname).Replace("\\", "/");
-        }
+        dir = GetDirPathByType(SongDataType.song, song.songname, isBuiltin);
         filePath = Directory.GetFiles(dir)
-            .FirstOrDefault(file => !file.EndsWith(".meta"));
+            .FirstOrDefault(file => !file.EndsWith(".meta") && Path.GetFileName(file).Contains(song.songname));
 
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"곡 파일을 찾을 수 없습니다: {filePath}");
-
+        Debug.Log($"곡 파일 로드: {filePath}");
         AudioType audioType = GetAudioType(filePath);
         string url = "file://" + filePath;
 
@@ -94,13 +96,12 @@ public class FileManager
         return clip;
     }
 
-    
     #endregion
 
     #region 기본 파일 경로 관련
     private static string GetStreamingAssetsPath()
     {
-        return Application.streamingAssetsPath;
+        return Application.streamingAssetsPath+"/";
     }
     //local 경로 확인
     private static string GetLocalPath()
@@ -117,13 +118,14 @@ public class FileManager
         #endif
         return folderPath;
     }
-    private static string[] GetSongNames( string AssetPath)
+    private static string[] GetSongNames(bool isBuiltin)
     {
-        string[] songnames = Directory.GetDirectories(AssetPath+"/SongInfo")
+        string dir = GetDirPathByType(SongDataType.SongInfo, "", isBuiltin);
+        string[] songnames = Directory.GetDirectories(dir)  
         .Where(file => !file.EndsWith(".meta")).ToArray();
         for(int i = 0; i < songnames.Length; i++)
         {
-            songnames[i] = songnames[i].Replace(AssetPath+"/SongInfo", "");
+            songnames[i] = songnames[i].Replace(dir, "").Replace("/", "");
         }
         return songnames;
     }
@@ -138,221 +140,389 @@ public class FileManager
             _ => AudioType.UNKNOWN
         };
     }
+    private static List<string> GetFilePathByType(SongDataType dataType, string songname, bool isBuiltin)
+    {
+        List<string> paths = new List<string>();
+        string path = "";
+
+        if(isBuiltin && dataType != SongDataType.Record)
+        {
+            path = GetStreamingAssetsPath();
+        }
+        else
+        {
+            path = GetLocalPath();
+            if(dataType == SongDataType.Record)
+            {
+                path += "Record/";
+            }
+            else
+            {
+                path += "Songs/";
+            }
+        }
+
+        path += songname + "/";
+        switch (dataType)
+        {
+            case SongDataType.SongInfo:
+                path += _info+".json";
+                paths.Add(path);
+                break;
+            case SongDataType.song:
+                path += songname;
+                paths.Add(path);
+                break;
+            case SongDataType.Record:
+                paths = DifficultyFilePathAdder(path);
+                break;
+            case SongDataType.PatternInfo:
+                paths = DifficultyFilePathAdder(path);
+                break;
+            case SongDataType.Pattern:
+                paths = DifficultyFilePathAdder(path+"Pattern/");
+                break;
+            default:
+                throw new ArgumentException("Invalid SongDataType");
+        }
+        return paths;
+    }
+    private static string GetDirPathByType(SongDataType dataType, string songname, bool isBuiltin)
+    {
+        string path = "";
+
+        if(isBuiltin && dataType != SongDataType.Record)
+        {
+            path = GetStreamingAssetsPath();
+        }
+        else
+        {
+            path = GetLocalPath();
+            if(dataType == SongDataType.Record)
+            {
+                path += "Record/";
+            }
+            else
+            {
+                path += "Songs/";
+            }
+        }
+        path += songname + "/";
+        
+        if(dataType == SongDataType.Pattern)
+        {
+            path += "Pattern/";
+        }
+        return path;
+    }
+    private static List<string> DifficultyFilePathAdder(string path)
+    {
+        List<string> paths = new List<string>();
+        for(int i = 0; i < _filenames.Length; i++)
+        {
+            paths.Add(path + _filenames[i] + ".json");
+        }
+        return paths;
+    }
     #endregion
 
     #region string to class 변환
+    private static T GetClassFromString<T>(string json) where T : class
+    {
+        if (string.IsNullOrEmpty(json))
+        {
+            Debug.LogError($"[FileManager] 빈 JSON 문자열, 타입: {typeof(T).Name}");
+            return null;
+        }
+
+        try
+        {
+            return JsonUtility.FromJson<T>(json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[FileManager] 파싱 실패, 타입: {typeof(T).Name}, 에러: {e.Message}");
+            return null;
+        }
+    }
     //json을 song으로 변환
     private static Song GetSongFromString(string songJson, List<string> patternInfosJson, List<string> recordsJson)
     {
-        Song song = JsonUtility.FromJson<Song>(songJson);
+        Song song = GetClassFromString<Song>(songJson);
         List<PatternInfo> patternInfos = new List<PatternInfo>();
         List<Record> records = new List<Record>();
-        string assetPath = GetStreamingAssetsPath();
 
         //json 변환
         foreach(string pattern in patternInfosJson)
         {
-            PatternInfo temp = JsonUtility.FromJson<PatternInfo>(pattern);
+            if(string.IsNullOrEmpty(pattern))
+            {
+                Debug.LogWarning($"[FileManager] 빈 PatternInfo JSON 문자열, 곡: {song.songname}");
+                continue;
+            }
+            if(pattern == "{}")
+            {
+                Debug.LogWarning($"[FileManager] 존재하지 않는 PatternInfo JSON 문자열, 곡: {song.songname}");
+                continue;
+            }
+            
+            PatternInfo temp = GetClassFromString<PatternInfo>(pattern);
             patternInfos.Add(temp);
         }
         foreach(string record in recordsJson)
         {
-            Record temp = JsonUtility.FromJson<Record>(record);
+            if(string.IsNullOrEmpty(record))
+            {
+                Debug.LogWarning($"[FileManager] 빈 Record JSON 문자열, 곡: {song.songname}");
+                records.Add(new Record()
+                {
+                    comboResult = ComboResult.none,
+                    maxcombo = 0,
+                    prate = 0,
+                    score = 0
+                });
+                continue;
+            }
+            if(record == "{}")
+            {
+                Debug.LogWarning($"[FileManager] 존재하지 않는 Record JSON 문자열, 곡: {song.songname}");
+                records.Add(new Record()
+                {
+                    comboResult = ComboResult.none,
+                    maxcombo = 0,
+                    prate = 0,
+                    score = 0
+                });
+                continue;
+            }
+
+            Record temp = GetClassFromString<Record>(record);
             records.Add(temp);
         }
 
-        //예외처리용 기록 채우기
-        for(int i = 0; i < 4; i++)
-        {
-            records.Add(new Record()
-            {
-                comboResult = ComboResult.none,
-                maxcombo = 0,
-                prate = 0,
-                score = 0
-            });
-        }
-        for(int i = 0; i < patternInfos.Count; i++)
-        {
-            patternInfos[i].patternPath = assetPath + "/Pattern/" + song.songname + "/" + _filenames[i] + ".json";
-        }
+        //예외처리용 기록 채우기 < 리펙토링 이후로 할필요 없어짐
+        // for(int i = 0; i < 4; i++)
+        // {
+        //     records.Add(new Record()
+        //     {
+        //         comboResult = ComboResult.none,
+        //         maxcombo = 0,
+        //         prate = 0,
+        //         score = 0
+        //     });
+        // }
         song.patternInfo = patternInfos;
         song.record = records;
         return song;
     }
-    private static Pattern GetPatternFromString(string patternJson)
-    {
-        Pattern pattern = JsonUtility.FromJson<Pattern>(patternJson);
-        return pattern;
-    }
     #endregion
     
     #region json file to string
-    //HACK: 이거 아예 하나의 함수로 모든 json파일 가져올 수 있을거같이 보임. 나중에 리펙터링 할것
-    private static List<string> GetPatternInfoJson(string songname)
-    {
-        List<string> patternsJson = new List<string>();
-        string AssetPath = GetStreamingAssetsPath();
 
-        string[] songpaths = Directory.GetFiles(AssetPath+"/SongInfo"+songname)
-        .Where(file => file.EndsWith(".json")).ToArray();
+    private static List<string> GetDataJson(SongDataType dataType, string songname,bool isBuiltin)
+    {
+        List<string> jsonDatas = new List<string>();
+        List<string> paths;
+        paths = GetFilePathByType(dataType, songname, isBuiltin);
+        Debug.Log($"[FileManager] GetDataJson - dataType: {dataType}, songname: {songname}, isBuiltin: {isBuiltin}");
+        foreach(string filePath in paths)
+        {
+            if(File.Exists(filePath) == false)
+            {
+                Debug.LogWarning($"[filemanager] 파일을 찾을 수 없습니다: {filePath}");
+                jsonDatas.Add("{}");
+                continue;
+            }
+            jsonDatas.Add(File.ReadAllText(filePath));
+        }
+
+        return jsonDatas;
+    }
+
+    //! 리펙토링된 함수, GetDataJson 사용 바람.
+    // private static List<string> GetPatternInfoJson(string songname)
+    // {
+    //     List<string> patternsJson = new List<string>();
+    //     string AssetPath = GetStreamingAssetsPath();
+
+    //     string[] songpaths = Directory.GetFiles(AssetPath+"/SongInfo"+songname)
+    //     .Where(file => file.EndsWith(".json")).ToArray();
         
-        foreach(string path in songpaths)
-        {
-            if(path.Contains("Info.json")) continue;
-            Debug.Log(File.ReadAllText(path));
-            patternsJson.Add(File.ReadAllText(path));
-        }
+    //     foreach(string path in songpaths)
+    //     {
+    //         if(path.Contains("Info.json")) continue;
+    //         Debug.Log(File.ReadAllText(path));
+    //         patternsJson.Add(File.ReadAllText(path));
+    //     }
 
-        return patternsJson;
-    }
-    private static List<string> GetRecordJson(string songname, string LocalPath)
-    {
+    //     return patternsJson;
+    // }
+    // private static List<string> GetRecordJson(string songname, string LocalPath)
+    // {
 
-        if(!File.Exists(LocalPath+"/Record"+songname)) return new List<string>();
+    //     if(!File.Exists(LocalPath+"/Record"+songname)) return new List<string>();
         
-        List<string> recordsJson = new List<string>();
+    //     List<string> recordsJson = new List<string>();
 
-        string[] recordpaths = Directory.GetFiles(LocalPath+"/Record"+songname)
-        .Where(file => file.EndsWith(".json")).ToArray();
+    //     string[] recordpaths = Directory.GetFiles(LocalPath+"/Record"+songname)
+    //     .Where(file => file.EndsWith(".json")).ToArray();
 
-        foreach(string path in recordpaths)
-        {
-            recordsJson.Add(File.ReadAllText(path));
-        }
-        return recordsJson;
-    }
-    private static string GetPatternJson(string patternPath)
-    {
-        if (!File.Exists(patternPath))
-        {
-            Debug.LogWarning("파일 탐지 못함");
-            return "";
-        }
-        string patternJson;
+    //     foreach(string path in recordpaths)
+    //     {
+    //         recordsJson.Add(File.ReadAllText(path));
+    //     }
+    //     return recordsJson;
+    // }
+    // private static string GetPatternJson(string songname, int difficultyIndex)
+    // {
+    //     string patternPath = GetStreamingAssetsPath() + "/Pattern/" + songname + "/" + _filenames[difficultyIndex] + ".json";
+    //     if (!File.Exists(patternPath))
+    //     {
+    //         Debug.LogWarning("파일 탐지 못함");
+    //         return "";
+    //     }
+    //     string patternJson;
 
-        patternJson = File.ReadAllText(patternPath);
-        return patternJson;
-    }
+    //     patternJson = File.ReadAllText(patternPath);
+    //     return patternJson;
+    // }
     #endregion
     #region class to String
-    private static string GetStringFromPattern(Pattern pattern)
+    private static string GetStringFromClass(object obj)
     {
-        return JsonUtility.ToJson(pattern, true);
-    }
-    public static string GetStringFromSong(Song songInfo)
-    {
-        return JsonUtility.ToJson(songInfo, true);
-    }
-    public static string GetStringFromPatternInfo(string songname,  int patternIndex, PatternInfo patternInfo)
-    {
-        patternInfo.patternPath = "Pattern/"+songname+"/"+_filenames[patternIndex];
-        
-        return JsonUtility.ToJson(patternInfo, true);
+        return JsonUtility.ToJson(obj, true);
     }
     #endregion
-    #region String to json
-    //HACK: 나중에 리펙터링 할 것.
-    private static void SetFileFromPattern(string songName, int patternIndex, string PatternJson)
+    #region String to json file
+
+    private static void SetFileFromJson(SongDataType dataType, string songname, string json, bool isBuiltin, int patternIndex = -1)
     {
-        string path = GetStreamingAssetsPath()+"/Pattern/"+songName;
-        if (!Directory.Exists(path))
+        List<string> paths = GetFilePathByType(dataType, songname, isBuiltin);
+        string path;
+        if(paths.Count > 1)
         {
-            Directory.CreateDirectory(path);
+            path = paths[patternIndex];
         }
-        path += "/" + _filenames[patternIndex]+".json";
+        else
+        {
+            path = paths[0];
+        }
+        if (!Directory.Exists(Path.GetDirectoryName(path)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+        }
         if (File.Exists(path))
         {
             Debug.LogWarning("파일을 교체합니다.");
         }
-        File.WriteAllText(path, PatternJson);
+        File.WriteAllText(path, json);
+    }
+
+    //리펙토링됨. SetFileFromJson 사용 바람.
+    // private static void SetFileFromPattern(string songName, int patternIndex, string PatternJson)
+    // {
+    //     string path = GetStreamingAssetsPath()+"/Pattern/"+songName;
+    //     if (!Directory.Exists(path))
+    //     {
+    //         Directory.CreateDirectory(path);
+    //     }
+    //     path += "/" + _filenames[patternIndex]+".json";
+    //     if (File.Exists(path))
+    //     {
+    //         Debug.LogWarning("파일을 교체합니다.");
+    //     }
+    //     File.WriteAllText(path, PatternJson);
         
 
-    }
-    private static void SetFileFromSong(string songName, string SongJson)
-    {
-        string path = GetStreamingAssetsPath()+"/SongInfo/"+songName;
-        if (!Directory.Exists(path))
-        {
-            Directory.CreateDirectory(path);
-        }
-        path += "/0-Info"+".json";
-        if (File.Exists(path))
-        {
-            Debug.LogWarning("파일을 교체합니다.");
-        }
-        File.WriteAllText(path, SongJson);
-    }
-    private static void SetFileFromPatternInfo(string songName,int patternIndex , string patternInfoJson)
-    {
-        string path = GetStreamingAssetsPath()+"/SongInfo/"+songName;
-        if (!Directory.Exists(path))
-        {
-            Directory.CreateDirectory(path);
-        }
-        path += "/"+_filenames[patternIndex]+".json";
-        if (File.Exists(path))
-        {
-            Debug.LogWarning("파일을 교체합니다.");
-        }
-        File.WriteAllText(path, patternInfoJson);
-    }
+    // }
+    // private static void SetFileFromSong(string songName, string SongJson)
+    // {
+    //     string path = GetStreamingAssetsPath()+"/SongInfo/"+songName;
+    //     if (!Directory.Exists(path))
+    //     {
+    //         Directory.CreateDirectory(path);
+    //     }
+    //     path += "/0-Info"+".json";
+    //     if (File.Exists(path))
+    //     {
+    //         Debug.LogWarning("파일을 교체합니다.");
+    //     }
+    //     File.WriteAllText(path, SongJson);
+    // }
+    // private static void SetFileFromPatternInfo(string songName,int patternIndex , string patternInfoJson)
+    // {
+    //     string path = GetStreamingAssetsPath()+"/SongInfo/"+songName;
+    //     if (!Directory.Exists(path))
+    //     {
+    //         Directory.CreateDirectory(path);
+    //     }
+    //     path += "/"+_filenames[patternIndex]+".json";
+    //     if (File.Exists(path))
+    //     {
+    //         Debug.LogWarning("파일을 교체합니다.");
+    //     }
+    //     File.WriteAllText(path, patternInfoJson);
+    // }
     #endregion
     #region 테스트용 함수
     /// <summary>
     /// 패턴파일 경로는 pattern/TestSong/1-Easy.json 입니다.
     /// </summary>
-    public static Pattern TestPatternLoad()
-    {
-        Pattern pattern;
-        pattern = GetPatternFromString(GetPatternJson(GetStreamingAssetsPath() + "/Pattern/TestSong/" + _filenames[0] + ".json"));
-        return pattern;
-    }
+    // public static Pattern TestPatternLoad()
+    // {
+    //     Pattern pattern;
+    //     pattern = GetPatternFromString(GetPatternJson(GetStreamingAssetsPath() + "/Pattern/TestSong/" + _filenames[0] + ".json"));
+    //     return pattern;
+    // }
     #endregion
     // 추가한 코드 
     public static Record UpdateRecord(string songName, int patternIndex, PlayData playData)
     {
         Record newRecord = ConvertPlayDataToRecord(playData);
-        Record oldRecord = LoadRecord(songName, patternIndex);
+        //Record oldRecord = LoadRecord(songName, patternIndex, false);
+        Record oldRecord = GetClassFromString<Record>(GetDataJson(SongDataType.Record, songName, false)[patternIndex]);
         
         if (IsBetterRecord(newRecord, oldRecord))
         {
-            SaveRecord(songName, patternIndex, newRecord);
+            // SaveRecord(songName, patternIndex, newRecord);
+            SetFileFromJson(SongDataType.Record, songName, GetStringFromClass(newRecord), false, patternIndex);
             return newRecord;
         }
 
         return oldRecord;
     }
     
-    public static Record LoadRecord(string songName, int patternIndex)
-    {
-        string filePath = GetRecordFilePath(songName, patternIndex);
+    // public static Record LoadRecord(string songName, int patternIndex, bool isBuiltin = false)
+    // {
+    //     string filePath = GetFilePathByType(SongDataType.Record, songName, isBuiltin)[patternIndex];
+    //     // string filePath = GetRecordFilePath(songName, patternIndex);
 
-        if (!File.Exists(filePath))
-        {
-            return new Record();
-        }
+    //     if (!File.Exists(filePath))
+    //     {
+    //         return new Record();
+    //     }
 
-        string json = File.ReadAllText(filePath);
-        return JsonUtility.FromJson<Record>(json);
-    }
+    //     string json = File.ReadAllText(filePath);
+    //     return JsonUtility.FromJson<Record>(json);
+    // }
 
-    public static void SaveRecord(string songName, int patternIndex, Record record)
-    {
-        string directoryPath = GetRecordDirectoryPath(songName);
+    // public static void SaveRecord(string songName, int patternIndex, Record record, bool isBuiltin = false)
+    // {
+    //     string directoryPath = GetDirPathByType(SongDataType.Record, songName, isBuiltin);
 
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath);
-        }
+    //     if (!Directory.Exists(directoryPath))
+    //     {
+    //         Directory.CreateDirectory(directoryPath);
+    //     }
 
-        string filePath = GetRecordFilePath(songName, patternIndex);
-        string json = JsonUtility.ToJson(record, true);
+    //     string filePath = GetFilePathByType(SongDataType.Record, songName, isBuiltin)[patternIndex];
+    //     // string filePath = GetRecordFilePath(songName, patternIndex);
+    //     string json = JsonUtility.ToJson(record, true);
 
-        File.WriteAllText(filePath, json);
+    //     File.WriteAllText(filePath, json);
 
-        Debug.Log("Record saved: " + filePath);
-    }
+    //     Debug.Log("Record saved: " + filePath);
+    // }
 
     private static Record ConvertPlayDataToRecord(PlayData playData)
     {
@@ -427,53 +597,53 @@ public class FileManager
         return false;
     }
 
-    private static string GetRecordDirectoryPath(string songName)
-    {
-        string localPath = GetLocalPath();
-        string safeSongName = SanitizeFileName(songName);
+    // private static string GetRecordDirectoryPath(string songName)
+    // {
+    //     string localPath = GetLocalPath();
+    //     string safeSongName = SanitizeFileName(songName);
 
-        return Path.Combine(localPath, "Record", safeSongName);
-    }
+    //     return Path.Combine(localPath, "Record", safeSongName);
+    // }
 
-    private static string GetRecordFilePath(string songName, int patternIndex)
-    {
-        string directoryPath = GetRecordDirectoryPath(songName);
-        string fileName = GetRecordFileName(patternIndex);
+    // private static string GetRecordFilePath(string songName, int patternIndex)
+    // {
+    //     string directoryPath = GetRecordDirectoryPath(songName);
+    //     string fileName = GetRecordFileName(patternIndex);
 
-        return Path.Combine(directoryPath, fileName);
-    }
+    //     return Path.Combine(directoryPath, fileName);
+    // }
 
-    private static string GetRecordFileName(int patternIndex)
-    {
-        switch (patternIndex)
-        {
-            case 0:
-                return "1-Easy.json";
-            case 1:
-                return "2-Normal.json";
-            case 2:
-                return "3-Hard.json";
-            case 3:
-                return "4-Extreme.json";
-            default:
-                return (patternIndex + 1) + "-Unknown.json";
-        }
-    }
+    // private static string GetRecordFileName(int patternIndex)
+    // {
+    //     switch (patternIndex)
+    //     {
+    //         case 0:
+    //             return "1-Easy.json";
+    //         case 1:
+    //             return "2-Normal.json";
+    //         case 2:
+    //             return "3-Hard.json";
+    //         case 3:
+    //             return "4-Extreme.json";
+    //         default:
+    //             return (patternIndex + 1) + "-Unknown.json";
+    //     }
+    // }
 
-    private static string SanitizeFileName(string fileName)
-    {
-        if (string.IsNullOrEmpty(fileName))
-        {
-            return "UnknownSong";
-        }
+    // private static string SanitizeFileName(string fileName)
+    // {
+    //     if (string.IsNullOrEmpty(fileName))
+    //     {
+    //         return "UnknownSong";
+    //     }
 
-        foreach (char invalidChar in Path.GetInvalidFileNameChars())
-        {
-            fileName = fileName.Replace(invalidChar, '_');
-        }
+    //     foreach (char invalidChar in Path.GetInvalidFileNameChars())
+    //     {
+    //         fileName = fileName.Replace(invalidChar, '_');
+    //     }
 
-        return fileName;
-    }
+    //     return fileName;
+    // }
 
     public static bool Editor_TryLoadSongInfo(string songName, out Song song) // json 파일 읽어오기
     {

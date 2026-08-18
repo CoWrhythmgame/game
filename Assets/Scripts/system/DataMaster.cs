@@ -10,6 +10,7 @@ public class DataMaster : MonoBehaviour
     private AudioClip _music;
     private bool _isNewRecord = false;
     private bool _isTestPlay = false;
+    private bool _isBuiltin = false;
     private int _difficultyIndex = 0;
     void Awake()
     {
@@ -37,8 +38,12 @@ public class DataMaster : MonoBehaviour
     //게임 시작 시(곡 선택시) 호출
     public void SetSongData(Song song, int difficultyIndex)
     {
-        this._song = song;
-        this._difficultyIndex = difficultyIndex;
+        _song = song;
+        _difficultyIndex = difficultyIndex;
+    }
+    public void SetIsBuiltin(bool isBuiltin)
+    {
+        _isBuiltin = isBuiltin;
     }
     public void SetMusic(AudioClip music)
     {
@@ -69,6 +74,10 @@ public class DataMaster : MonoBehaviour
     public AudioClip GetMusic()
     {
         return _music;
+    }
+    public bool GetIsBuiltin()
+    {
+        return _isBuiltin;
     }
     //게임 끝나고 플레이 데이터 저장할때 호출
     public void SetPlayData(PlayData playData)

@@ -15,7 +15,7 @@ public class StartMenuUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI anotherText;
 
     [Header("Scene Names")]
-    [SerializeField] private string inGameSceneName = "TestSongSelectScene";
+    [SerializeField] private string inGameSceneName = "SongSelectScene";
     [SerializeField] private string anotherSceneName = "";
 
     [Header("Text Colors")]

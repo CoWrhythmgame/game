@@ -24,6 +24,7 @@ public class EditorSongFileLoader : MonoBehaviour
     [SerializeField] private TMP_InputField artistInput;
     [SerializeField] private TMP_InputField bpmInput;
     [SerializeField] private TextMeshProUGUI errorText;
+    [SerializeField] private Button _jaketLoadButton;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
 
@@ -407,7 +408,7 @@ public class EditorSongFileLoader : MonoBehaviour
             documentsPath,
             "My Games",
             "RythmGame",
-            "EditorSongs"
+            "Songs"
         );
     }
 

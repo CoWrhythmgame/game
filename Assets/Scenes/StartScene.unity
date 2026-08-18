@@ -883,8 +883,8 @@ MonoBehaviour:
   anotherPanelImage: {fileID: 1986597638}
   inGameText: {fileID: 1876401902}
   anotherText: {fileID: 528203496}
-  inGameSceneName: TestSongSelectScene
-  anotherSceneName: TestEditorMeasure
+  inGameSceneName: SongSelectScene
+  anotherSceneName: EditorScene
   normalTextColor: {r: 1, g: 1, b: 1, a: 1}
   selectedTextColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   normalPanelColor: {r: 1, g: 1, b: 1, a: 0.25}

@@ -24,6 +24,7 @@ public class PatternManager : MonoBehaviour
     private double _tripTime = 0d;
     private float _songBPM = 1;
     private bool _isLoaded=false;
+    private bool _isSongBuiltin = false;
     void Start()
     {
         SetUp();
@@ -63,6 +64,7 @@ public class PatternManager : MonoBehaviour
         _difficultyIndex = dataMaster.GetDifficultyIndex();
         _playOption = dataMaster.GetPlayOption();
         _music = dataMaster.GetMusic();
+        _isSongBuiltin = dataMaster.GetIsBuiltin();
     }
     private void StartSong()
     {
@@ -79,7 +81,7 @@ public class PatternManager : MonoBehaviour
     private void ReadPattern()
     {
         // * 이곳에 pattern.json 읽는 함수 호출
-        Pattern pattern = FileManager.LoadPattern(_songData, _difficultyIndex);
+        Pattern pattern = FileManager.LoadPattern(_songData, _difficultyIndex, _isSongBuiltin);
         _noteList = new List<Note>();
 
         _noteList = pattern.notes;

@@ -58,7 +58,7 @@ public class SaveManager : MonoBehaviour
             //HACK: AssetDataBase는 UnityEditor 클래스의 메서드라서 에디터에서만 사용 가능함.
             AssetDatabase.Refresh();
 
-            song = FileManager.LoadSong().Where(x => x.songname == song.songname).ToArray()[0];
+            song = FileManager.LoadSong(false).Where(x => x.songname == song.songname).ToArray()[0];
             AudioClip musicClip = await FileManager.LoadMusic(song, false);
             dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
 

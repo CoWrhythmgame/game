@@ -34,7 +34,7 @@ public class SongList : MonoBehaviour
 
     void Awake()
     {
-        songs = FileManager.LoadSong();
+        songs = FileManager.LoadSong(true);
         Debug.Log(JsonUtility.ToJson(songs[0],true));
             TestMakeSong("test", "artist", 100, 12, 1, 1002, ComboResult.none, 80);
             TestMakeSong("test2", "me", 100, 11, 1, 108, ComboResult.allperfact, 81);
@@ -42,25 +42,21 @@ public class SongList : MonoBehaviour
             {
                 new PatternInfo()
                 {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 1,
                     totalNoteCount = 1
                 },
                 new PatternInfo()
                 {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 2,
                     totalNoteCount = 2
                 },
                 new PatternInfo()
                 {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 3,
                     totalNoteCount = 3
                 },
                 new PatternInfo()
                 {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = 4,
                     totalNoteCount = 4
                 }
@@ -268,7 +264,6 @@ public class SongList : MonoBehaviour
             bpm = bpm,
             patternInfo = new List<PatternInfo>(){
                 new PatternInfo(){
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = difficulty,
                     totalNoteCount = totalnotecount
                 }

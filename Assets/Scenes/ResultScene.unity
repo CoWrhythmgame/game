@@ -2761,7 +2761,7 @@ MonoBehaviour:
   rightAction: {fileID: -6431531379200325304, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   submitAction: {fileID: 4039409693550217708, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   inGameSceneName: InGameScene
-  songSelectSceneName: TestSongSelectScene
+  songSelectSceneName: SongSelectScene
 --- !u!1 &1226789918
 GameObject:
   m_ObjectHideFlags: 0
