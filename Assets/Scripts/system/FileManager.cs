@@ -272,7 +272,7 @@ public class FileManager
         foreach(string record in recordsJson)
         {
             if(string.IsNullOrEmpty(record))
-            {
+            {   
                 Debug.LogWarning($"[FileManager] 빈 Record JSON 문자열, 곡: {song.songname}");
                 records.Add(new Record()
                 {
