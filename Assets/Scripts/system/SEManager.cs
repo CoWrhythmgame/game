@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SEManager : MonoBehaviour
 {
     // 재생할 오디오 클립 (인스펙터에서 할당)
     [SerializeField] private AudioClip _hitSoundClip;
+    [SerializeField] private AudioMixerGroup _mixerGroup;
     
     // 미리 만들어둘 스피커(AudioSource)의 개수
     [SerializeField] private int _poolSize = 20;
@@ -18,6 +20,7 @@ public class SEManager : MonoBehaviour
         for (int i = 0; i < _poolSize; i++)
         {
             _audioSources[i] = gameObject.AddComponent<AudioSource>();
+            _audioSources[i].outputAudioMixerGroup = _mixerGroup;
             _audioSources[i].playOnAwake = false;
         }
     }

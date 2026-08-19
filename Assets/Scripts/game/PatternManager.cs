@@ -47,8 +47,6 @@ public class PatternManager : MonoBehaviour
         }
         GetDataFromMaster();
 
-
-        //HACK: 로드 시스템 만들면 주석 풀기
         _infoPannel.SetSongInfo(_songData);
 
         _scrollSpeed = _playOption.scrollSpeed;
@@ -123,7 +121,7 @@ public class PatternManager : MonoBehaviour
             // ingame 작업중에는 song값을 불러오지 않으므로 비활성화
             Record newrecord = UpdateRecord(playdata);
             dataMaster.SetRecord(newrecord, newrecord != _songData.record[_difficultyIndex]);
-            // HACK: 오디오 사용해서 조건 넣기
+            // HACK: 나중에 조건 확인하기
             // if(마무리 조건(노래가 끝났을 때 같은거))
             Invoke("OnChangeScene",2f);
         }
