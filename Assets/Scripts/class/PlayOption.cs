@@ -10,5 +10,4 @@ public class PlayOption
     public float scrollSpeed = 1;
     public float noteOffset = 0;
     public int keySoundType = 0;
-    public KeySetting keySetting;
 }

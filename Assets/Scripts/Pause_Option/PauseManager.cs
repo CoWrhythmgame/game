@@ -21,7 +21,7 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private InputActionReference pauseAction;
 
     [Header("Scene")]
-    [SerializeField] private string songSelectSceneName = "TestSongSelectScene";
+    [SerializeField] private string songSelectSceneName = "SongSelectScene";
 
     private int currentIndex = 0;
     private float previousTimeScale = 1f;

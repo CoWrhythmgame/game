@@ -2174,6 +2174,7 @@ GameObject:
   - component: {fileID: 573148992}
   - component: {fileID: 573148991}
   - component: {fileID: 573148990}
+  - component: {fileID: 573148994}
   - component: {fileID: 573148993}
   m_Layer: 0
   m_Name: NoteManager
@@ -2213,6 +2214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NotePoolManager
   _notePrefab: {fileID: 7154544121348377699, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
   judgementManager: {fileID: 0}
+  _notePosManager: {fileID: 0}
   _defaultCapacity: 100
   _maxSize: 300
   _tripseconds: 2
@@ -2328,6 +2330,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &573148994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573148989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddd5bdbef73409346af68e885205c8ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NotePosManager
+  _activeNoteList: []
 --- !u!1 &594635089
 GameObject:
   m_ObjectHideFlags: 0
@@ -2533,7 +2548,7 @@ MonoBehaviour:
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   pauseAction: {fileID: 5877426184956629342, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  songSelectSceneName: TestSongSelectScene
+  songSelectSceneName: SongSelectScene
 --- !u!1001 &776124587
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3612,17 +3627,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6083527562854936667, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6083527562854936667, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1314622695
+      objectReference: {fileID: 0}
     - target: {fileID: 7304791166683003562, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_Name
       value: Note
       objectReference: {fileID: 0}
     - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.04
+      value: -11.24
       objectReference: {fileID: 0}
     - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.68
+      value: -2.71
       objectReference: {fileID: 0}
     - target: {fileID: 9112778743441507334, guid: 65484a16b23ef464397c137bd2ba03dc, type: 3}
       propertyPath: m_LocalPosition.z

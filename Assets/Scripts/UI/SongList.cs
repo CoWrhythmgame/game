@@ -20,6 +20,7 @@ public class SongList : MonoBehaviour
     public GameObject DifficultyR;
 
     [SerializeField] private DataMaster _dataMaster;
+    [SerializeField] private OptionMenuUI _optionMenuUI;
     // public KeySetting keySetting;
     InputSystem_Actions inputSystem_Actions;
     InputAction cursorAction;
@@ -31,6 +32,7 @@ public class SongList : MonoBehaviour
     RectTransform difficultycontentRect;
     List<Song> songs = new List<Song>();
     Song currentSongData;
+    PlayOption _currentPlayOption;
     float SSheight;
     float SIwidth;
     private int _builtinSongCount = 0;
@@ -211,6 +213,7 @@ public class SongList : MonoBehaviour
     private async void CursorSummit()
     {
         _dataMaster.SetSongData(currentSongData, difficultyIndex);
+        _dataMaster.SetOption(_optionMenuUI.GetCurrentPlayOption());
         if(_builtinSongCount > songIndex)
         {
             _dataMaster.SetIsBuiltin(true);

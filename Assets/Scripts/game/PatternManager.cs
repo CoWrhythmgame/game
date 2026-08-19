@@ -51,8 +51,8 @@ public class PatternManager : MonoBehaviour
         //HACK: 로드 시스템 만들면 주석 풀기
         _infoPannel.SetSongInfo(_songData);
 
-        // _scrollSpeed = _playOption.scrollSpeed;
-        // _noteOffset = _playOption.noteOffset;
+        _scrollSpeed = _playOption.scrollSpeed;
+        _noteOffset = _playOption.noteOffset;
         _songBPM = _songData.bpm;
         _tripTime = 2d/_scrollSpeed;
         _audioSource.clip = _music;
@@ -74,7 +74,7 @@ public class PatternManager : MonoBehaviour
         
         ReadPattern();
 
-
+        transform.GetComponent<NotePosManager>().SetStartTime(_startAudioTime);
         judgementManager.GetComponent<JudgementManager>().SetStartTime(_startAudioTime, _startInputTime);
         judgementManager.GetComponent<ScoreManager>().Initialize(_noteList.Count,_noteList.Where(c=>c.noteType == NoteType.hold).ToList().Count);
     }
@@ -170,6 +170,7 @@ public class PatternManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //HACK: 총 정지 시간을 확인할 필요가 있음
         double currentTime = AudioSettings.dspTime-_startAudioTime;
         if(_isLoaded)
         {

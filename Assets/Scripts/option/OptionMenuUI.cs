@@ -434,4 +434,18 @@ public class OptionMenuUI : MonoBehaviour
         keySettingManager.BeginChangeLaneKey(laneIndex);
         RefreshUI();
     }
+    public PlayOption GetCurrentPlayOption()
+    {
+        PlayOption playOption = new PlayOption
+        {
+            masterVol = masterVolume,
+            musicVol = musicVolume,
+            SEVol = soundEffectVolume,
+            noteSoundVol = keyVolume,
+            scrollSpeed = scrollSpeed,
+            noteOffset = noteOffset
+        };
+
+        return playOption;
+    }
 }
