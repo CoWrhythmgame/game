@@ -18,7 +18,6 @@ public class JudgementManager : MonoBehaviour
     private int[] _FSList;
     private double _startAudioTime;
     private double _startInputTime;
-    private double _offset;
     private float _noteOffset;
     private float _judgeY;
     // 판정 기준 시간 (단위: 초)
@@ -56,6 +55,7 @@ public class JudgementManager : MonoBehaviour
         _laneBuffers[laneIndex].Enqueue(note);
     }
 
+
     // 2. 아까 만든 InputManager에서 특정 레인 키가 눌렸을 때 호출됩니다.
     public void OnLaneInputFired(int laneIndex, double inputTime)
     {
@@ -67,8 +67,10 @@ public class JudgementManager : MonoBehaviour
         NoteObject targetNote = buffer.Peek();
 
         // 오차 시간 계산
-        double timeDiff = targetNote.GetTargetTime() - inputTime+_offset;
-        
+        double timeDiff = targetNote.GetTargetTime() - (inputTime-_noteOffset)+_startInputTime;
+
+        Debug.Log("time: " + (-(inputTime-_noteOffset)+_startInputTime)+" target: " + targetNote.GetTargetTime());
+        Debug.Log("timeDiff: " + timeDiff);
         bool isFast = false;
         if(timeDiff > 0) isFast = true;
         timeDiff = Math.Abs(timeDiff);
@@ -115,7 +117,7 @@ public class JudgementManager : MonoBehaviour
         if(!(targetNote.GetIsLong() && targetNote.GetIsHolding())) return;
 
         // 오차 시간 계산
-        double timeDiff = targetNote.GetReleaseTime() - inputTime+_offset;
+        double timeDiff = targetNote.GetReleaseTime() - (inputTime-_noteOffset)+_startInputTime;
     
         timeDiff = Math.Abs(timeDiff);
         Debug.Log("입력 오차: "+timeDiff);
@@ -210,7 +212,6 @@ public class JudgementManager : MonoBehaviour
         
         _playOption = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>().GetPlayOption();
         _noteOffset = _playOption.noteOffset;
-        _offset = _startInputTime+_noteOffset;
     }
 
     private void Update()
@@ -218,7 +219,7 @@ public class JudgementManager : MonoBehaviour
         // 3. 유저가 치지 않고 놓친 노트(Miss) 처리
         // Time.time 대신 반드시 음악의 현재 위치(DSP 타임 등)를 가져와야 합니다.
         //HACK: 총 정지 시간을 확인할 필요가 있음
-        double currentTime = AudioSettings.dspTime-_startAudioTime; 
+        double currentTime = AudioSettings.dspTime-_startAudioTime - _noteOffset; 
         
         for (int i = 0; i < _laneBuffers.Length; i++)
         {

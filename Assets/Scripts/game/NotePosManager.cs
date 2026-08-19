@@ -4,6 +4,7 @@ using UnityEngine;
 public class NotePosManager : MonoBehaviour
 {
     [SerializeField]private List<Transform> _activeNoteList = new List<Transform>();
+    [SerializeField]private float _bpmFactor = 1.0f;
     private Dictionary<Transform, NoteObject> _noteObjDict = new Dictionary<Transform, NoteObject>();
     private float _traveldistance;
     private float _judgeY;
@@ -22,11 +23,11 @@ public class NotePosManager : MonoBehaviour
                 if (noteObject.GetIsLong() && noteObject.GetIsHolding())
                 {
                     
-                    _activeNoteList[i].localScale = new Vector3(1, Mathf.Clamp((float)(noteObject.GetReleaseTime() - currentTime) * noteObject.GetNoteSpeed() * 32 / _traveldistance, 0, float.MaxValue), 1);
+                    _activeNoteList[i].localScale = new Vector3(1, Mathf.Clamp((float)(noteObject.GetReleaseTime() - currentTime) * noteObject.GetNoteSpeed() * 32 / _traveldistance*_bpmFactor, 0, float.MaxValue), 1);
                 }
                 else
                 {
-                    float newY = (float)(timeToHit * noteObject.GetNoteSpeed());
+                    float newY = (float)(timeToHit * noteObject.GetNoteSpeed())*_bpmFactor;
                     Vector3 newPosition = new Vector3(_activeNoteList[i].position.x, newY + _judgeY, _activeNoteList[i].position.z);
                     _activeNoteList[i].position = newPosition;
                 }

@@ -9,7 +9,6 @@ public class PatternManager : MonoBehaviour
     [SerializeField] private NotePoolManager notePoolManager;
     [SerializeField] private InfoPannel _infoPannel;
     [SerializeField] private float _scrollSpeed = 1f;
-    [SerializeField] private float _noteOffset = 0f;
     private DataMaster dataMaster;
     private AudioSource _audioSource;
     private AudioClip _music;
@@ -22,6 +21,7 @@ public class PatternManager : MonoBehaviour
     private double _startAudioTime = 0d;
     private double _startInputTime = 0d;
     private double _tripTime = 0d;
+    private float _noteoffset = 0f;
     private float _songBPM = 1;
     private bool _isLoaded=false;
     private bool _isSongBuiltin = false;
@@ -50,7 +50,7 @@ public class PatternManager : MonoBehaviour
         _infoPannel.SetSongInfo(_songData);
 
         _scrollSpeed = _playOption.scrollSpeed;
-        _noteOffset = _playOption.noteOffset;
+        _noteoffset = _playOption.noteOffset;
         _songBPM = _songData.bpm;
         _tripTime = 2d/_scrollSpeed;
         _audioSource.clip = _music;
@@ -182,7 +182,7 @@ public class PatternManager : MonoBehaviour
         {
             if(_noteQueue[i].Count > 0){
                 Note note = _noteQueue[i].Peek();
-                if(currentTime >= note.time - _tripTime*note.bpm/_songBPM)
+                if(currentTime >= note.time - _tripTime*note.bpm/_songBPM+Mathf.Clamp(_noteoffset, float.MinValue, 0))
                 {
 
                     notePoolManager.SpawnNote(note, _scrollSpeed, note.bpm/_songBPM);

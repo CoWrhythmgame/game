@@ -40,9 +40,9 @@ public class NoteObject : MonoBehaviour
         _isHolding = false;
         _tempVector = Vector3.one;
         _traveldistance = traveldistance; //이건 warming에서 find써서 정의 가능한 변수임. 나중에 최적화할때 확인바람.
+        _targetReleaseTime = note.releaseTime;
         if(note.noteType == NoteType.hold)
         {
-            _targetReleaseTime = note.releaseTime;
             _tempVector.y = (float)(note.releaseTime-note.time)*_noteSpeed*_travelheight/_traveldistance;
             _transform.localScale = _tempVector;
             GetComponent<SpriteRenderer>().sprite = _noteSprite[1];
@@ -98,7 +98,6 @@ public class NoteObject : MonoBehaviour
     {
         double currentTime = AudioSettings.dspTime-startTime;
         Invoke("ReleaseToPool", (float)(_targetReleaseTime - currentTime+3f));
-
     }
 
     // 풀로 반환하는 함수
