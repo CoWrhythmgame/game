@@ -54,7 +54,6 @@ public class SaveManager : MonoBehaviour
             };
             FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
             
-            //FIXME: 파일 저장 경로 싹 바꿀것
             //HACK: AssetDataBase는 UnityEditor 클래스의 메서드라서 에디터에서만 사용 가능함.
             AssetDatabase.Refresh();
 
