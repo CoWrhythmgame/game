@@ -182,7 +182,7 @@ public class PatternManager : MonoBehaviour
         {
             if(_noteQueue[i].Count > 0){
                 Note note = _noteQueue[i].Peek();
-                if(currentTime >= note.time - _tripTime*note.bpm/_songBPM/Mathf.Clamp(_scrollSpeed, float.MinValue, 1f)+Mathf.Clamp(_noteoffset, float.MinValue, 0))
+                if(currentTime >= note.time - _tripTime*note.bpm/_songBPM/Mathf.Clamp(_scrollSpeed, float.MinValue, 1f)/Mathf.Clamp(NotePosManager._bpmFactor, float.MinValue, 1f)+Mathf.Clamp(_noteoffset, float.MinValue, 0))
                 {
 
                     notePoolManager.SpawnNote(note, _scrollSpeed, note.bpm/_songBPM);

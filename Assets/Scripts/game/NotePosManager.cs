@@ -1,15 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class NotePosManager : MonoBehaviour
 {
+    public static float _bpmFactor = 1.0f;
     [SerializeField]private List<Transform> _activeNoteList = new List<Transform>();
-    [SerializeField]private float _bpmFactor = 1.0f;
+    [SerializeField]private bool _direct_Geo = false;
     private Dictionary<Transform, NoteObject> _noteObjDict = new Dictionary<Transform, NoteObject>();
     private float _traveldistance;
     private float _judgeY;
+    private float _directFactor = 1f;
+    private float _count = 0;
     private double _startTime;
 
+
+    void Awake()
+    {
+        _bpmFactor = 1.0f;
+        _directFactor = 1f;
+    }
     private void Update()
     {
         double currentTime = AudioSettings.dspTime - _startTime;
@@ -33,6 +43,21 @@ public class NotePosManager : MonoBehaviour
                 }
             }
         }
+        if(_direct_Geo ||Keyboard.current.bKey.wasPressedThisFrame)
+        {
+            _directFactor = 0.001f;
+            _count=1;
+            _direct_Geo = false;
+        }
+        if(_directFactor < 1f)
+        {
+            _directFactor += (_count/1000)*(_count/1000);
+            _count++;
+        }else if(_directFactor > 1f)
+        {
+            _directFactor = 1f;
+        }
+        _bpmFactor = _directFactor;
     }
 
     public void AddNote(Transform note)
