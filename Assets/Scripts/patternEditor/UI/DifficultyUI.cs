@@ -270,7 +270,6 @@ public class EditorDifficultyUI : MonoBehaviour
         {
             bool enabled = IsDifficultyEnabled(i);
             bool selected = i == currentDifficultyIndex;
-
             Image image = slots[i].buttonImage;
 
             if (image == null && slots[i].difficultyButton != null)
@@ -278,10 +277,12 @@ public class EditorDifficultyUI : MonoBehaviour
 
             if (image != null)
             {
-                if (selected)
+                if (selected){
                     image.color = selectedColor;
-                else if (enabled)
+                }
+                else if (enabled){
                     image.color = enabledColor;
+                }
                 else
                     image.color = disabledColor;
             }

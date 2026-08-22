@@ -144,6 +144,10 @@ public class SongList : MonoBehaviour
         {
             CursorSummit();
         }
+        if(Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            SceneManager.LoadScene("StartScene");
+        }
     }
     void FixedUpdate()
     {

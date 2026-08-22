@@ -86,7 +86,7 @@ public class EditorSongInfoUI : MonoBehaviour
             return;
 
         currentDifficultyIndex = difficultyIndex;
-        RefreshDifficultyUI();
+        // RefreshDifficultyUI();
 
         Debug.Log("Selected Difficulty : " + CurrentDifficultyName);
 
@@ -94,32 +94,33 @@ public class EditorSongInfoUI : MonoBehaviour
         // LoadPatternByDifficulty(currentDifficultyIndex);
     }
 
-    private void RefreshDifficultyUI()
-    {
-        RefreshOneDifficulty(0, easyButton, easyText);
-        RefreshOneDifficulty(1, normalButton, normalText);
-        RefreshOneDifficulty(2, hardButton, hardText);
-        RefreshOneDifficulty(3, extreamButton, extreamText);
-    }
+    // private void RefreshDifficultyUI()
+    // {
+    //     RefreshOneDifficulty(0, easyButton, easyText);
+    //     RefreshOneDifficulty(1, normalButton, normalText);
+    //     RefreshOneDifficulty(2, hardButton, hardText);
+    //     RefreshOneDifficulty(3, extreamButton, extreamText);
+    // }
 
-    private void RefreshOneDifficulty(int index, Button button, TextMeshProUGUI text)
-    {
-        bool isSelected = index == currentDifficultyIndex;
+    // private void RefreshOneDifficulty(int index, Button button, TextMeshProUGUI text)
+    // {
+    //     bool isSelected = index == currentDifficultyIndex;
+        
+    //     //! 이거 EditorDifficulty UI 스크립트에서 동일한 역할을 하는 중임.
+    //     // if (button != null)
+    //     // {
+    //     //     Image buttonImage = button.GetComponent<Image>();
 
-        if (button != null)
-        {
-            Image buttonImage = button.GetComponent<Image>();
+    //     //     if (buttonImage != null)
+    //     //         buttonImage.color = isSelected ? selectedButtonColor : normalButtonColor;
+    //     // }
 
-            if (buttonImage != null)
-                buttonImage.color = isSelected ? selectedButtonColor : normalButtonColor;
-        }
-
-        if (text != null)
-        {
-            text.text = difficultyNames[index];
-            text.color = isSelected ? selectedTextColor : normalTextColor;
-        }
-    }
+    //     // if (text != null)
+    //     // {
+    //     //     text.text = difficultyNames[index];
+    //     //     text.color = isSelected ? selectedTextColor : normalTextColor;
+    //     // }
+    // }
 
     private void SetText(TextMeshProUGUI text, string value)
     {
