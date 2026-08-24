@@ -12,12 +12,15 @@ public class SongList : MonoBehaviour
     public GameObject SSprefab;
     public GameObject songContentPannel;
     public GameObject songIndicatorobj;
+    [SerializeField] private RectTransform _builtinFolder;
+    [SerializeField] private RectTransform _customFolder;
     public int difficultyIndex = 0;
     public GameObject DifficultyContentPannel;
     public GameObject DifficultyL;
     public GameObject DifficultyR;
 
     [SerializeField] private DataMaster _dataMaster;
+    [SerializeField] private OptionMenuUI _optionMenuUI;
     // public KeySetting keySetting;
     InputSystem_Actions inputSystem_Actions;
     InputAction cursorAction;
@@ -29,76 +32,21 @@ public class SongList : MonoBehaviour
     RectTransform difficultycontentRect;
     List<Song> songs = new List<Song>();
     Song currentSongData;
+    PlayOption _currentPlayOption;
     float SSheight;
     float SIwidth;
+    private int _builtinSongCount = 0;
 
     void Awake()
     {
-        songs = FileManager.LoadSong();
+        songs = FileManager.LoadSong(true);
+        _builtinSongCount = songs.Count;
+        songs.AddRange(FileManager.LoadSong(false));
         Debug.Log(JsonUtility.ToJson(songs[0],true));
-            TestMakeSong("test", "artist", 100, 12, 1, 1002, ComboResult.none, 80);
-            TestMakeSong("test2", "me", 100, 11, 1, 108, ComboResult.allperfact, 81);
-            TestMakeSong("TeSt3", "AAA", 123, new List<PatternInfo>()
-            {
-                new PatternInfo()
-                {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
-                    difficulty = 1,
-                    totalNoteCount = 1
-                },
-                new PatternInfo()
-                {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
-                    difficulty = 2,
-                    totalNoteCount = 2
-                },
-                new PatternInfo()
-                {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
-                    difficulty = 3,
-                    totalNoteCount = 3
-                },
-                new PatternInfo()
-                {
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
-                    difficulty = 4,
-                    totalNoteCount = 4
-                }
-            }, 
-            new List<Record>()
-            {
-                new Record()
-                {
-                    score = 1,
-                    maxcombo = 0,
-                    comboResult = ComboResult.none,
-                    prate = 0
-                },
-                new Record()
-                {
-                    score = 2,
-                    maxcombo = 2,
-                    comboResult = ComboResult.fullcombo,
-                    prate = 90
-                },
-                new Record()
-                {
-                    score = 3,
-                    maxcombo = 3,
-                    comboResult = ComboResult.allperfact,
-                    prate = 100
-                },
-                new Record()
-                {
-                    score = 4,
-                    maxcombo = 2,
-                    comboResult = ComboResult.none,
-                    prate = 50
-                },
-            });
         songIndicator = songIndicatorobj.GetComponent<SongIndicator>();
         SSheight = SSprefab.GetComponent<RectTransform>().rect.height;
         SIwidth = songIndicatorobj.GetComponent<RectTransform>().rect.width;
+        _customFolder.anchoredPosition = new Vector3(-15, _builtinSongCount * -SSheight-30, 0);
         Song temp = songs[2];
         // temp.record.Clear();
         // temp.pattern.Clear();
@@ -170,12 +118,19 @@ public class SongList : MonoBehaviour
     public void MakeSelectors(List<Song> songs)
     {
         Vector3 pos = new Vector3(0, 0, 0);
-        foreach(Song song in songs)
+        for (int i = 0; i < songs.Count; i++)
         {
             GameObject selector = Instantiate(SSprefab);
             selector.transform.SetParent(songContentPannel.transform, false);
-            selector.GetComponent<RectTransform>().anchoredPosition = pos;
-            selector.GetComponent<SongSelector>().Setup(song);
+            if(i < _builtinSongCount)
+            {
+                selector.GetComponent<RectTransform>().anchoredPosition = pos;
+            }
+            else
+            {
+                selector.GetComponent<RectTransform>().anchoredPosition = pos + new Vector3(0, -130, 0);
+            }
+            selector.GetComponent<SongSelector>().Setup(songs[i]);
             SongSelectors.Add(selector);
             pos += new Vector3(0, -(SSheight+10), 0);
         }
@@ -250,10 +205,23 @@ public class SongList : MonoBehaviour
             SetDifficulty(difficultyIndex - 1);
         }
         songtragetPos = new Vector2(0, (SSheight+10) * songIndex);
+        if(songIndex >= _builtinSongCount)
+        {
+            songtragetPos += new Vector2(0, 130);
+        }
     }
     private async void CursorSummit()
     {
         _dataMaster.SetSongData(currentSongData, difficultyIndex);
+        _dataMaster.SetOption(_optionMenuUI.GetCurrentPlayOption());
+        if(_builtinSongCount > songIndex)
+        {
+            _dataMaster.SetIsBuiltin(true);
+        }
+        else
+        {
+            _dataMaster.SetIsBuiltin(false);
+        }
         AudioClip musicClip = await FileManager.LoadMusic(currentSongData, false);
         _dataMaster.SetMusic(musicClip);
         SceneManager.LoadScene("InGameScene");
@@ -268,7 +236,6 @@ public class SongList : MonoBehaviour
             bpm = bpm,
             patternInfo = new List<PatternInfo>(){
                 new PatternInfo(){
-                    patternPath = "Assets/Resources/Songs/test/test_pattern.json",
                     difficulty = difficulty,
                     totalNoteCount = totalnotecount
                 }

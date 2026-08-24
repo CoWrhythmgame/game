@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,8 @@ using UnityEngine;
 public class NoteHitEffectPool : MonoBehaviour
 {
     public static NoteHitEffectPool Instance { get; private set; }
+
+    [SerializeField] private SEManager _seManager;
 
     [System.Serializable]
     public class EffectEntry
@@ -85,7 +88,7 @@ public class NoteHitEffectPool : MonoBehaviour
         instance.transform.position = worldPos;
         instance.gameObject.SetActive(true);
         instance.Play(_stateNameLookup[judgement], 0, 0f); // normalizedTime 0으로 강제 초기화
-
+        _seManager.PlayHitSound();
         StartCoroutine(ReturnToPoolAfterPlay(instance, judgement));
     }
 

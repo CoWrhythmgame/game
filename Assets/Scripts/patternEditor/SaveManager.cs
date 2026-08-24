@@ -73,24 +73,15 @@ public class SaveManager : MonoBehaviour
                 difficulty = Mathf.RoundToInt(difficultyLevel),
                 totalNoteCount = pattern.notes != null ? pattern.notes.Count : 0
             };
-
-            FileManager.Editor_SavePattern(song, patternInfo, pattern, difficultyIndex);
-
+            FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
+            
+            //HACK: AssetDataBase는 UnityEditor 클래스의 메서드라서 에디터에서만 사용 가능함.
             AssetDatabase.Refresh();
 
-            Song[] songs = FileManager.LoadSong()
-                .Where(x => x.songname == song.songname)
-                .ToArray();
-
-            if (songs.Length == 0)
-            {
-                Debug.LogWarning("저장한 곡 정보를 다시 불러오지 못했습니다: " + song.songname);
-                return false;
-            }
-
-            song = songs[0];
-
+            song = FileManager.LoadSong(false).Where(x => x.songname == song.songname).ToArray()[0];
             AudioClip musicClip = await FileManager.LoadMusic(song, false);
+            dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
+
 
             dataMaster.SetSongData(song, difficultyIndex);
             dataMaster.SetMusic(musicClip);

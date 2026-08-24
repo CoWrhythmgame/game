@@ -10,6 +10,7 @@ public class DataMaster : MonoBehaviour
     private AudioClip _music;
     private bool _isNewRecord = false;
     private bool _isTestPlay = false;
+    private bool _isBuiltin = false;
     private int _difficultyIndex = 0;
     void Awake()
     {
@@ -26,6 +27,19 @@ public class DataMaster : MonoBehaviour
 
         // 3. 씬이 바뀌어도 파괴되지 않도록 설정 (최상위 오브젝트여야 작동함)
         DontDestroyOnLoad(gameObject);
+
+        
+        PlayOption playOption = new PlayOption
+        {
+            masterVol = PlayerPrefs.GetInt("Option_MasterVolume", 100),
+            musicVol = PlayerPrefs.GetInt("Option_MusicVolume", 100),
+            SEVol = PlayerPrefs.GetInt("Option_SoundEffectVolume", 100),
+            noteSoundVol = PlayerPrefs.GetInt("Option_KeyVolume", 100),
+            scrollSpeed = PlayerPrefs.GetFloat("Option_ScrollSpeed", 1.0f),
+            noteOffset = PlayerPrefs.GetFloat("Option_NoteOffset", 0.0f)
+        };
+        _playOption = playOption;
+
     }
     #region SongSelectScene
     //옵션이 바뀌었을 때 함수 호출
@@ -37,8 +51,12 @@ public class DataMaster : MonoBehaviour
     //게임 시작 시(곡 선택시) 호출
     public void SetSongData(Song song, int difficultyIndex)
     {
-        this._song = song;
-        this._difficultyIndex = difficultyIndex;
+        _song = song;
+        _difficultyIndex = difficultyIndex;
+    }
+    public void SetIsBuiltin(bool isBuiltin)
+    {
+        _isBuiltin = isBuiltin;
     }
     public void SetMusic(AudioClip music)
     {
@@ -69,6 +87,10 @@ public class DataMaster : MonoBehaviour
     public AudioClip GetMusic()
     {
         return _music;
+    }
+    public bool GetIsBuiltin()
+    {
+        return _isBuiltin;
     }
     //게임 끝나고 플레이 데이터 저장할때 호출
     public void SetPlayData(PlayData playData)

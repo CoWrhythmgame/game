@@ -18,7 +18,6 @@ public class JudgementManager : MonoBehaviour
     private int[] _FSList;
     private double _startAudioTime;
     private double _startInputTime;
-    private double _offset;
     private float _noteOffset;
     private float _judgeY;
     // 판정 기준 시간 (단위: 초)
@@ -56,6 +55,7 @@ public class JudgementManager : MonoBehaviour
         _laneBuffers[laneIndex].Enqueue(note);
     }
 
+
     // 2. 아까 만든 InputManager에서 특정 레인 키가 눌렸을 때 호출됩니다.
     public void OnLaneInputFired(int laneIndex, double inputTime)
     {
@@ -70,7 +70,10 @@ public class JudgementManager : MonoBehaviour
         NoteObject targetNote = buffer.Peek();
 
         // 오차 시간 계산
-        double timeDiff = targetNote.GetTargetTime() - adjustedInputTime + _offset;
+        double timeDiff = targetNote.GetTargetTime() - adjustedInputTime + _startInputTime+_noteOffset;
+
+        Debug.Log("time: " + (-(inputTime-_noteOffset)+_startInputTime)+" target: " + targetNote.GetTargetTime());
+        Debug.Log("timeDiff: " + timeDiff);
         
         bool isFast = false;
         if(timeDiff > 0) isFast = true;
@@ -92,14 +95,14 @@ public class JudgementManager : MonoBehaviour
         else if (targetNote.GetTargetTime() > adjustedInputTime - _startInputTime && timeDiff <= _missWindow)
         {
             // 너무 일찍 친 경우 (Fast Miss)
-            ProcessHit(buffer, targetNote, "Miss");
+            ProcessMiss(buffer, targetNote);
         }
         // 허용 범위 밖으로 너무 일찍 눌렀다면 아무 반응도 하지 않고 남겨둡니다 (허공 치기)
 
         Debug.Log("time: " + inputTime+" target: " + targetNote.GetTargetTime());
 
         //페슬
-        if(timeDiff > _FSwindow)
+        if(timeDiff > _FSwindow && timeDiff <= _greatWindow)
         {
             ProcessFS(isFast);
         }
@@ -116,14 +119,14 @@ public class JudgementManager : MonoBehaviour
         // 큐의 맨 앞(가장 먼저 떨어지는) 노트 확인 (아직 빼지 않음)
         NoteObject targetNote = buffer.Peek();
 
-        //노트가 롱노트이면서 판정중이 아니라면
+        //노트가 롱노트이면서 판정중이 아니면 조기 종료
         if(!(targetNote.GetIsLong() && targetNote.GetIsHolding())) return;
 
         // 멈춘 시간만큼 정지
         double adjustedInputTime = inputTime - PauseManager.TotalPausedInputTime;
 
         // 오차 시간 계산
-        double timeDiff = targetNote.GetReleaseTime() - adjustedInputTime + _offset;
+        double timeDiff = targetNote.GetTargetTime() - adjustedInputTime + _startInputTime+_noteOffset;
     
         timeDiff = Math.Abs(timeDiff);
         Debug.Log("입력 오차: "+timeDiff);
@@ -138,14 +141,10 @@ public class JudgementManager : MonoBehaviour
             ProcessHit(buffer, targetNote, "Miss");
             // 너무 일찍 친 경우 (Fast Miss)
             ProcessRelease(buffer, targetNote);
+            ProcessFS(true);
         }
         // 허용 범위 밖으로 너무 일찍 눌렀다면 아무 반응도 하지 않고 남겨둡니다 (허공 치기)
 
-        //페슬
-        if(timeDiff > _FSwindow)
-        {
-            ProcessFS(true);
-        }
     }
 
 
@@ -155,13 +154,9 @@ public class JudgementManager : MonoBehaviour
         Debug.Log($"판정: {judgment}");
         _judgeText.ShowToast(judgment, 0.5f);
         scoreManager.AddJudgment(judgment);
-        switch (judgment)
-        {
-            case "Perfect": _judgeCount[0]++; break;
-            case "Great": _judgeCount[1]++; break;
-            case "Good": _judgeCount[2]++; break;
-            case "Miss": _judgeCount[3]++; break;
-        }
+        processCount(judgment);
+
+
         if(!note.GetIsLong()) buffer.Dequeue(); // 롱노트가 아니면 버퍼에서 제거
         note.OnHit(_startAudioTime);     // 타격 이펙트 재생 및 Pool로 반환
         _infoPannel.SetJudgeCount(_judgeCount);
@@ -177,6 +172,33 @@ public class JudgementManager : MonoBehaviour
     {
         buffer.Dequeue();
         note.OnRelease();
+        patternManager.CheckPatternEnd();
+    }
+    private void processCount(string judgment)
+    {
+        switch (judgment)
+        {
+            case "Perfect": _judgeCount[0]++; break;
+            case "Great": _judgeCount[1]++; break;
+            case "Good": _judgeCount[2]++; break;
+            case "Miss": _judgeCount[3]++; break;
+        }
+    }
+    private void ProcessMiss(Queue<NoteObject> buffer, NoteObject note)
+    {
+        Debug.Log("Miss! (놓침)");
+        _judgeText.ShowToast("Miss", 0.5f);
+        scoreManager.AddJudgment("Miss");
+        if(note.GetIsLong() && !note.GetIsHolding())
+        {
+            scoreManager.AddJudgment("Miss");
+            processCount("Miss");
+        }
+        processCount("Miss");
+        buffer.Dequeue();
+        note.OnMiss(_startAudioTime); // Pool로 반환
+        _infoPannel.SetJudgeCount(_judgeCount);
+
         patternManager.CheckPatternEnd();
     }
     private void ProcessFS(bool isFast)
@@ -199,7 +221,6 @@ public class JudgementManager : MonoBehaviour
         
         _playOption = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>().GetPlayOption();
         _noteOffset = _playOption.noteOffset;
-        _offset = _startInputTime+_noteOffset;
     }
 
     private void Update()
@@ -208,7 +229,7 @@ public class JudgementManager : MonoBehaviour
             return;
         // 3. 유저가 치지 않고 놓친 노트(Miss) 처리
         // Time.time 대신 반드시 음악의 현재 위치(DSP 타임 등)를 가져와야 합니다.
-        double currentTime = AudioSettings.dspTime - PauseManager.TotalPausedDspTime - _startAudioTime;
+        double currentTime = AudioSettings.dspTime - PauseManager.TotalPausedDspTime - _startAudioTime - _noteOffset;
 
         //이거 좀 위험해보임
         for (int i = 0; i < _laneBuffers.Length; i++)
@@ -216,16 +237,24 @@ public class JudgementManager : MonoBehaviour
             if (_laneBuffers[i].Count > 0)
             {
                 NoteObject targetNote = _laneBuffers[i].Peek();
-                // 롱노트가 아닌데 늦었으면
-                if (currentTime - targetNote.GetTargetTime() > _goodWindow && !targetNote.GetIsLong())
+                // 늦었으면
+                if (currentTime - targetNote.GetTargetTime() > _goodWindow)
                 {
                     Debug.Log("Miss! (놓침)");
 
-                    targetNote.OnMiss(); // Pool로 반환
-                    ProcessHit(_laneBuffers[i], targetNote, "Miss");
+                    if(targetNote.GetIsLong() && !targetNote.GetIsHolding())
+                    {
+                        ProcessMiss(_laneBuffers[i], targetNote);
+                        ProcessFS(false);
+                    }
+                    else if(!targetNote.GetIsLong())
+                    {
+                        ProcessMiss(_laneBuffers[i], targetNote);
+                        ProcessFS(false);
+                    }
                 }
-                // 롱노트인데 늦었으면
-                if (currentTime - targetNote.GetReleaseTime() > _longPerfectWindow && targetNote.GetIsLong())
+                // 롱노트인데 처리중에 늦었으면
+                if (currentTime - targetNote.GetReleaseTime() > _longPerfectWindow && targetNote.GetIsLong() && targetNote.GetIsHolding())
                 {
                     Debug.Log("Good, 롱노트 놓침");
 
