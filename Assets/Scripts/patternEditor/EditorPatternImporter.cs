@@ -1,3 +1,4 @@
+using UnityEditor.Hardware;
 using UnityEngine;
 
 public class EditorPatternImporter : MonoBehaviour
@@ -12,43 +13,43 @@ public class EditorPatternImporter : MonoBehaviour
     [Header("Temporary Test")]
     [SerializeField] private string importSongName = "";
 
-    public void ImportPattern()
+    public void ImportPattern(bool isbuiltin)
     {
         if (string.IsNullOrWhiteSpace(importSongName))
         {
-            Debug.LogWarning("Import Song NameÀÌ ºñ¾î ÀÖ½À´Ï´Ù.");
+            Debug.LogWarning("Import Song Nameï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
         if (editorDifficultyUI == null)
         {
-            Debug.LogWarning("EditorDifficultyUI°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("EditorDifficultyUIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
         if (measureList == null)
         {
-            Debug.LogWarning("MeasureList°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("MeasureListï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
         Song song = null;
 
-        bool hasSavedSongInfo = FileManager.Editor_TryLoadSongInfo(importSongName, out song);
+        bool hasSavedSongInfo = FileManager.Editor_TryLoadSongInfo(importSongName, isbuiltin, out song);
 
         if (!hasSavedSongInfo)
         {
-            Debug.LogWarning("StreamingAssets °î Á¤º¸°¡ ¾ø½À´Ï´Ù. EditorSongs¿¡¼­ °îÀ» ºÒ·¯¿É´Ï´Ù: " + importSongName);
+            Debug.LogWarning("StreamingAssets ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. EditorSongsï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½É´Ï´ï¿½: " + importSongName);
 
             if (editorSongFileLoader == null)
             {
-                Debug.LogWarning("EditorSongFileLoader°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+                Debug.LogWarning("EditorSongFileLoaderï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
                 return;
             }
 
             if (!editorSongFileLoader.TryLoadExistingEditorSongByName(importSongName, out EditorLoadedSongData loadedData))
             {
-                Debug.LogWarning("EditorSongs¿¡¼­µµ °îÀ» ºÒ·¯¿ÀÁö ¸øÇß½À´Ï´Ù: " + importSongName);
+                Debug.LogWarning("EditorSongsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½: " + importSongName);
                 return;
             }
 
@@ -86,12 +87,14 @@ public class EditorPatternImporter : MonoBehaviour
             bool hasPatternInfo = FileManager.Editor_TryLoadPatternInfo(
                 importSongName,
                 i,
+                isbuiltin,
                 out PatternInfo patternInfo
             );
 
             bool hasPattern = FileManager.Editor_TryLoadPattern(
                 importSongName,
                 i,
+                isbuiltin,
                 out Pattern pattern
             );
 
@@ -120,7 +123,7 @@ public class EditorPatternImporter : MonoBehaviour
             editorDifficultyUI.ApplyImportedDifficulty(0, true, 1);
             editorDifficultyUI.SelectImportedDifficulty(0);
 
-            Debug.LogWarning("ÀúÀåµÈ Ã¤º¸°¡ ¾ø¾î À½¾Ç¸¸ ºÒ·¯¿À°í ºó Easy ÆÐÅÏÀ¸·Î ½ÃÀÛÇÕ´Ï´Ù: " + importSongName);
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Easy ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½: " + importSongName);
         }
         else
         {
@@ -129,10 +132,10 @@ public class EditorPatternImporter : MonoBehaviour
         Debug.Log("Imported editor song: " + importSongName);
     }
 
-    public void ImportPatternBySongName(string songName)
+    public void ImportPatternBySongName(string songName, bool isbuiltin)
     {
         importSongName = songName;
-        ImportPattern();
+        ImportPattern(isbuiltin);
     }
     private void Start()
     {
@@ -148,8 +151,8 @@ public class EditorPatternImporter : MonoBehaviour
         int difficultyIndex = EditorReturnContext.DifficultyIndex;
 
         EditorReturnContext.Clear();
-
-        ImportPatternBySongName(songName);
+        bool isbuiltin = DataMaster.Instance.GetIsBuiltin();
+        ImportPatternBySongName(songName, isbuiltin);
 
         if (editorDifficultyUI != null)
             editorDifficultyUI.SelectImportedDifficulty(difficultyIndex);

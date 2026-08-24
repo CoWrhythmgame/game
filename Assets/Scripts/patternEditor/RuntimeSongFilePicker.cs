@@ -61,7 +61,7 @@ public class RuntimeSongFilePicker : MonoBehaviour
 
         if (songFileLoader == null)
         {
-            Debug.LogWarning("EditorSongFileLoader°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("EditorSongFileLoaderï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
@@ -104,7 +104,7 @@ public class RuntimeSongFilePicker : MonoBehaviour
     {
         if (!File.Exists(path))
         {
-            Debug.LogWarning("¼±ÅÃÇÑ song_info.json ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù: " + path);
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ song_info.json ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê½ï¿½ï¿½Ï´ï¿½: " + path);
             return;
         }
 
@@ -112,7 +112,7 @@ public class RuntimeSongFilePicker : MonoBehaviour
 
         if (fileName != "song_info.json")
         {
-            Debug.LogWarning("song_info.json ÆÄÀÏÀ» ¼±ÅÃÇØ¾ß ÇÕ´Ï´Ù: " + path);
+            Debug.LogWarning("song_info.json ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Õ´Ï´ï¿½: " + path);
             return;
         }
 
@@ -121,16 +121,18 @@ public class RuntimeSongFilePicker : MonoBehaviour
 
         if (songData == null || string.IsNullOrWhiteSpace(songData.songName))
         {
-            Debug.LogWarning("song_info.json¿¡¼­ °î ÀÌ¸§À» ÀÐÁö ¸øÇß½À´Ï´Ù: " + path);
+            Debug.LogWarning("song_info.jsonï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½: " + path);
             return;
         }
 
         if (patternImporter == null)
         {
-            Debug.LogWarning("EditorPatternImporter°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("EditorPatternImporterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
-        patternImporter.ImportPatternBySongName(songData.songName);
+        bool isbuiltin = FileManager.ChackBuiltIn(path);
+
+        patternImporter.ImportPatternBySongName(songData.songName, isbuiltin);
     }
 }

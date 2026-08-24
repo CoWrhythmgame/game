@@ -177,7 +177,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8126856730200406674
 Transform:
   m_ObjectHideFlags: 0
@@ -239,7 +239,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1314622695
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4025159193867184526, guid: 0d4d699cdf606e04ebbee95d43418fca, type: 3}
@@ -1943,6 +1943,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb26dee1eb4af5540b2a9dcc6d8696af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectButton
+  _childObjects: []
 --- !u!1 &4229234230766720545
 GameObject:
   m_ObjectHideFlags: 0

@@ -224,6 +224,11 @@ public class FileManager
         }
         return paths;
     }
+    public static bool ChackBuiltIn(string path)
+    {
+        string streamingAssetsPath = GetStreamingAssetsPath();
+        return path.StartsWith(streamingAssetsPath);
+    }
     #endregion
 
     #region string to class 변환
@@ -645,11 +650,11 @@ public class FileManager
     //     return fileName;
     // }
 
-    public static bool Editor_TryLoadSongInfo(string songName, out Song song) // json 파일 읽어오기
+    public static bool Editor_TryLoadSongInfo(string songName, bool isbuiltin, out Song song) // json 파일 읽어오기
     {
         song = null;
 
-        string path = Application.streamingAssetsPath + "/SongInfo/" + songName + "/0-Info.json";
+        string path = GetFilePathByType(SongDataType.SongInfo, songName, isbuiltin)[0];
 
         if (!File.Exists(path))
         {
@@ -663,7 +668,7 @@ public class FileManager
         return song != null;
     }
 
-    public static bool Editor_TryLoadPatternInfo(string songName, int patternIndex, out PatternInfo patternInfo) // 난이도 정보 읽어오기
+    public static bool Editor_TryLoadPatternInfo(string songName, int patternIndex, bool isbuiltin, out PatternInfo patternInfo) // 난이도 정보 읽어오기
     {
         patternInfo = null;
 
@@ -672,7 +677,7 @@ public class FileManager
         if (patternIndex < 0 || patternIndex >= filenames.Length)
             return false;
 
-        string path = Application.streamingAssetsPath + "/SongInfo/" + songName + "/" + filenames[patternIndex] + ".json";
+        string path = GetFilePathByType(SongDataType.PatternInfo, songName, isbuiltin)[patternIndex];
 
         if (!File.Exists(path))
             return false;
@@ -683,7 +688,7 @@ public class FileManager
         return patternInfo != null;
     }
 
-    public static bool Editor_TryLoadPattern(string songName, int patternIndex, out Pattern pattern) // 패턴 읽어오기
+    public static bool Editor_TryLoadPattern(string songName, int patternIndex, bool isbuiltin, out Pattern pattern) // 패턴 읽어오기
     {
         pattern = null;
 
@@ -692,7 +697,7 @@ public class FileManager
         if (patternIndex < 0 || patternIndex >= filenames.Length)
             return false;
 
-        string path = Application.streamingAssetsPath + "/Pattern/" + songName + "/" + filenames[patternIndex] + ".json";
+        string path = GetFilePathByType(SongDataType.Pattern, songName, isbuiltin)[patternIndex];
 
         if (!File.Exists(path))
             return false;

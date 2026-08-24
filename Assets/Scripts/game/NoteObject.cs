@@ -93,10 +93,14 @@ public class NoteObject : MonoBehaviour
     /// 노트를 놓쳐서 화면에 보이지 않게 되면 풀로 반환하기 위해 호출되는 함수
     /// </summary>
     /// <param name="startTime">곡 시작 시간</param>
-    /// HACK: 총 정지 시간을 확인할 필요가 있음
     public void OnMiss(double startTime)
     {
-        double currentTime = AudioSettings.dspTime-startTime;
+        double currentTime = AudioSettings.dspTime-PauseManager.TotalPausedDspTime-startTime;
+        if (!_isLong)
+        {
+            ReleaseToPool();
+            return;
+        }
         Invoke("ReleaseToPool", (float)(_targetReleaseTime - currentTime+3f));
     }
 

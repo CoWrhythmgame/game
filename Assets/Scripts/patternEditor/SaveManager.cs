@@ -82,15 +82,6 @@ public class SaveManager : MonoBehaviour
             AudioClip musicClip = await FileManager.LoadMusic(song, false);
             dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
 
-            if (songs.Length == 0)
-            {
-                Debug.LogWarning("저장한 곡 정보를 다시 불러오지 못했습니다: " + song.songname);
-                return false;
-            }
-
-            song = songs[0];
-
-            AudioClip musicClip = await FileManager.LoadMusic(song, false);
 
             dataMaster.SetSongData(song, difficultyIndex);
             dataMaster.SetMusic(musicClip);
