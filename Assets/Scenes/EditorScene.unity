@@ -2358,6 +2358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EditorSongAudioController
   _measureList: {fileID: 1502741737}
+  beatmapTimer: {fileID: 1502741739}
   _SEManager: {fileID: 339224532}
   songFileLoader: {fileID: 926148147}
   audioSource: {fileID: 250468425}
@@ -2371,6 +2372,7 @@ MonoBehaviour:
   playButtonText: {fileID: 160803216}
   timeText: {fileID: 1807120324}
   seekSeconds: 5
+  hitSoundLatencyCompensation: 0.03
 --- !u!114 &250468427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2602,19 +2604,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 284860397}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1643355681}
-        m_TargetAssemblyTypeName: EditorPatternImporter, Assembly-CSharp
-        m_MethodName: ImportPattern
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &284860397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2972,7 +2962,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EditorDifficultyUI
   songFileLoader: {fileID: 926148147}
   measureList: {fileID: 1502741737}
-  dirtyState: {fileID: 0}
   slots:
   - displayName: Easy
     difficultyButton: {fileID: 1333454462}
@@ -4578,7 +4567,6 @@ MonoBehaviour:
   _editorSongFileLoader: {fileID: 926148147}
   _editorSongInfoUI: {fileID: 926148148}
   editorDifficultyUI: {fileID: 337416447}
-  dirtyState: {fileID: 0}
 --- !u!4 &557794604
 Transform:
   m_ObjectHideFlags: 0
@@ -8019,6 +8007,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuntimeSongFilePicker
   songFileLoader: {fileID: 926148147}
+  importButton: {fileID: 284860396}
+  patternImporter: {fileID: 1643355681}
 --- !u!114 &953900064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9169,7 +9159,6 @@ MonoBehaviour:
   _editorSongFileLoader: {fileID: 926148147}
   _editorSongInfoUI: {fileID: 926148148}
   editorDifficultyUI: {fileID: 337416447}
-  dirtyState: {fileID: 0}
 --- !u!1001 &1144289259
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11131,10 +11120,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1426757515}
-  - component: {fileID: 1426757514}
   - component: {fileID: 1426757513}
   m_Layer: 5
-  m_Name: ExitAndDirtyState
+  m_Name: ExitManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11153,21 +11141,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExitConfirmController
   confirmPanel: {fileID: 929426621}
-  dirtyState: {fileID: 1426757514}
   saveManager: {fileID: 1135131609}
   targetSceneName: StartScene
---- !u!114 &1426757514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1426757512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a0c19da6ff35f54689f700aa8d2c3e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DirtyState
 --- !u!224 &1426757515
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12755,9 +12730,8 @@ MonoBehaviour:
   editorDifficultyUI: {fileID: 337416447}
   measureList: {fileID: 1502741737}
   beatmapTimer: {fileID: 1502741739}
-  dirtyState: {fileID: 1426757514}
   editorSongFileLoader: {fileID: 926148147}
-  importSongName: "IROCD-007 - 04 - Freezer feat.\u5983\u82FA - \u7DCB\u7E8F\u3044\u306E\u5BB5"
+  importSongName: 111222
 --- !u!224 &1643355682
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15460,7 +15434,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1135131609}
         m_TargetAssemblyTypeName: SaveManager, Assembly-CSharp
-        m_MethodName: SavePattern
+        m_MethodName: SavePatternFromButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

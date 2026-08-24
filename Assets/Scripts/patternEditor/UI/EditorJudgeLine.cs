@@ -54,8 +54,8 @@ public class EditorJudgeLine : MonoBehaviour
     {
         if (targetCamera == null)
             return;
-
-        float judgeY = targetCamera.transform.position.y + localYOffset;
+  
+        float judgeY = targetCamera.transform.position.y + localYOffset; 
 
         lineRenderer.SetPosition(0, new Vector3(leftX, judgeY, zPosition));
         lineRenderer.SetPosition(1, new Vector3(rightX, judgeY, zPosition));

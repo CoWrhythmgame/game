@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.InputSystem.LowLevel;
 public class PauseManager : MonoBehaviour
 {
     public static bool IsPaused { get; private set; }
@@ -25,11 +25,19 @@ public class PauseManager : MonoBehaviour
 
     private int currentIndex = 0;
     private float previousTimeScale = 1f;
-
+    private static double pauseStartDspTime;
+    private static double pauseStartInputTime;
+    public static event System.Action OnGamePaused;
+    public static event System.Action OnGameResumed;
+    public static double TotalPausedDspTime { get; private set; }
+    public static double TotalPausedInputTime { get; private set; }
     private void Awake()
     {
         IsPaused = false;
         Time.timeScale = 1f;
+
+        TotalPausedDspTime = 0d;
+        TotalPausedInputTime = 0d;
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
@@ -98,6 +106,9 @@ public class PauseManager : MonoBehaviour
         IsPaused = true;
         currentIndex = 0;
 
+        pauseStartDspTime = AudioSettings.dspTime;
+        pauseStartInputTime = InputState.currentTime;
+
         previousTimeScale = Time.timeScale;
         Time.timeScale = 0f;
 
@@ -105,6 +116,7 @@ public class PauseManager : MonoBehaviour
             pausePanel.SetActive(true);
 
         RefreshMenuUI();
+        OnGamePaused?.Invoke();
     }
 
     public void ResumeGame()
@@ -112,11 +124,15 @@ public class PauseManager : MonoBehaviour
         if (!IsPaused)
             return;
 
+        TotalPausedDspTime += AudioSettings.dspTime - pauseStartDspTime;
+        TotalPausedInputTime += InputState.currentTime - pauseStartInputTime;
+
         IsPaused = false;
         Time.timeScale = previousTimeScale <= 0f ? 1f : previousTimeScale;
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
+        OnGameResumed?.Invoke();
     }
 
     public void RestartGame()

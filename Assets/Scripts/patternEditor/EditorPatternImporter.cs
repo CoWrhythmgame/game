@@ -7,7 +7,6 @@ public class EditorPatternImporter : MonoBehaviour
     [SerializeField] private EditorDifficultyUI editorDifficultyUI;
     [SerializeField] private MeasureList measureList;
     [SerializeField] private BeatmapTimer beatmapTimer;
-    [SerializeField] private DirtyState dirtyState;
     [SerializeField] private EditorSongFileLoader editorSongFileLoader;
 
     [Header("Temporary Test")]
@@ -18,12 +17,6 @@ public class EditorPatternImporter : MonoBehaviour
         if (string.IsNullOrWhiteSpace(importSongName))
         {
             Debug.LogWarning("Import Song Name이 비어 있습니다.");
-            return;
-        }
-
-        if (!FileManager.Editor_TryLoadSongInfo(importSongName, out Song song))
-        {
-            Debug.LogWarning("곡 정보를 불러오지 못했습니다: " + importSongName);
             return;
         }
 
@@ -39,23 +32,50 @@ public class EditorPatternImporter : MonoBehaviour
             return;
         }
 
+        Song song = null;
+
+        bool hasSavedSongInfo = FileManager.Editor_TryLoadSongInfo(importSongName, out song);
+
+        if (!hasSavedSongInfo)
+        {
+            Debug.LogWarning("StreamingAssets 곡 정보가 없습니다. EditorSongs에서 곡을 불러옵니다: " + importSongName);
+
+            if (editorSongFileLoader == null)
+            {
+                Debug.LogWarning("EditorSongFileLoader가 연결되지 않았습니다.");
+                return;
+            }
+
+            if (!editorSongFileLoader.TryLoadExistingEditorSongByName(importSongName, out EditorLoadedSongData loadedData))
+            {
+                Debug.LogWarning("EditorSongs에서도 곡을 불러오지 못했습니다: " + importSongName);
+                return;
+            }
+
+            song = new Song
+            {
+                songname = loadedData.songName,
+                artist = loadedData.artistName,
+                bpm = loadedData.bpm
+            };
+        }
+        else
+        {
+            if (editorSongFileLoader != null)
+            {
+                editorSongFileLoader.SetCurrentSongDataFromImport(song);
+            }
+        }
+
         if (editorSongInfoUI != null)
         {
             editorSongInfoUI.SetSongInfo(song.songname, song.artist, song.bpm);
-        }
-
-        if (editorSongFileLoader != null)
-        {
-            editorSongFileLoader.SetCurrentSongDataFromImport(song);
         }
 
         if (beatmapTimer != null)
         {
             beatmapTimer.SetSingleBpm(song.bpm);
         }
-
-        if (dirtyState != null)
-            dirtyState.ClearDirty();
 
         editorDifficultyUI.BeginImport();
 
@@ -96,12 +116,42 @@ public class EditorPatternImporter : MonoBehaviour
         if (firstEnabledIndex == -1)
         {
             measureList.ClearPattern();
-            Debug.LogWarning("불러올 수 있는 채보가 없습니다: " + importSongName);
-            return;
+
+            editorDifficultyUI.ApplyImportedDifficulty(0, true, 1);
+            editorDifficultyUI.SelectImportedDifficulty(0);
+
+            Debug.LogWarning("저장된 채보가 없어 음악만 불러오고 빈 Easy 패턴으로 시작합니다: " + importSongName);
         }
+        else
+        {
+            editorDifficultyUI.SelectImportedDifficulty(firstEnabledIndex);
+        }
+        Debug.Log("Imported editor song: " + importSongName);
+    }
 
-        editorDifficultyUI.SelectImportedDifficulty(firstEnabledIndex);
+    public void ImportPatternBySongName(string songName)
+    {
+        importSongName = songName;
+        ImportPattern();
+    }
+    private void Start()
+    {
+        TryRestoreFromTestPlay();
+    }
 
-        Debug.Log("Imported pattern song: " + importSongName);
+    private void TryRestoreFromTestPlay()
+    {
+        if (!EditorReturnContext.ShouldRestore)
+            return;
+
+        string songName = EditorReturnContext.SongName;
+        int difficultyIndex = EditorReturnContext.DifficultyIndex;
+
+        EditorReturnContext.Clear();
+
+        ImportPatternBySongName(songName);
+
+        if (editorDifficultyUI != null)
+            editorDifficultyUI.SelectImportedDifficulty(difficultyIndex);
     }
 }

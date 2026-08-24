@@ -8,6 +8,15 @@ public class MouseManager : MonoBehaviour
     private EditorNote _editorNote = null;
     private void Update()
     {
+        if (EditorInputBlocker.IsBlocked) // 다른 판넬 열려있으면 막는 로직
+        {
+            if (_editorNote != null)
+            {
+                _editorNote.OnOffMouse();
+                _editorNote = null;
+            }
+            return;
+        }
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
 
