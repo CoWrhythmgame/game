@@ -35,7 +35,7 @@ public class EditorSongAudioController : MonoBehaviour
     [SerializeField] private float seekSeconds = 5f;
 
     [Header("Hit Sound Sync")]
-    [SerializeField] private float hitSoundLatencyCompensation = 0.03f;
+    [SerializeField] private float hitSoundLatencyCompensation = 0.027f;
 
     private Queue<Note> _currentPattern;
     private bool isLoadingClip = false;

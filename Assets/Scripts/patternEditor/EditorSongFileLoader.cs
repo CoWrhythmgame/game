@@ -35,6 +35,7 @@ public class EditorSongFileLoader : MonoBehaviour
 
     private EditorLoadedSongData currentSongData;
 
+    
     public bool IsSongLoaded()
     {
         return currentSongData != null;
@@ -85,7 +86,7 @@ public class EditorSongFileLoader : MonoBehaviour
     public bool HasLoadedSong => currentSongData != null;
 
     public event Action<EditorLoadedSongData> OnSongLoadedOrUpdated;
-
+    public event Action<EditorLoadedSongData> OnSongMetaUpdated;
     private void Awake()
     {
         if (loadSongButton != null)
@@ -306,7 +307,7 @@ public class EditorSongFileLoader : MonoBehaviour
             );
         }
 
-        OnSongLoadedOrUpdated?.Invoke(currentSongData);
+        OnSongMetaUpdated?.Invoke(currentSongData);
 
         inputMode = SongMetaInputMode.None;
         HideSongMetaInputPanel();

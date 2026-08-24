@@ -52,7 +52,7 @@ public class MeasureList : MonoBehaviour
         _inspector.OnResetButtonClicked += ResetMeasure;
 
         _songFileLoader.OnSongLoadedOrUpdated += OnSongDataChanged;
-
+        _songFileLoader.OnSongMetaUpdated += OnSongDataChanged;
         AddMeasure();
     }
     void Update()
@@ -87,6 +87,14 @@ public class MeasureList : MonoBehaviour
     }
     #endregion
     #region Callbacks
+    private void OnDestroy()
+    {
+        if (_songFileLoader != null)
+        {
+            _songFileLoader.OnSongLoadedOrUpdated -= OnSongDataChanged;
+            _songFileLoader.OnSongMetaUpdated -= OnSongDataChanged;
+        }
+    }
     private void OnScroll(float scrollData)
     {
         float scrollvalue = 2;

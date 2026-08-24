@@ -92,7 +92,7 @@ public class SaveManager : MonoBehaviour
 
             AudioClip musicClip = await FileManager.LoadMusic(song, false);
 
-            dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
+            dataMaster.SetSongData(song, difficultyIndex);
             dataMaster.SetMusic(musicClip);
             dataMaster.SetIsTestPlay(true);
 
