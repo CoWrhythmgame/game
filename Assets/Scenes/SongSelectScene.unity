@@ -810,6 +810,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1537704676 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7934808593645965062, guid: 6a8dfb67c577d4f4fb24c914faa47f5b, type: 3}
+  m_PrefabInstance: {fileID: 5341640326810882878}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &2036185436
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,6 +1038,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2561568634708996932, guid: 6a8dfb67c577d4f4fb24c914faa47f5b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 700
+      objectReference: {fileID: 0}
+    - target: {fileID: 2561568634708996932, guid: 6a8dfb67c577d4f4fb24c914faa47f5b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4727311328376277025, guid: 6a8dfb67c577d4f4fb24c914faa47f5b, type: 3}
+      propertyPath: jacketImage
+      value: 
+      objectReference: {fileID: 1537704676}
+    - target: {fileID: 4727311328376277025, guid: 6a8dfb67c577d4f4fb24c914faa47f5b, type: 3}
+      propertyPath: DefaultJaket
+      value: 
+      objectReference: {fileID: 6307188255389831587, guid: 87d1dd9dc3f18ff4f8c92fe707b47321, type: 3}
     - target: {fileID: 5948934427385816453, guid: 6a8dfb67c577d4f4fb24c914faa47f5b, type: 3}
       propertyPath: m_Name
       value: Canvas

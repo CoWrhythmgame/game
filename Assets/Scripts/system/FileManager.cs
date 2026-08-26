@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using SFB;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -19,8 +20,11 @@ public enum SongDataType
 
 public class FileManager
 {
+    public static Dictionary<string, Sprite> JacketCache { get; } = new Dictionary<string, Sprite>();
     private static readonly string[] _filenames = new string[4]{"1-Easy","2-Normal","3-Hard","4-Extreme"};
     private static readonly string _info = "0-Info";
+    
+
 
     #region 외부 접근 함수
     public static List<Song> LoadSong(bool isBuiltin)
@@ -43,6 +47,49 @@ public class FileManager
             songs.Add(GetSongFromString(songJson, patternInfosJson, recordsJson));
         }
         return songs;
+    }
+    public static Sprite LoadJacket(string songname, bool isBuiltin)
+    {
+        if(JacketCache.TryGetValue(songname, out Sprite cachedSprite))
+        {
+            return cachedSprite;
+        }
+        string path = GetFilePathByType(SongDataType.jaket, songname, isBuiltin)[0];
+
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning("Jacket file not found: " + path);
+            return null;
+        }
+
+        Texture2D texture = new Texture2D(2, 2);
+        byte[] imageData = File.ReadAllBytes(path);
+        texture.LoadImage(imageData);
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+    }
+    public static byte[] LoadJacketData(string songname, bool isBuiltin)
+    {
+        string path = GetFilePathByType(SongDataType.jaket, songname, isBuiltin)[0];
+
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning("Jacket file not found: " + path);
+            return null;
+        }
+
+        byte[] imageData = File.ReadAllBytes(path);
+        return imageData;
+    }
+    public static void SaveJacket(string songname, bool isBuiltin, byte[] imageData)
+    {
+        string path = GetFilePathByType(SongDataType.jaket, songname, isBuiltin)[0];
+
+        if (!Directory.Exists(Path.GetDirectoryName(path)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+        }
+
+        File.WriteAllBytes(path, imageData);
     }
     public static Pattern LoadPattern(Song songData, int difficultyIndex, bool isBuiltin)
     {
@@ -94,6 +141,38 @@ public class FileManager
         clip.name = Path.GetFileNameWithoutExtension(filePath);
 
         return clip;
+    }
+    // HACK: 리펙터링 필요
+    public static string OpenJaketFileBrowser()
+    {
+        ExtensionFilter[] extensions =
+        {
+            new ExtensionFilter("Image Files", "png", "jpg", "jpeg"),
+            new ExtensionFilter("All Files", "*")
+        };
+
+        string[] paths = StandaloneFileBrowser.OpenFilePanel(
+            "Load Jacket Image",
+            "",
+            extensions,
+            false
+        );
+
+        if (paths == null || paths.Length == 0)
+        {
+            Debug.Log("Jacket image loading canceled.");
+            return "";
+        }
+
+        string path = paths[0];
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            Debug.Log("Jacket image loading canceled.");
+            return "";
+        }
+
+        return path;
     }
 
     #endregion
@@ -171,6 +250,10 @@ public class FileManager
                 break;
             case SongDataType.song:
                 path += songname;
+                paths.Add(path);
+                break;
+            case SongDataType.jaket:
+                path += songname+".png";
                 paths.Add(path);
                 break;
             case SongDataType.Record:

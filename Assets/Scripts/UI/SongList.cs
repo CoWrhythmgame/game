@@ -158,7 +158,10 @@ public class SongList : MonoBehaviour
         {
             SetDifficulty(difficultyIndex);
         }
-        songIndicator.SetIndicator(currentSongData, difficultyIndex);
+        bool isBuiltin = songIndex < _builtinSongCount;
+        Sprite jaket = FileManager.LoadJacket(currentSongData.songname, isBuiltin);
+
+        songIndicator.SetIndicator(currentSongData, difficultyIndex, jaket);
     }
     //
     public void SetDifficulty(int index)
@@ -182,7 +185,11 @@ public class SongList : MonoBehaviour
 
         difficultyIndex = index;
         difficultytragetPos = new Vector2(-SIwidth*index, 0);
-        songIndicator.SetIndicator(currentSongData, difficultyIndex);
+
+        bool isBuiltin = songIndex < _builtinSongCount;
+        Sprite jaket = FileManager.LoadJacket(currentSongData.songname, isBuiltin);
+
+        songIndicator.SetIndicator(currentSongData, difficultyIndex, jaket);
     }
     //커서 이동 판별 함수
     void CursorMove(Vector2 input)

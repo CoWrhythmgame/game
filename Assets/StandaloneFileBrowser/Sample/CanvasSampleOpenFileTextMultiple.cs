@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using SFB;
+using UnityEngine.Networking;
 
 [RequireComponent(typeof(Button))]
 public class CanvasSampleOpenFileTextMultiple : MonoBehaviour, IPointerDownHandler {
@@ -50,13 +51,24 @@ public class CanvasSampleOpenFileTextMultiple : MonoBehaviour, IPointerDownHandl
     }
 #endif
 
-    private IEnumerator OutputRoutine(string[] urlArr) {
-        var outputText = "";
-        for (int i = 0; i < urlArr.Length; i++) {
-            var loader = new WWW(urlArr[i]);
-            yield return loader;
-            outputText += loader.text;
+    private IEnumerator OutputRoutine(string[] urlArr)
+    {
+        var outputBuilder = new StringBuilder();
+
+        for (int i = 0; i < urlArr.Length; i++)
+        {
+            using UnityWebRequest request = UnityWebRequest.Get(urlArr[i]);
+            yield return request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError($"텍스트 로드 실패 [{urlArr[i]}]: {request.error}");
+                continue; // 하나 실패해도 나머지는 이어서 진행
+            }
+
+            outputBuilder.Append(request.downloadHandler.text);
         }
-        output.text = outputText;
+
+        output.text = outputBuilder.ToString();
     }
 }

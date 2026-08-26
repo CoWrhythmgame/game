@@ -3,17 +3,29 @@ using UnityEngine.UI;
 
 public class SongIndicator : MonoBehaviour
 {
-    public Text songname;
-    public Text artist;
-    public Text BPM;
-    public Text difficulty;
-    public Text TotalNote;
-    public Text Score;
-    public Text Combo;
-    public Text Rate;
-    public Text RecordComboResult;
-    public void SetIndicator(Song song, int difficultyindex)
+    [SerializeField]private Text songname;
+    [SerializeField]private Text artist;
+    [SerializeField]private Text BPM;
+    [SerializeField]private Text difficulty;
+    [SerializeField]private Text TotalNote;
+    [SerializeField]private Text Score;
+    [SerializeField]private Text Combo;
+    [SerializeField]private Text Rate;
+    [SerializeField]private Text RecordComboResult;
+    [SerializeField]private Image jacketImage;
+
+    [SerializeField]private Sprite DefaultJaket;
+    public void SetIndicator(Song song, int difficultyindex, Sprite jacketSprite)
     {
+        if(jacketSprite != null)
+        {
+            jacketImage.sprite = jacketSprite;
+        }
+        else
+        {
+            Debug.LogWarning("자켓 이미지가 null입니다. 기본 자켓 이미지를 사용합니다.");
+            jacketImage.sprite = DefaultJaket;
+        }
         songname.text = song.songname;
         artist.text = song.artist;
         difficulty.text = song.patternInfo[difficultyindex].difficulty.ToString();
