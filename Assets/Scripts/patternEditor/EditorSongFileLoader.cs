@@ -24,18 +24,20 @@ public class EditorSongFileLoader : MonoBehaviour
     [SerializeField] private TMP_InputField artistInput;
     [SerializeField] private TMP_InputField bpmInput;
     [SerializeField] private TextMeshProUGUI errorText;
-    [SerializeField] private Button _jaketLoadButton;
+    [SerializeField] private Image _jacketImage;
+    [SerializeField] private Button _jacketLoadButton;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
 
     [Header("Default Values")]
     [SerializeField] private string defaultArtistName = "Unknown Artist";
+    [SerializeField] private Sprite _defaultJacket;
 
     private string pendingSourcePath = "";
     private SongMetaInputMode inputMode = SongMetaInputMode.None;
 
     private EditorLoadedSongData currentSongData;
-
+    private byte[] _jacketImageData;
     
     public bool IsSongLoaded()
     {
@@ -84,6 +86,10 @@ public class EditorSongFileLoader : MonoBehaviour
 
         return currentSongData.audioLocalPath;
     }
+    public byte[] GetJacketImageData()
+    {
+        return _jacketImageData;
+    }
     public bool HasLoadedSong => currentSongData != null;
 
     public event Action<EditorLoadedSongData> OnSongLoadedOrUpdated;
@@ -101,6 +107,8 @@ public class EditorSongFileLoader : MonoBehaviour
 
         if (cancelButton != null)
             cancelButton.onClick.AddListener(CancelSongInfoInput);
+        if(_jacketLoadButton != null)
+            _jacketLoadButton.onClick.AddListener(RequestJacketFile);
 
         HideSongMetaInputPanel();
         SetEditButtonActive(false);
@@ -162,6 +170,7 @@ public class EditorSongFileLoader : MonoBehaviour
         pendingSourcePath = "";
         inputMode = SongMetaInputMode.EditCurrentSong;
 
+
         ShowSongMetaInputPanelForEdit();
     }
 
@@ -173,6 +182,8 @@ public class EditorSongFileLoader : MonoBehaviour
         EditorInputBlocker.SetBlocked(true);
         
         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sourcePath);
+        SetJacketImage(null);
+        _jacketImageData = null;
 
         if (songNameInput != null)
             songNameInput.text = fileNameWithoutExtension;
@@ -192,6 +203,9 @@ public class EditorSongFileLoader : MonoBehaviour
             songMetaInputPanel.SetActive(true);
 
         EditorInputBlocker.SetBlocked(true);
+        Sprite jaket = FileManager.LoadJacket(currentSongData.songName, false);
+        _jacketImageData = FileManager.LoadJacketData(currentSongData.songName, false);
+        SetJacketImage(jaket);
 
         if (songNameInput != null)
             songNameInput.text = currentSongData.songName;
@@ -298,6 +312,7 @@ public class EditorSongFileLoader : MonoBehaviour
         currentSongData.selectedDifficultyName = songInfoUI != null ? songInfoUI.CurrentDifficultyName : "Easy";
 
         SaveCurrentSongInfoJson();
+        FileManager.SaveJacket(songName, false, _jacketImageData);
 
         if (songInfoUI != null)
         {
@@ -340,6 +355,7 @@ public class EditorSongFileLoader : MonoBehaviour
         string savedAudioPath = Path.Combine(songFolderPath, audioFileName);
 
         File.Copy(sourcePath, savedAudioPath, true);
+        FileManager.SaveJacket(songName, false, _jacketImageData);
 
         currentSongData = new EditorLoadedSongData
         {
@@ -508,7 +524,7 @@ public class EditorSongFileLoader : MonoBehaviour
 
         if (!File.Exists(jsonPath))
         {
-            Debug.LogWarning("Editor song_info.jsonÀ» Ã£Áö ¸øÇß½À´Ï´Ù: " + jsonPath);
+            Debug.LogWarning("Editor song_info.jsonï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½: " + jsonPath);
             return false;
         }
 
@@ -517,7 +533,7 @@ public class EditorSongFileLoader : MonoBehaviour
 
         if (loadedData == null)
         {
-            Debug.LogWarning("Editor song_info.json ÆÄ½Ì ½ÇÆÐ: " + jsonPath);
+            Debug.LogWarning("Editor song_info.json ï¿½Ä½ï¿½ ï¿½ï¿½ï¿½ï¿½: " + jsonPath);
             return false;
         }
 
@@ -547,7 +563,7 @@ public class EditorSongFileLoader : MonoBehaviour
 
         if (string.IsNullOrEmpty(loadedData.audioLocalPath) || !File.Exists(loadedData.audioLocalPath))
         {
-            Debug.LogWarning("¿Àµð¿À ÆÄÀÏÀ» Ã£Áö ¸øÇß½À´Ï´Ù: " + songFolderPath);
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½: " + songFolderPath);
             return false;
         }
 
@@ -568,6 +584,42 @@ public class EditorSongFileLoader : MonoBehaviour
 
         Debug.Log("Existing editor song loaded: " + currentSongData.songName);
         return true;
+    }
+    private void RequestJacketFile()
+    {
+        string path = FileManager.OpenJaketFileBrowser();
+        if (string.IsNullOrEmpty(path))
+        {
+            Debug.Log("Jacket image loading canceled.");
+            return;
+        }
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
+        {
+            _jacketImage.sprite = null;
+            _jacketImage.color = Color.clear;
+            return;
+        }
+
+        byte[] imageData = File.ReadAllBytes(path);
+        _jacketImageData = imageData;
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(imageData);
+
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        SetJacketImage(sprite);
+    }
+    private void SetJacketImage(Sprite sprite)
+    {
+        if (_jacketImage == null)
+            return;
+        if (sprite == null)
+        {
+            _jacketImage.sprite = _defaultJacket;
+        }
+        else{
+            _jacketImage.sprite = sprite;
+        }
+        _jacketImage.color = Color.white;
     }
 }
 

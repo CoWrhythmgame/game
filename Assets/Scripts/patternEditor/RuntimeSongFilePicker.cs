@@ -19,6 +19,7 @@ public class RuntimeSongFilePicker : MonoBehaviour
 
         if (importButton != null)
             importButton.onClick.AddListener(OpenSavedSongInfoFileBrowser);
+
     }
 
     private void OnDisable()

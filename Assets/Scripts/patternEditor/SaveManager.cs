@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -74,9 +73,15 @@ public class SaveManager : MonoBehaviour
                 totalNoteCount = pattern.notes != null ? pattern.notes.Count : 0
             };
             FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
-            
-            //HACK: AssetDataBase는 UnityEditor 클래스의 메서드라서 에디터에서만 사용 가능함.
-            AssetDatabase.Refresh();
+            byte[] jaketdata = _editorSongFileLoader.GetJacketImageData();
+            if(jaketdata != null)
+            {
+                FileManager.SaveJacket(song.songname, false, jaketdata);
+            }
+            else
+            {
+                Debug.LogWarning("자켓 이미지 데이터가 없습니다. 자켓 이미지를 저장하지 않습니다.");
+            }
 
             song = FileManager.LoadSong(false).Where(x => x.songname == song.songname).ToArray()[0];
             AudioClip musicClip = await FileManager.LoadMusic(song, false);
@@ -176,6 +181,15 @@ public class SaveManager : MonoBehaviour
             };
 
             FileManager.Editor_SavePattern(song, patternInfo, pattern, i);
+            byte[] jaketdata = _editorSongFileLoader.GetJacketImageData();
+            if(jaketdata != null)
+            {
+                FileManager.SaveJacket(song.songname, false, jaketdata);
+            }
+            else
+            {
+                Debug.LogWarning("자켓 이미지 데이터가 없습니다. 자켓 이미지를 저장하지 않습니다.");
+            }
 
             Debug.Log("Pattern saved. Difficulty: " + editorDifficultyUI.GetDifficultyName(i));
 
@@ -188,7 +202,6 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        AssetDatabase.Refresh();
 
         return true;
     }
