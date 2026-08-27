@@ -1,4 +1,3 @@
-using UnityEditor.Hardware;
 using UnityEngine;
 
 public class EditorPatternImporter : MonoBehaviour
