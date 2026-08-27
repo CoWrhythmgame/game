@@ -9,6 +9,8 @@ public class OptionMenuUI : MonoBehaviour
 
     [Header("Panel")]
     [SerializeField] private GameObject optionPanel;
+    [Header("SEManager")]
+    [SerializeField] private SEManager _SEManager;
 
     [Header("Option Name Texts")]
     [SerializeField] private TextMeshProUGUI[] nameTexts;
@@ -262,6 +264,7 @@ public class OptionMenuUI : MonoBehaviour
 
             case 5: // Key Volume
                 keyVolume = Mathf.Clamp(keyVolume + direction * 5, 0, 100);
+                _SEManager?.PlayHitSound();
                 break;
 
             case 6: // Scroll Speed
@@ -271,9 +274,9 @@ public class OptionMenuUI : MonoBehaviour
                 break;
 
             case 7: // Note Offset
-                noteOffset += direction * 0.1f;
+                noteOffset += direction * 0.01f;
                 noteOffset = Mathf.Clamp(noteOffset, -5.0f, 5.0f);
-                noteOffset = Mathf.Round(noteOffset * 10f) / 10f;
+                noteOffset = Mathf.Round(noteOffset * 100f) / 100f;
                 break;
             case 8:
             case 9:
@@ -386,7 +389,7 @@ public class OptionMenuUI : MonoBehaviour
         SetValueText(4, soundEffectVolume.ToString());
         SetValueText(5, keyVolume.ToString());
         SetValueText(6, scrollSpeed.ToString("0.0"));
-        SetValueText(7, noteOffset.ToString("0.0"));
+        SetValueText(7, noteOffset.ToString("0.00"));
         for (int i = 0; i < LaneKeyOptionCount; i++)
         {
             int optionIndex = LaneKeyOptionStartIndex + i;

@@ -247,7 +247,7 @@ public class Measure : MonoBehaviour
             }
             
             note.GetComponent<SpriteRenderer>().sortingLayerName = "Note_Hold";
-            note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _noteType, length);
+            note.GetComponent<EditorNote>().Initialize((int)((notePos.x+0.375f)/0.25f), _signature, (int)Mathf.Round(note.transform.localPosition.y*_signature), _noteType, length/4*_transform.localScale.y);
             _isHold = false;
             _shadenoteTransform.localScale = new Vector3(0.25f,1/_transform.localScale.y,1);
         }

@@ -126,7 +126,7 @@ public class JudgementManager : MonoBehaviour
         double adjustedInputTime = inputTime - PauseManager.TotalPausedInputTime;
 
         // 오차 시간 계산
-        double timeDiff = targetNote.GetTargetTime() - adjustedInputTime + _startInputTime+_noteOffset;
+        double timeDiff = targetNote.GetReleaseTime() - adjustedInputTime + _startInputTime+_noteOffset;
     
         timeDiff = Math.Abs(timeDiff);
         Debug.Log("입력 오차: "+timeDiff);

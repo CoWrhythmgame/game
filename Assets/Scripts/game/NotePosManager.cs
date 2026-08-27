@@ -7,6 +7,7 @@ public class NotePosManager : MonoBehaviour
     public static float _bpmFactor = 1.0f;
     [SerializeField]private List<Transform> _activeNoteList = new List<Transform>();
     [SerializeField]private bool _direct_Geo = false;
+    [SerializeField]private float _factorViewer = 1f;
     private Dictionary<Transform, NoteObject> _noteObjDict = new Dictionary<Transform, NoteObject>();
     private float _traveldistance;
     private float _judgeY;
@@ -22,7 +23,8 @@ public class NotePosManager : MonoBehaviour
     }
     private void Update()
     {
-        double currentTime = AudioSettings.dspTime - _startTime;
+        _factorViewer = _bpmFactor;
+        double currentTime = AudioSettings.dspTime -PauseManager.TotalPausedDspTime - _startTime;
         //HACK: 총 정지 시간을 확인할 필요가 있음
 
         for(int i = _activeNoteList.Count - 1; i >= 0; i--)
@@ -33,7 +35,7 @@ public class NotePosManager : MonoBehaviour
                 if (noteObject.GetIsLong() && noteObject.GetIsHolding())
                 {
                     
-                    _activeNoteList[i].localScale = new Vector3(1, Mathf.Clamp((float)(noteObject.GetReleaseTime() - currentTime) * noteObject.GetNoteSpeed() * 32 / _traveldistance*_bpmFactor, 0, float.MaxValue), 1);
+                    _activeNoteList[i].localScale = new Vector3(1, Mathf.Clamp((float)(noteObject.GetReleaseTime() - currentTime) * noteObject.GetNoteSpeed() * 36 / _traveldistance*_bpmFactor, 0, float.MaxValue), 1);
                 }
                 else
                 {

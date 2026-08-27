@@ -2198,7 +2198,6 @@ MonoBehaviour:
   notePoolManager: {fileID: 0}
   _infoPannel: {fileID: 144558223}
   _scrollSpeed: 1
-  _noteOffset: 0
   _difficultyIndex: 0
 --- !u!114 &573148991
 MonoBehaviour:
@@ -2343,6 +2342,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NotePosManager
   _activeNoteList: []
+  _direct_Geo: 0
+  _factorViewer: 1
 --- !u!1 &594635089
 GameObject:
   m_ObjectHideFlags: 0
@@ -6477,7 +6478,7 @@ PrefabInstance:
     - target: {fileID: 2018849610040983204, guid: f66a86b3c58ba5d41ba13eececb07234, type: 3}
       propertyPath: _mixerGroup
       value: 
-      objectReference: {fileID: 1068273754612991987, guid: ccb50b269a044fc4b8fcbe123aef9da2, type: 2}
+      objectReference: {fileID: 6156639598696840950, guid: ccb50b269a044fc4b8fcbe123aef9da2, type: 2}
     - target: {fileID: 2018849610040983204, guid: f66a86b3c58ba5d41ba13eececb07234, type: 3}
       propertyPath: _hitSoundClip
       value: 
