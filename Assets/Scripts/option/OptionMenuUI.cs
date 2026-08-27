@@ -10,7 +10,8 @@ public class OptionMenuUI : MonoBehaviour
     [Header("Panel")]
     [SerializeField] private GameObject optionPanel;
     [Header("SEManager")]
-    [SerializeField] private SEManager _SEManager;
+    [SerializeField] private SEManager _KeySound;
+    [SerializeField] private SEManager _MusicSound;
 
     [Header("Option Name Texts")]
     [SerializeField] private TextMeshProUGUI[] nameTexts;
@@ -256,6 +257,7 @@ public class OptionMenuUI : MonoBehaviour
 
             case 3: // Music Volume
                 musicVolume = Mathf.Clamp(musicVolume + direction * 5, 0, 100);
+                _MusicSound?.PlayHitSound();
                 break;
 
             case 4: // Sound Effect
@@ -264,7 +266,7 @@ public class OptionMenuUI : MonoBehaviour
 
             case 5: // Key Volume
                 keyVolume = Mathf.Clamp(keyVolume + direction * 5, 0, 100);
-                _SEManager?.PlayHitSound();
+                _KeySound?.PlayHitSound();
                 break;
 
             case 6: // Scroll Speed
