@@ -103,37 +103,97 @@ public class RuntimeSongFilePicker : MonoBehaviour
 
     private void ImportSongInfoFromPath(string path)
     {
+        // 선택한 파일 자체가 존재하지 않음
         if (!File.Exists(path))
         {
-            Debug.LogWarning("������ song_info.json ������ �������� �ʽ��ϴ�: " + path);
+            Debug.LogWarning("Selected file does not exist: " + path);
+
+            if (songFileLoader != null)
+            {
+                songFileLoader.ShowLoadError(
+                    "The selected file could not be found."
+                );
+            }
+
             return;
         }
 
         string fileName = Path.GetFileName(path);
 
+        // song_info.json이 아닌 다른 JSON 선택
         if (fileName != "song_info.json")
         {
-            Debug.LogWarning("song_info.json ������ �����ؾ� �մϴ�: " + path);
+            Debug.LogWarning("Please select song_info.json: " + path);
+
+            if (songFileLoader != null)
+            {
+                songFileLoader.ShowLoadError(
+                    "Please select a song_info.json file."
+                );
+            }
+
             return;
         }
 
-        string json = File.ReadAllText(path);
-        EditorLoadedSongData songData = JsonUtility.FromJson<EditorLoadedSongData>(json);
+        EditorLoadedSongData songData;
 
-        if (songData == null || string.IsNullOrWhiteSpace(songData.songName))
+        // JSON 읽기 / 파싱
+        try
         {
-            Debug.LogWarning("song_info.json���� �� �̸��� ���� ���߽��ϴ�: " + path);
+            string json = File.ReadAllText(path);
+
+            songData =
+                JsonUtility.FromJson<EditorLoadedSongData>(json);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogException(e);
+
+            if (songFileLoader != null)
+            {
+                songFileLoader.ShowLoadError(
+                    "The selected song_info.json file is invalid."
+                );
+            }
+
+            return;
+        }
+
+        // JSON은 열렸지만 필요한 곡 정보가 없음
+        if (songData == null ||
+            string.IsNullOrWhiteSpace(songData.songName))
+        {
+            Debug.LogWarning(
+                "Invalid song_info.json: " + path
+            );
+
+            if (songFileLoader != null)
+            {
+                songFileLoader.ShowLoadError(
+                    "The selected song_info.json file is invalid."
+                );
+            }
+
             return;
         }
 
         if (patternImporter == null)
         {
-            Debug.LogWarning("EditorPatternImporter�� ������� �ʾҽ��ϴ�.");
+            Debug.LogWarning(
+                "EditorPatternImporter is not connected."
+            );
+
+            if (songFileLoader != null)
+            {
+                songFileLoader.ShowLoadError(
+                    "Pattern importer is not available."
+                );
+            }
+
             return;
         }
 
-        bool isbuiltin = FileManager.ChackBuiltIn(path);
-
-        patternImporter.ImportPatternBySongName(songData.songName, isbuiltin);
+        // 정상 파일이면 Import 진행
+        patternImporter.ImportPatternBySongName(songData.songName, false);
     }
 }

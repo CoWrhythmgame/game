@@ -28,6 +28,9 @@ public class EditorSongFileLoader : MonoBehaviour
     [SerializeField] private Button _jacketLoadButton;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
+    [Header("Load Error UI")]
+    [SerializeField] private TextMeshProUGUI loadErrorText;
+    [SerializeField] private float loadErrorDuration = 3f;
 
     [Header("Default Values")]
     [SerializeField] private string defaultArtistName = "Unknown Artist";
@@ -38,7 +41,7 @@ public class EditorSongFileLoader : MonoBehaviour
 
     private EditorLoadedSongData currentSongData;
     private byte[] _jacketImageData;
-    
+
     public bool IsSongLoaded()
     {
         return currentSongData != null;
@@ -107,11 +110,12 @@ public class EditorSongFileLoader : MonoBehaviour
 
         if (cancelButton != null)
             cancelButton.onClick.AddListener(CancelSongInfoInput);
-        if(_jacketLoadButton != null)
+        if (_jacketLoadButton != null)
             _jacketLoadButton.onClick.AddListener(RequestJacketFile);
 
         HideSongMetaInputPanel();
         SetEditButtonActive(false);
+        ClearLoadError();
     }
 
     private void OnDestroy()
@@ -127,6 +131,9 @@ public class EditorSongFileLoader : MonoBehaviour
 
         if (cancelButton != null)
             cancelButton.onClick.RemoveListener(CancelSongInfoInput);
+
+        if (_jacketLoadButton != null)
+            _jacketLoadButton.onClick.RemoveListener(RequestJacketFile);
     }
 
     public event Action OnSongFileOpenRequested;
@@ -136,29 +143,34 @@ public class EditorSongFileLoader : MonoBehaviour
     }
     public void LoadSongFromPath(string sourcePath)
     {
+        // 파일 선택창에서 취소한 것은 오류로 표시하지 않음
         if (string.IsNullOrWhiteSpace(sourcePath))
         {
-            Debug.LogWarning("Song loading canceled or path is empty.");
+            Debug.Log("Song loading canceled or path is empty.");
             return;
         }
 
         if (!File.Exists(sourcePath))
         {
             Debug.LogWarning("Audio file does not exist: " + sourcePath);
+            ShowLoadError("The selected audio file could not be found.");
             return;
         }
 
         if (!IsSupportedAudioFile(sourcePath))
         {
             Debug.LogWarning("Unsupported audio file. Only mp3, wav, and ogg files are allowed.");
+            ShowLoadError("Unsupported audio file. Please select MP3, WAV, or OGG.");
             return;
         }
 
         pendingSourcePath = sourcePath;
         inputMode = SongMetaInputMode.ImportNewSong;
 
+        ClearLoadError();
         ShowSongMetaInputPanelForImport(sourcePath);
     }
+
     public void OpenEditSongInfoPanel()
     {
         if (currentSongData == null)
@@ -180,7 +192,7 @@ public class EditorSongFileLoader : MonoBehaviour
             songMetaInputPanel.SetActive(true);
 
         EditorInputBlocker.SetBlocked(true);
-        
+
         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sourcePath);
         SetJacketImage(null);
         _jacketImageData = null;
@@ -455,10 +467,31 @@ public class EditorSongFileLoader : MonoBehaviour
             editInfoButton.interactable = isActive;
     }
 
+    // 곡 정보 입력 패널 전용 오류 메시지
     private void SetError(string message)
     {
         if (errorText != null)
             errorText.text = message;
+    }
+
+    // Load Song / Import 전용 오류 메시지
+    public void ShowLoadError(string message)
+    {
+        if (loadErrorText == null)
+            return;
+
+        CancelInvoke(nameof(ClearLoadError));
+
+        loadErrorText.text = message;
+
+        if (!string.IsNullOrEmpty(message))
+            Invoke(nameof(ClearLoadError), loadErrorDuration);
+    }
+
+    private void ClearLoadError()
+    {
+        if (loadErrorText != null)
+            loadErrorText.text = "";
     }
 
     public void SetCurrentSongDataFromImport(Song song)
@@ -466,6 +499,7 @@ public class EditorSongFileLoader : MonoBehaviour
         if (song == null)
         {
             Debug.LogWarning("Import song data is null.");
+            ShowLoadError("The imported song data is invalid.");
             return;
         }
 
@@ -514,56 +548,85 @@ public class EditorSongFileLoader : MonoBehaviour
 
         if (string.IsNullOrWhiteSpace(songName))
         {
-            Debug.LogWarning("Song name is empty.");
+            ShowLoadError("Song name is missing.");
             return false;
         }
 
         string safeSongName = MakeSafeFileName(songName);
-        string songFolderPath = Path.Combine(GetEditorSongRootPath(), safeSongName);
-        string jsonPath = Path.Combine(songFolderPath, "song_info.json");
+        string songFolderPath = Path.Combine(
+            GetEditorSongRootPath(),
+            safeSongName
+        );
+
+        string jsonPath = Path.Combine(
+            songFolderPath,
+            "song_info.json"
+        );
 
         if (!File.Exists(jsonPath))
         {
-            Debug.LogWarning("Editor song_info.json�� ã�� ���߽��ϴ�: " + jsonPath);
+            ShowLoadError("Song information file could not be found.");
             return false;
         }
 
-        string json = File.ReadAllText(jsonPath);
-        loadedData = JsonUtility.FromJson<EditorLoadedSongData>(json);
-
-        if (loadedData == null)
+        try
         {
-            Debug.LogWarning("Editor song_info.json �Ľ� ����: " + jsonPath);
+            string json = File.ReadAllText(jsonPath);
+            loadedData = JsonUtility.FromJson<EditorLoadedSongData>(json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            ShowLoadError("The song information file is invalid.");
+            return false;
+        }
+
+        if (loadedData == null ||
+            string.IsNullOrWhiteSpace(loadedData.songName))
+        {
+            ShowLoadError("The song information file is invalid.");
             return false;
         }
 
         loadedData.songFolderPath = songFolderPath;
 
-        if (string.IsNullOrEmpty(loadedData.audioLocalPath))
+        // 기존 절대 경로가 없거나 유효하지 않다면 현재 곡 폴더 기준으로 복구
+        if (string.IsNullOrEmpty(loadedData.audioLocalPath) ||
+            !File.Exists(loadedData.audioLocalPath))
         {
             if (!string.IsNullOrEmpty(loadedData.audioFileName))
             {
-                loadedData.audioLocalPath = Path.Combine(songFolderPath, loadedData.audioFileName);
-            }
-            else
-            {
-                string[] audioFiles = Directory.GetFiles(songFolderPath);
+                string rebuiltAudioPath = Path.Combine(
+                    songFolderPath,
+                    loadedData.audioFileName
+                );
 
-                foreach (string file in audioFiles)
+                if (File.Exists(rebuiltAudioPath))
+                    loadedData.audioLocalPath = rebuiltAudioPath;
+            }
+        }
+
+        // audioFileName으로도 못 찾았다면 폴더 내부의 지원 오디오 파일 검색
+        if (string.IsNullOrEmpty(loadedData.audioLocalPath) ||
+            !File.Exists(loadedData.audioLocalPath))
+        {
+            string[] audioFiles = Directory.GetFiles(songFolderPath);
+
+            foreach (string file in audioFiles)
+            {
+                if (IsSupportedAudioFile(file))
                 {
-                    if (IsSupportedAudioFile(file))
-                    {
-                        loadedData.audioLocalPath = file;
-                        loadedData.audioFileName = Path.GetFileName(file);
-                        break;
-                    }
+                    loadedData.audioLocalPath = file;
+                    loadedData.audioFileName = Path.GetFileName(file);
+                    break;
                 }
             }
         }
 
-        if (string.IsNullOrEmpty(loadedData.audioLocalPath) || !File.Exists(loadedData.audioLocalPath))
+        if (string.IsNullOrEmpty(loadedData.audioLocalPath) ||
+            !File.Exists(loadedData.audioLocalPath))
         {
-            Debug.LogWarning("����� ������ ã�� ���߽��ϴ�: " + songFolderPath);
+            ShowLoadError("The audio file for this song could not be found.");
             return false;
         }
 
@@ -580,11 +643,17 @@ public class EditorSongFileLoader : MonoBehaviour
 
         SetEditButtonActive(true);
 
+        ClearLoadError();
         OnSongLoadedOrUpdated?.Invoke(currentSongData);
 
-        Debug.Log("Existing editor song loaded: " + currentSongData.songName);
+        Debug.Log(
+            "Existing editor song loaded: " +
+            currentSongData.songName
+        );
+
         return true;
     }
+
     private void RequestJacketFile()
     {
         string path = FileManager.OpenJaketFileBrowser();
@@ -616,7 +685,8 @@ public class EditorSongFileLoader : MonoBehaviour
         {
             _jacketImage.sprite = _defaultJacket;
         }
-        else{
+        else
+        {
             _jacketImage.sprite = sprite;
         }
         _jacketImage.color = Color.white;

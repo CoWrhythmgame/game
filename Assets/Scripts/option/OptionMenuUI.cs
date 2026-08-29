@@ -182,10 +182,17 @@ public class OptionMenuUI : MonoBehaviour
             frameIndex = 0;
         }
 
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = frameValues[frameIndex];
+        int targetFrame = frameValues[frameIndex];
 
-        Debug.Log("Frame Rate = " + frameValues[frameIndex]);
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = targetFrame;
+
+        Debug.Log(
+            $"Frame Setting Applied | " +
+            $"Selected: {targetFrame} | " +
+            $"targetFrameRate: {Application.targetFrameRate} | " +
+            $"vSyncCount: {QualitySettings.vSyncCount}"
+        );
     }
     public void ToggleOption()
     {
