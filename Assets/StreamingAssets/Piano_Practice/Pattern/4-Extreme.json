@@ -29,14 +29,14 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 3,
             "time": 4.0,
             "noteType": 0,
             "releaseTime": 4.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 0,
             "time": 4.0,
             "noteType": 0,
             "releaseTime": 4.0,
@@ -47,13 +47,6 @@
             "time": 5.0,
             "noteType": 0,
             "releaseTime": 5.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 0,
-            "time": 6.0,
-            "noteType": 0,
-            "releaseTime": 6.0,
             "bpm": 120.0
         },
         {
@@ -68,6 +61,13 @@
             "time": 7.0,
             "noteType": 0,
             "releaseTime": 7.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 6.0,
+            "noteType": 0,
+            "releaseTime": 6.0,
             "bpm": 120.0
         },
         {
@@ -99,10 +99,17 @@
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
             "time": 8.0,
             "noteType": 0,
             "releaseTime": 8.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 9.0,
+            "noteType": 0,
+            "releaseTime": 9.0,
             "bpm": 120.0
         },
         {
@@ -134,17 +141,17 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 1,
             "time": 10.0,
             "noteType": 0,
             "releaseTime": 10.0,
             "bpm": 120.0
         },
         {
-            "lane": 1,
-            "time": 12.5,
+            "lane": 3,
+            "time": 11.0,
             "noteType": 0,
-            "releaseTime": 12.5,
+            "releaseTime": 11.0,
             "bpm": 120.0
         },
         {
@@ -152,6 +159,13 @@
             "time": 12.0,
             "noteType": 0,
             "releaseTime": 12.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 12.5,
+            "noteType": 0,
+            "releaseTime": 12.5,
             "bpm": 120.0
         },
         {
@@ -169,10 +183,17 @@
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
             "time": 12.0,
             "noteType": 0,
             "releaseTime": 12.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 13.0,
+            "noteType": 0,
+            "releaseTime": 13.0,
             "bpm": 120.0
         },
         {
@@ -197,17 +218,24 @@
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 3,
             "time": 15.5,
             "noteType": 0,
             "releaseTime": 15.5,
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 1,
             "time": 14.0,
             "noteType": 0,
             "releaseTime": 14.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 15.0,
+            "noteType": 0,
+            "releaseTime": 15.0,
             "bpm": 120.0
         },
         {
@@ -218,7 +246,7 @@
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
             "time": 16.0,
             "noteType": 0,
             "releaseTime": 16.0,
@@ -239,6 +267,13 @@
             "bpm": 120.0
         },
         {
+            "lane": 0,
+            "time": 17.0,
+            "noteType": 0,
+            "releaseTime": 17.0,
+            "bpm": 120.0
+        },
+        {
             "lane": 3,
             "time": 17.5,
             "noteType": 0,
@@ -253,7 +288,7 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 1,
             "time": 18.0,
             "noteType": 0,
             "releaseTime": 18.0,
@@ -264,6 +299,13 @@
             "time": 18.5,
             "noteType": 0,
             "releaseTime": 18.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 19.0,
+            "noteType": 0,
+            "releaseTime": 19.0,
             "bpm": 120.0
         },
         {
@@ -282,13 +324,6 @@
         },
         {
             "lane": 1,
-            "time": 20.0,
-            "noteType": 0,
-            "releaseTime": 20.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
             "time": 20.0,
             "noteType": 0,
             "releaseTime": 20.0,
@@ -316,6 +351,13 @@
             "bpm": 120.0
         },
         {
+            "lane": 0,
+            "time": 20.0,
+            "noteType": 0,
+            "releaseTime": 20.0,
+            "bpm": 120.0
+        },
+        {
             "lane": 2,
             "time": 22.0,
             "noteType": 0,
@@ -337,7 +379,7 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 3,
             "time": 22.0,
             "noteType": 0,
             "releaseTime": 22.0,
@@ -372,56 +414,133 @@
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
+            "time": 24.0,
+            "noteType": 0,
+            "releaseTime": 24.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 24.5,
+            "noteType": 0,
+            "releaseTime": 24.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 25.0,
+            "noteType": 0,
+            "releaseTime": 25.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 25.5,
+            "noteType": 0,
+            "releaseTime": 25.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 26.0,
             "noteType": 0,
             "releaseTime": 26.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 0,
+            "time": 26.0,
+            "noteType": 0,
+            "releaseTime": 26.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 26.5,
             "noteType": 0,
             "releaseTime": 26.5,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 0,
+            "time": 26.5,
+            "noteType": 0,
+            "releaseTime": 26.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 27.0,
             "noteType": 0,
             "releaseTime": 27.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 0,
+            "time": 27.0,
+            "noteType": 0,
+            "releaseTime": 27.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 27.5,
             "noteType": 0,
             "releaseTime": 27.5,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 0,
+            "time": 27.5,
+            "noteType": 0,
+            "releaseTime": 27.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 28.0,
             "noteType": 0,
             "releaseTime": 28.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
+            "time": 28.0,
+            "noteType": 0,
+            "releaseTime": 28.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
             "time": 28.5,
             "noteType": 0,
             "releaseTime": 28.5,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 1,
+            "time": 28.5,
+            "noteType": 0,
+            "releaseTime": 28.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 29.0,
             "noteType": 0,
             "releaseTime": 29.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
+            "time": 29.0,
+            "noteType": 0,
+            "releaseTime": 29.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
             "time": 29.5,
             "noteType": 0,
             "releaseTime": 29.5,
@@ -429,55 +548,83 @@
         },
         {
             "lane": 1,
+            "time": 29.5,
+            "noteType": 0,
+            "releaseTime": 29.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
             "time": 28.25,
             "noteType": 0,
             "releaseTime": 28.25,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 3,
             "time": 28.75,
             "noteType": 0,
             "releaseTime": 28.75,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 0,
             "time": 29.25,
             "noteType": 0,
             "releaseTime": 29.25,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 3,
             "time": 29.75,
             "noteType": 0,
             "releaseTime": 29.75,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 1,
             "time": 30.0,
             "noteType": 0,
             "releaseTime": 30.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
+            "time": 30.0,
+            "noteType": 0,
+            "releaseTime": 30.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
             "time": 30.5,
             "noteType": 0,
             "releaseTime": 30.5,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 1,
+            "time": 30.5,
+            "noteType": 0,
+            "releaseTime": 30.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 31.0,
             "noteType": 0,
             "releaseTime": 31.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
+            "time": 31.0,
+            "noteType": 0,
+            "releaseTime": 31.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
             "time": 31.5,
             "noteType": 0,
             "releaseTime": 31.5,
@@ -485,27 +632,48 @@
         },
         {
             "lane": 1,
+            "time": 31.5,
+            "noteType": 0,
+            "releaseTime": 31.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
             "time": 30.25,
             "noteType": 0,
             "releaseTime": 30.25,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 3,
             "time": 30.75,
             "noteType": 0,
             "releaseTime": 30.75,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 0,
             "time": 31.25,
             "noteType": 0,
             "releaseTime": 31.25,
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 3,
+            "time": 31.75,
+            "noteType": 0,
+            "releaseTime": 31.75,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 32.0,
+            "noteType": 0,
+            "releaseTime": 32.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 32.25,
             "noteType": 0,
             "releaseTime": 32.25,
@@ -520,6 +688,13 @@
         },
         {
             "lane": 3,
+            "time": 33.0,
+            "noteType": 0,
+            "releaseTime": 33.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
             "time": 32.75,
             "noteType": 0,
             "releaseTime": 32.75,
@@ -527,44 +702,51 @@
         },
         {
             "lane": 1,
-            "time": 32.0,
-            "noteType": 0,
-            "releaseTime": 32.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 2,
             "time": 33.25,
             "noteType": 0,
             "releaseTime": 33.25,
             "bpm": 120.0
         },
         {
-            "lane": 3,
-            "time": 33.0,
-            "noteType": 0,
-            "releaseTime": 33.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 1,
+            "lane": 0,
             "time": 33.5,
             "noteType": 0,
             "releaseTime": 33.5,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 3,
             "time": 33.75,
             "noteType": 0,
             "releaseTime": 33.75,
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 2,
             "time": 32.0,
             "noteType": 1,
             "releaseTime": 33.75,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 35.0,
+            "noteType": 1,
+            "releaseTime": 36.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 34.5,
+            "noteType": 0,
+            "releaseTime": 34.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 35.0,
+            "noteType": 0,
+            "releaseTime": 35.0,
             "bpm": 120.0
         },
         {
@@ -575,35 +757,7 @@
             "bpm": 120.0
         },
         {
-            "lane": 1,
-            "time": 34.25,
-            "noteType": 0,
-            "releaseTime": 34.25,
-            "bpm": 120.0
-        },
-        {
             "lane": 3,
-            "time": 34.5,
-            "noteType": 0,
-            "releaseTime": 34.5,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
-            "time": 34.75,
-            "noteType": 0,
-            "releaseTime": 34.75,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
-            "time": 35.0,
-            "noteType": 0,
-            "releaseTime": 35.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 2,
             "time": 34.0,
             "noteType": 1,
             "releaseTime": 35.0,
@@ -611,13 +765,34 @@
         },
         {
             "lane": 1,
-            "time": 35.0,
-            "noteType": 1,
-            "releaseTime": 36.0,
+            "time": 34.25,
+            "noteType": 0,
+            "releaseTime": 34.25,
             "bpm": 120.0
         },
         {
             "lane": 1,
+            "time": 34.75,
+            "noteType": 0,
+            "releaseTime": 34.75,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 36.0,
+            "noteType": 1,
+            "releaseTime": 37.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 36.0,
+            "noteType": 1,
+            "releaseTime": 37.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
             "time": 36.5,
             "noteType": 0,
             "releaseTime": 36.5,
@@ -632,6 +807,20 @@
         },
         {
             "lane": 2,
+            "time": 37.0,
+            "noteType": 1,
+            "releaseTime": 38.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 37.0,
+            "noteType": 1,
+            "releaseTime": 38.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
             "time": 37.5,
             "noteType": 0,
             "releaseTime": 37.5,
@@ -645,59 +834,73 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
-            "time": 36.0,
-            "noteType": 1,
-            "releaseTime": 36.75,
-            "bpm": 120.0
-        },
-        {
             "lane": 3,
-            "time": 37.0,
-            "noteType": 1,
-            "releaseTime": 37.75,
-            "bpm": 120.0
-        },
-        {
-            "lane": 0,
             "time": 38.0,
-            "noteType": 0,
-            "releaseTime": 38.0,
+            "noteType": 1,
+            "releaseTime": 38.5,
             "bpm": 120.0
         },
         {
             "lane": 1,
-            "time": 38.5,
-            "noteType": 0,
-            "releaseTime": 38.5,
-            "bpm": 120.0
-        },
-        {
-            "lane": 2,
-            "time": 39.0,
-            "noteType": 0,
-            "releaseTime": 39.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 2,
             "time": 38.0,
             "noteType": 1,
             "releaseTime": 38.5,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
             "time": 38.5,
             "noteType": 1,
-            "releaseTime": 39.0,
+            "releaseTime": 40.0,
             "bpm": 120.0
         },
         {
             "lane": 0,
+            "time": 38.5,
+            "noteType": 1,
+            "releaseTime": 40.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 39.0,
             "noteType": 1,
-            "releaseTime": 39.5,
+            "releaseTime": 40.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 39.0,
+            "noteType": 1,
+            "releaseTime": 40.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 41.0,
+            "noteType": 0,
+            "releaseTime": 41.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 42.0,
+            "noteType": 0,
+            "releaseTime": 42.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 43.0,
+            "noteType": 0,
+            "releaseTime": 43.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 44.0,
+            "noteType": 0,
+            "releaseTime": 44.0,
             "bpm": 120.0
         },
         {
@@ -705,6 +908,13 @@
             "time": 44.0,
             "noteType": 0,
             "releaseTime": 44.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 44.16666667163372,
+            "noteType": 0,
+            "releaseTime": 44.16666667163372,
             "bpm": 120.0
         },
         {
@@ -722,24 +932,31 @@
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 1,
+            "time": 45.0,
+            "noteType": 0,
+            "releaseTime": 45.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 45.16666662693024,
+            "noteType": 0,
+            "releaseTime": 45.16666662693024,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 45.33333337306976,
             "noteType": 0,
             "releaseTime": 45.33333337306976,
             "bpm": 120.0
         },
         {
-            "lane": 0,
-            "time": 44.16666667163372,
-            "noteType": 0,
-            "releaseTime": 44.16666667163372,
-            "bpm": 120.0
-        },
-        {
             "lane": 3,
-            "time": 45.16666662693024,
+            "time": 46.0,
             "noteType": 0,
-            "releaseTime": 45.16666662693024,
+            "releaseTime": 46.0,
             "bpm": 120.0
         },
         {
@@ -764,6 +981,34 @@
             "bpm": 120.0
         },
         {
+            "lane": 2,
+            "time": 46.0,
+            "noteType": 0,
+            "releaseTime": 46.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 46.16666667163372,
+            "noteType": 0,
+            "releaseTime": 46.16666667163372,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 46.33333334326744,
+            "noteType": 0,
+            "releaseTime": 46.33333334326744,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 47.0,
+            "noteType": 0,
+            "releaseTime": 47.0,
+            "bpm": 120.0
+        },
+        {
             "lane": 3,
             "time": 47.0,
             "noteType": 0,
@@ -779,6 +1024,27 @@
         },
         {
             "lane": 3,
+            "time": 47.33333337306976,
+            "noteType": 0,
+            "releaseTime": 47.33333337306976,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 47.0,
+            "noteType": 0,
+            "releaseTime": 47.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 47.16666662693024,
+            "noteType": 0,
+            "releaseTime": 47.16666662693024,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 47.33333337306976,
             "noteType": 0,
             "releaseTime": 47.33333337306976,
@@ -806,21 +1072,21 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 1,
             "time": 48.5,
             "noteType": 0,
             "releaseTime": 48.5,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 2,
             "time": 48.66666668653488,
             "noteType": 0,
             "releaseTime": 48.66666668653488,
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 0,
             "time": 48.83333331346512,
             "noteType": 0,
             "releaseTime": 48.83333331346512,
@@ -828,41 +1094,41 @@
         },
         {
             "lane": 3,
+            "time": 48.0,
+            "noteType": 1,
+            "releaseTime": 49.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 49.0,
+            "noteType": 1,
+            "releaseTime": 50.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 49.0,
             "noteType": 0,
             "releaseTime": 49.0,
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 0,
             "time": 49.16666662693024,
             "noteType": 0,
             "releaseTime": 49.16666662693024,
             "bpm": 120.0
         },
         {
-            "lane": 2,
-            "time": 49.66666662693024,
-            "noteType": 0,
-            "releaseTime": 49.66666662693024,
-            "bpm": 120.0
-        },
-        {
             "lane": 3,
-            "time": 49.83333337306976,
-            "noteType": 0,
-            "releaseTime": 49.83333337306976,
-            "bpm": 120.0
-        },
-        {
-            "lane": 0,
             "time": 49.33333337306976,
             "noteType": 0,
             "releaseTime": 49.33333337306976,
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 1,
             "time": 49.5,
             "noteType": 0,
             "releaseTime": 49.5,
@@ -870,16 +1136,23 @@
         },
         {
             "lane": 3,
-            "time": 48.0,
-            "noteType": 1,
-            "releaseTime": 48.83333331346512,
+            "time": 49.66666662693024,
+            "noteType": 0,
+            "releaseTime": 49.66666662693024,
             "bpm": 120.0
         },
         {
             "lane": 1,
-            "time": 49.0,
+            "time": 49.83333337306976,
+            "noteType": 0,
+            "releaseTime": 49.83333337306976,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 50.0,
             "noteType": 1,
-            "releaseTime": 49.83333331346512,
+            "releaseTime": 51.0,
             "bpm": 120.0
         },
         {
@@ -897,7 +1170,21 @@
             "bpm": 120.0
         },
         {
+            "lane": 2,
+            "time": 50.33333334326744,
+            "noteType": 0,
+            "releaseTime": 50.33333334326744,
+            "bpm": 120.0
+        },
+        {
             "lane": 1,
+            "time": 50.5,
+            "noteType": 0,
+            "releaseTime": 50.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
             "time": 50.66666668653488,
             "noteType": 0,
             "releaseTime": 50.66666668653488,
@@ -911,14 +1198,14 @@
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 2,
             "time": 51.0,
             "noteType": 0,
             "releaseTime": 51.0,
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 0,
             "time": 51.16666662693024,
             "noteType": 0,
             "releaseTime": 51.16666662693024,
@@ -926,37 +1213,16 @@
         },
         {
             "lane": 3,
-            "time": 51.5,
-            "noteType": 0,
-            "releaseTime": 51.5,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
-            "time": 50.33333334326744,
-            "noteType": 0,
-            "releaseTime": 50.33333334326744,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
-            "time": 50.5,
-            "noteType": 0,
-            "releaseTime": 50.5,
-            "bpm": 120.0
-        },
-        {
-            "lane": 0,
             "time": 51.33333337306976,
             "noteType": 0,
             "releaseTime": 51.33333337306976,
             "bpm": 120.0
         },
         {
-            "lane": 2,
-            "time": 50.0,
-            "noteType": 1,
-            "releaseTime": 50.83333331346512,
+            "lane": 0,
+            "time": 51.5,
+            "noteType": 0,
+            "releaseTime": 51.5,
             "bpm": 120.0
         },
         {
@@ -964,6 +1230,13 @@
             "time": 51.0,
             "noteType": 1,
             "releaseTime": 51.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 52.0,
+            "noteType": 1,
+            "releaseTime": 53.0,
             "bpm": 120.0
         },
         {
@@ -981,77 +1254,70 @@
             "bpm": 120.0
         },
         {
-            "lane": 3,
-            "time": 53.0,
-            "noteType": 0,
-            "releaseTime": 53.0,
-            "bpm": 120.0
-        },
-        {
             "lane": 2,
-            "time": 53.16666662693024,
-            "noteType": 0,
-            "releaseTime": 53.16666662693024,
-            "bpm": 120.0
-        },
-        {
-            "lane": 0,
-            "time": 53.33333337306976,
-            "noteType": 0,
-            "releaseTime": 53.33333337306976,
-            "bpm": 120.0
-        },
-        {
-            "lane": 1,
-            "time": 53.0,
-            "noteType": 1,
-            "releaseTime": 53.83333331346512,
-            "bpm": 120.0
-        },
-        {
-            "lane": 2,
-            "time": 52.0,
-            "noteType": 1,
-            "releaseTime": 52.83333331346512,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
             "time": 52.33333334326744,
             "noteType": 0,
             "releaseTime": 52.33333334326744,
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 1,
             "time": 52.5,
             "noteType": 0,
             "releaseTime": 52.5,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 2,
             "time": 52.66666668653488,
             "noteType": 0,
             "releaseTime": 52.66666668653488,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 0,
             "time": 52.83333331346512,
             "noteType": 0,
             "releaseTime": 52.83333331346512,
             "bpm": 120.0
         },
         {
+            "lane": 2,
+            "time": 53.0,
+            "noteType": 1,
+            "releaseTime": 54.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 53.0,
+            "noteType": 0,
+            "releaseTime": 53.0,
+            "bpm": 120.0
+        },
+        {
             "lane": 3,
+            "time": 53.16666662693024,
+            "noteType": 0,
+            "releaseTime": 53.16666662693024,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 53.33333337306976,
+            "noteType": 0,
+            "releaseTime": 53.33333337306976,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
             "time": 53.5,
             "noteType": 0,
             "releaseTime": 53.5,
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 1,
             "time": 53.66666662693024,
             "noteType": 0,
             "releaseTime": 53.66666662693024,
@@ -1065,66 +1331,17 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 3,
             "time": 54.0,
             "noteType": 0,
             "releaseTime": 54.0,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 2,
             "time": 54.16666667163372,
             "noteType": 0,
             "releaseTime": 54.16666667163372,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
-            "time": 55.0,
-            "noteType": 0,
-            "releaseTime": 55.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 0,
-            "time": 54.5,
-            "noteType": 0,
-            "releaseTime": 54.5,
-            "bpm": 120.0
-        },
-        {
-            "lane": 2,
-            "time": 54.0,
-            "noteType": 1,
-            "releaseTime": 54.33333334326744,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
-            "time": 54.5,
-            "noteType": 1,
-            "releaseTime": 54.83333334326744,
-            "bpm": 120.0
-        },
-        {
-            "lane": 0,
-            "time": 55.0,
-            "noteType": 1,
-            "releaseTime": 55.33333334326744,
-            "bpm": 120.0
-        },
-        {
-            "lane": 1,
-            "time": 55.5,
-            "noteType": 1,
-            "releaseTime": 56.0,
-            "bpm": 120.0
-        },
-        {
-            "lane": 2,
-            "time": 55.5,
-            "noteType": 1,
-            "releaseTime": 56.0,
             "bpm": 120.0
         },
         {
@@ -1135,17 +1352,52 @@
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 0,
+            "time": 54.5,
+            "noteType": 0,
+            "releaseTime": 54.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
             "time": 54.66666668653488,
             "noteType": 0,
             "releaseTime": 54.66666668653488,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 0,
             "time": 54.83333331346512,
             "noteType": 0,
             "releaseTime": 54.83333331346512,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 54.0,
+            "noteType": 1,
+            "releaseTime": 54.5,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 54.5,
+            "noteType": 1,
+            "releaseTime": 55.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 1,
+            "time": 55.0,
+            "noteType": 1,
+            "releaseTime": 56.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 55.0,
+            "noteType": 0,
+            "releaseTime": 55.0,
             "bpm": 120.0
         },
         {
@@ -1156,10 +1408,31 @@
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 0,
             "time": 55.33333337306976,
             "noteType": 0,
             "releaseTime": 55.33333337306976,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
+            "time": 55.5,
+            "noteType": 1,
+            "releaseTime": 56.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 3,
+            "time": 55.5,
+            "noteType": 1,
+            "releaseTime": 56.0,
+            "bpm": 120.0
+        },
+        {
+            "lane": 0,
+            "time": 55.5,
+            "noteType": 1,
+            "releaseTime": 56.0,
             "bpm": 120.0
         }
     ]

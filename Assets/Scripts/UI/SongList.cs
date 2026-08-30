@@ -46,12 +46,7 @@ public class SongList : MonoBehaviour
         songIndicator = songIndicatorobj.GetComponent<SongIndicator>();
         SSheight = SSprefab.GetComponent<RectTransform>().rect.height;
         SIwidth = songIndicatorobj.GetComponent<RectTransform>().rect.width;
-        _customFolder.anchoredPosition = new Vector3(-15, _builtinSongCount * -SSheight-30, 0);
-        Song temp = songs[2];
-        // temp.record.Clear();
-        // temp.pattern.Clear();
-        Debug.Log(JsonUtility.ToJson(temp,true));
-        Debug.Log(Application.streamingAssetsPath);
+        _customFolder.anchoredPosition = new Vector3(-15, _builtinSongCount * -(SSheight+10)-15, 0);
         inputSystem_Actions = new InputSystem_Actions();
 
         _dataMaster = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>();

@@ -1867,7 +1867,7 @@ GameObject:
   - component: {fileID: 757484324}
   - component: {fileID: 757484323}
   m_Layer: 5
-  m_Name: DiffcultyText
+  m_Name: RatingText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2874,6 +2874,8 @@ MonoBehaviour:
   songNameText: {fileID: 935139257}
   artistText: {fileID: 1491319816}
   difficultyText: {fileID: 731767175}
+  ratingText: {fileID: 757484323}
+  jacketImage: {fileID: 1940585517}
   perfectCountText: {fileID: 825406644}
   greatCountText: {fileID: 542677475}
   goodCountText: {fileID: 1226789920}
@@ -2899,6 +2901,7 @@ MonoBehaviour:
   submitAction: {fileID: 4039409693550217708, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   inGameSceneName: InGameScene
   songSelectSceneName: SongSelectScene
+  defaultJacket: {fileID: 6307188255389831587, guid: 87d1dd9dc3f18ff4f8c92fe707b47321, type: 3}
 --- !u!1 &1147550598
 GameObject:
   m_ObjectHideFlags: 0

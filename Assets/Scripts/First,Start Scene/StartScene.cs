@@ -9,6 +9,10 @@ public class StartMenuUI : MonoBehaviour
     [Header("Panel Images")]
     [SerializeField] private Image inGamePanelImage;
     [SerializeField] private Image anotherPanelImage;
+    [SerializeField] private Image ExitPanelImage;
+
+    [Header("Exit Button")]
+    [SerializeField] private Button exitButton;
 
     [Header("Menu Texts")]
     [SerializeField] private TextMeshProUGUI inGameText;
@@ -25,13 +29,17 @@ public class StartMenuUI : MonoBehaviour
     [Header("Panel Colors")]
     [SerializeField] private Color normalPanelColor = new Color(1f, 1f, 1f, 0.25f);
     [SerializeField] private Color selectedPanelColor = new Color(1f, 1f, 1f, 0.45f);
+    [Header("Exit Sprite")]
+    [SerializeField] private Sprite exitSpriteInactive;
+    [SerializeField] private Sprite exitSpriteActive;
 
     private int currentIndex = 0;
-    private const int menuCount = 2;
+    private const int menuCount = 3;
 
     private void Start()
     {
         RefreshUI();
+        exitButton.onClick.AddListener(ExitGame);
     }
 
     private void Update()
@@ -82,6 +90,9 @@ public class StartMenuUI : MonoBehaviour
 
                 LoadScene(anotherSceneName);
                 break;
+            case 2:
+                ExitGame();
+                break;
         }
     }
 
@@ -100,6 +111,7 @@ public class StartMenuUI : MonoBehaviour
     {
         bool isInGameSelected = currentIndex == 0;
         bool isAnotherSelected = currentIndex == 1;
+        bool isExitSelected = currentIndex == 2;
 
         if (inGameText != null)
             inGameText.color = isInGameSelected ? selectedTextColor : normalTextColor;
@@ -112,5 +124,11 @@ public class StartMenuUI : MonoBehaviour
 
         if (anotherPanelImage != null)
             anotherPanelImage.color = isAnotherSelected ? selectedPanelColor : normalPanelColor;
+        if(ExitPanelImage != null)
+            ExitPanelImage.sprite = isExitSelected ? exitSpriteActive : exitSpriteInactive;
+    }
+    private void ExitGame()
+    {
+        Application.Quit();
     }
 }

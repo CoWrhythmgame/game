@@ -1,9 +1,0 @@
-{
-    "songname": "TestSong",
-    "artist": "MMM",
-    "bpm": 321.0,
-    "songPath": "Assets/Resources/Songs/test/test.mp3",
-    "previewPath": "Assets/Resources/Songs/test/test_preview.mp3",
-    "pattern": [],
-    "record": []
-}

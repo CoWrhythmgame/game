@@ -98,7 +98,7 @@ public class NoteObject : MonoBehaviour
         double currentTime = AudioSettings.dspTime-PauseManager.TotalPausedDspTime-startTime;
         if (!_isLong)
         {
-            ReleaseToPool();
+            Invoke("ReleaseToPool", 3f);
             return;
         }
         Invoke("ReleaseToPool", (float)(_targetReleaseTime - currentTime+3f));

@@ -18,6 +18,8 @@ public class ResultUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI songNameText;
     [SerializeField] private TextMeshProUGUI artistText;
     [SerializeField] private TextMeshProUGUI difficultyText;
+    [SerializeField] private TextMeshProUGUI ratingText;
+    [SerializeField] private Image jacketImage;
 
     [Header("Judge Count")]
     [SerializeField] private TextMeshProUGUI perfectCountText;
@@ -51,6 +53,8 @@ public class ResultUI : MonoBehaviour
     [Header("Scene Names")]
     [SerializeField] private string inGameSceneName = "InGameScene";
     [SerializeField] private string songSelectSceneName = "TestSongSelectScene";
+    [Header("dummy")]
+    [SerializeField] private Sprite defaultJacket;
 
     private int currentIndex = 0;
 
@@ -71,7 +75,7 @@ public class ResultUI : MonoBehaviour
 
         if (DataMaster.Instance == null)
         {
-            Debug.LogWarning("ResultUI: DataMaster°¡ ¾ø½À´Ï´Ù. ´õ¹Ì °á°ú¸¦ Ç¥½ÃÇÕ´Ï´Ù.");
+            Debug.LogWarning("ResultUI: DataMasterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½Õ´Ï´ï¿½.");
             ShowDummyResult();
             RefreshMenuUI();
             return;
@@ -83,7 +87,7 @@ public class ResultUI : MonoBehaviour
 
         if (song == null || string.IsNullOrEmpty(song.songname) || playData == null)
         {
-            Debug.LogWarning("ResultUI: Àü´Þ¹ÞÀº °á°ú µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù. ´õ¹Ì °á°ú¸¦ Ç¥½ÃÇÕ´Ï´Ù.");
+            Debug.LogWarning("ResultUI: ï¿½ï¿½ï¿½Þ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½Õ´Ï´ï¿½.");
             ShowDummyResult();
             RefreshMenuUI();
             return;
@@ -159,6 +163,7 @@ public class ResultUI : MonoBehaviour
         SetText(songNameText, "SongName");
         SetText(artistText, "Artist");
         SetText(difficultyText, "Difficulty");
+        SetText(ratingText, "0");
 
         SetText(perfectCountText, "1000");
         SetText(greatCountText, "100");
@@ -264,10 +269,16 @@ public class ResultUI : MonoBehaviour
         string songName = song != null ? song.songname : "Unknown Song";
         string artist = song != null ? song.artist : "Unknown Artist";
         string difficulty = GetDifficultyName(patternIndex);
+        string rating = song.patternInfo[patternIndex].difficulty.ToString("0.0");
+        Sprite jacketSprite = FileManager.LoadJacket(songName, DataMaster.Instance.GetIsBuiltin());
+
+        jacketImage.sprite = jacketSprite != null ? jacketSprite : defaultJacket; 
+
 
         SetText(songNameText, songName);
         SetText(artistText, artist);
         SetText(difficultyText, difficulty);
+        SetText(ratingText, rating);
 
         SetText(scoreText, Mathf.RoundToInt(playData.score).ToString());
         SetText(rateText, playData.prate.ToString("0.00") + "%");

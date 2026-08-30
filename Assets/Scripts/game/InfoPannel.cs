@@ -15,11 +15,12 @@ public class InfoPannel : MonoBehaviour
     [SerializeField] private TextPannel _percentPannel;
     #endregion
 
-    public void SetSongInfo(Song songData)
+    public void SetSongInfo(Song songData, bool isBuiltin)
     {
         _songNameText.text = songData.songname;
         _artistText.text = songData.artist;
         _bpmText.text = "BPM "+songData.bpm.ToString();
+        _jaketImage.sprite = FileManager.LoadJacket(songData.songname, isBuiltin);
     }
 
     public void SetJudgeCount(int[] judgeCount)
