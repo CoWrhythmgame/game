@@ -400,28 +400,28 @@
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 1,
             "time": 44.16666667163372,
             "noteType": 0,
             "releaseTime": 44.16666667163372,
             "bpm": 120.0
         },
         {
-            "lane": 0,
+            "lane": 2,
             "time": 44.33333334326744,
             "noteType": 0,
             "releaseTime": 44.33333334326744,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 3,
             "time": 45.0,
             "noteType": 0,
             "releaseTime": 45.0,
             "bpm": 120.0
         },
         {
-            "lane": 1,
+            "lane": 2,
             "time": 45.16666662693024,
             "noteType": 0,
             "releaseTime": 45.16666662693024,
@@ -435,14 +435,14 @@
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 0,
             "time": 46.0,
             "noteType": 0,
             "releaseTime": 46.0,
             "bpm": 120.0
         },
         {
-            "lane": 2,
+            "lane": 1,
             "time": 46.16666667163372,
             "noteType": 0,
             "releaseTime": 46.16666667163372,
@@ -457,23 +457,23 @@
         },
         {
             "lane": 3,
+            "time": 46.83333331346512,
+            "noteType": 0,
+            "releaseTime": 46.83333331346512,
+            "bpm": 120.0
+        },
+        {
+            "lane": 2,
             "time": 47.0,
             "noteType": 0,
             "releaseTime": 47.0,
             "bpm": 120.0
         },
         {
-            "lane": 3,
+            "lane": 1,
             "time": 47.16666662693024,
             "noteType": 0,
             "releaseTime": 47.16666662693024,
-            "bpm": 120.0
-        },
-        {
-            "lane": 3,
-            "time": 47.33333337306976,
-            "noteType": 0,
-            "releaseTime": 47.33333337306976,
             "bpm": 120.0
         },
         {

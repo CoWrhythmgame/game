@@ -47,7 +47,7 @@ public class PatternManager : MonoBehaviour
         }
         GetDataFromMaster();
 
-        _infoPannel.SetSongInfo(_songData);
+        _infoPannel.SetSongInfo(_songData, _isSongBuiltin);
 
         _scrollSpeed = _playOption.scrollSpeed;
         _noteoffset = _playOption.noteOffset;
