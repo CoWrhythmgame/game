@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -18,6 +19,7 @@ public class NotePoolManager : MonoBehaviour
     private List<Vector3> noteSpawnPos = new List<Vector3>();
 
     private IObjectPool<NoteObject> _notePool;
+    [SerializeField] private bool _isOnSetting = false;
 
     private void Awake()
     {
@@ -92,7 +94,12 @@ public class NotePoolManager : MonoBehaviour
 
         for(int i = 0; i < lanecount; i++)
         {
-            noteSpawnPos.Add(new Vector3(i-lanecount/2+0.5f, spawnY, 0f));
+            Vector3 pos = new Vector3(i-lanecount/2+0.5f, spawnY, 0f);
+            if (_isOnSetting)
+            {
+                pos.x = 7+i;
+            }
+            noteSpawnPos.Add(pos);
         }
     }
     // 실제 게임 중 노트를 스폰할 때 외부(패턴 매니저 등)에서 호출하는 함수

@@ -9,6 +9,7 @@ public class OptionMenuUI : MonoBehaviour
 
     [Header("Panel")]
     [SerializeField] private GameObject optionPanel;
+    [SerializeField] private GameObject optionLane;
     [Header("SEManager")]
     [SerializeField] private SEManager _KeySound;
     [SerializeField] private SEManager _MusicSound;
@@ -28,6 +29,10 @@ public class OptionMenuUI : MonoBehaviour
 
     [Header("Key Setting")]
     [SerializeField] private KeySettingManager keySettingManager;
+    [Header("Lane")]
+    [SerializeField] private PatternManager patternManager;
+    [SerializeField] private JudgementManager judgementManager;
+    [SerializeField] private TextPannel _LaneKeyPannel;
 
     private const int LaneKeyOptionStartIndex = 8;
     private const int LaneKeyOptionCount = 4;
@@ -81,8 +86,10 @@ public class OptionMenuUI : MonoBehaviour
     {
         IsOptionOpen = false;
 
-        if (optionPanel != null)
+        if (optionPanel != null){
             optionPanel.SetActive(false);
+            optionLane.SetActive(false);
+        }
     }
 
     private void OnDestroy()
@@ -207,8 +214,10 @@ public class OptionMenuUI : MonoBehaviour
         IsOptionOpen = true;
         currentIndex = 0;
 
-        if (optionPanel != null)
+        if (optionPanel != null){
             optionPanel.SetActive(true);
+            optionLane.SetActive(true);
+        }
 
         RefreshUI();
 
@@ -219,8 +228,10 @@ public class OptionMenuUI : MonoBehaviour
     {
         IsOptionOpen = false;
 
-        if (optionPanel != null)
+        if (optionPanel != null){
             optionPanel.SetActive(false);
+            optionLane.SetActive(false);
+        }
 
         Debug.Log("Option Close");
     }
@@ -364,6 +375,8 @@ public class OptionMenuUI : MonoBehaviour
     {
         RefreshNameTexts();
         RefreshValueTexts();
+        patternManager.UpdatePlayOption();
+        judgementManager.UpdatePlayOption();
     }
 
     private void RefreshNameTexts()
@@ -412,6 +425,7 @@ public class OptionMenuUI : MonoBehaviour
                 SetValueText(optionIndex, keySettingManager.GetLaneKeyDisplayName(i));
             }
         }
+        _LaneKeyPannel.SetContent(keySettingManager.GetLaneKeyDisplayName(0));
     }
 
     private void SetValueText(int index, string value)
