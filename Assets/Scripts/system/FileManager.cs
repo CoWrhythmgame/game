@@ -341,23 +341,39 @@ public class FileManager
         List<Record> records = new List<Record>();
 
         //json 변환
-        foreach(string pattern in patternInfosJson)
+        foreach (string pattern in patternInfosJson)
         {
-            if(string.IsNullOrEmpty(pattern))
+            if (string.IsNullOrEmpty(pattern))
             {
                 Debug.LogWarning($"[FileManager] 빈 PatternInfo JSON 문자열, 곡: {song.songname}");
+
+                // 난이도 인덱스를 유지하기 위해 빈 데이터 추가
+                patternInfos.Add(new PatternInfo());
                 continue;
             }
-            if(pattern == "{}")
+
+            if (pattern == "{}")
             {
                 Debug.LogWarning($"[FileManager] 존재하지 않는 PatternInfo JSON 문자열, 곡: {song.songname}");
+
+                // 난이도 인덱스를 유지하기 위해 빈 데이터 추가
+                patternInfos.Add(new PatternInfo());
                 continue;
             }
-            
+
             PatternInfo temp = GetClassFromString<PatternInfo>(pattern);
-            patternInfos.Add(temp);
+
+            if (temp != null)
+            {
+                patternInfos.Add(temp);
+            }
+            else
+            {
+                // 파싱 실패해도 인덱스가 밀리지 않도록 자리 유지
+                patternInfos.Add(new PatternInfo());
+            }
         }
-        foreach(string record in recordsJson)
+        foreach (string record in recordsJson)
         {
             if(string.IsNullOrEmpty(record))
             {   

@@ -53,12 +53,17 @@ public class SaveManager : MonoBehaviour
                 return false;
             }
 
+            // 현재 작업 중인 패턴을 메모리에 반영
             editorDifficultyUI.SaveCurrentPatternToMemory();
 
             int difficultyIndex = editorDifficultyUI.CurrentDifficultyIndex;
-            float difficultyLevel = editorDifficultyUI.GetDifficultyLevel(difficultyIndex);
 
-            Pattern pattern = _measureList.GetPattern();
+            // 테스트 플레이 전에 활성화된 모든 난이도를 자동 저장
+            if (!SavePattern())
+            {
+                Debug.LogWarning("테스트 플레이 전 패턴 자동 저장에 실패했습니다.");
+                return false;
+            }
 
             Song song = new Song
             {
@@ -67,26 +72,11 @@ public class SaveManager : MonoBehaviour
                 artist = editorLoadedSongData.artistName
             };
 
-            PatternInfo patternInfo = new PatternInfo
-            {
-                difficulty = Mathf.RoundToInt(difficultyLevel),
-                totalNoteCount = pattern.notes != null ? pattern.notes.Count : 0
-            };
-            FileManager.Editor_SavePattern(song, patternInfo, pattern, _editorSongInfoUI.GetDifficultyIndex());
-            byte[] jaketdata = _editorSongFileLoader.GetJacketImageData();
-            if(jaketdata != null)
-            {
-                FileManager.SaveJacket(song.songname, false, jaketdata);
-            }
-            else
-            {
-                Debug.LogWarning("자켓 이미지 데이터가 없습니다. 자켓 이미지를 저장하지 않습니다.");
-            }
+            song = FileManager.LoadSong(false)
+                .Where(x => x.songname == song.songname)
+                .ToArray()[0];
 
-            song = FileManager.LoadSong(false).Where(x => x.songname == song.songname).ToArray()[0];
             AudioClip musicClip = await FileManager.LoadMusic(song, false);
-            dataMaster.SetSongData(song, editorLoadedSongData.selectedDifficultyIndex);
-
 
             dataMaster.SetSongData(song, difficultyIndex);
             dataMaster.SetMusic(musicClip);
