@@ -24,7 +24,7 @@ public class NoteObject : MonoBehaviour
     public void Warming(NotePosManager notePosManager)
     {
         _transform = GetComponent<Transform>();
-        GetComponent<SpriteRenderer>().sortingOrder = 1;
+        GetComponent<SpriteRenderer>().sortingOrder = 100;
         _judgePos = GameObject.FindGameObjectWithTag("Judgement").transform.position;
         _notePosManager = notePosManager;
     }   

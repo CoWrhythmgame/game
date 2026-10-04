@@ -2199,6 +2199,8 @@ MonoBehaviour:
   _infoPannel: {fileID: 144558223}
   _scrollSpeed: 1
   _difficultyIndex: 0
+  _optionMenuUI: {fileID: 0}
+  _isOnSetting: 0
 --- !u!114 &573148991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4287,7 +4289,7 @@ GameObject:
   - component: {fileID: 1299873564}
   - component: {fileID: 1299873566}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Toast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5375,6 +5377,7 @@ MonoBehaviour:
   _infoPannel: {fileID: 144558223}
   _judgeText: {fileID: 1299873566}
   _noteHitEffectPool: {fileID: 1474419734}
+  _isOnSetting: 0
 --- !u!4 &1599285179
 Transform:
   m_ObjectHideFlags: 0

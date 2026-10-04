@@ -25,7 +25,6 @@ public class NotePosManager : MonoBehaviour
     {
         _factorViewer = _bpmFactor;
         double currentTime = AudioSettings.dspTime -PauseManager.TotalPausedDspTime - _startTime;
-        //HACK: 총 정지 시간을 확인할 필요가 있음
 
         for(int i = _activeNoteList.Count - 1; i >= 0; i--)
         {

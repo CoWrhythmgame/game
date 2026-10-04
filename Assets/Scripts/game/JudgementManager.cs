@@ -29,15 +29,11 @@ public class JudgementManager : MonoBehaviour
     private readonly double _longPerfectWindow = 0.08335; // ±50.01ms
     private double _FSwindow = 0.05001;
     private bool _isHold;
+    [Header("ForSettingMenu")]
+    [SerializeField] private bool _isOnSetting = false;
 
     private void Awake()
     {
-        // 4개의 레인 버퍼 초기화
-        _laneBuffers = new Queue<NoteObject>[4];
-        for (int i = 0; i < 4; i++)
-        {
-            _laneBuffers[i] = new Queue<NoteObject>();
-        }
         _judgeCount = new int[4]{0,0,0,0};
         _FSList = new int[2]{0,0};
         scoreManager = transform.GetComponent<ScoreManager>();
@@ -45,8 +41,18 @@ public class JudgementManager : MonoBehaviour
 
         _judgeY = GameObject.FindGameObjectWithTag("Judgement").transform.position.y;
 
-
+        if(_isOnSetting)return;
         _infoPannel.SetJudgeCount(_judgeCount);
+    }
+    void OnEnable()
+    {
+        // 4개의 레인 버퍼 초기화
+        _laneBuffers = new Queue<NoteObject>[4];
+        for (int i = 0; i < 4; i++)
+        {
+            _laneBuffers[i] = new Queue<NoteObject>();
+        }
+        
     }
 
     // 1. 노트 스포너가 노트를 생성할 때 버퍼에 등록합니다.
@@ -151,18 +157,25 @@ public class JudgementManager : MonoBehaviour
     // 타격 성공 처리
     private void ProcessHit(Queue<NoteObject> buffer, NoteObject note, string judgment)
     {
-        Debug.Log($"판정: {judgment}");
-        _judgeText.ShowToast(judgment, 0.5f);
-        scoreManager.AddJudgment(judgment);
-        processCount(judgment);
-
-
         if(!note.GetIsLong()) buffer.Dequeue(); // 롱노트가 아니면 버퍼에서 제거
         note.OnHit(_startAudioTime);     // 타격 이펙트 재생 및 Pool로 반환
+
+        Vector3 pos = new Vector3(note.GetLaneIndex() - 1.5f, _judgeY, 0f);
+        if(_isOnSetting) pos.x = 7f;
+
+        _noteHitEffectPool.PlayHitEffect(judgment, pos);
+
+        Debug.Log($"판정: {judgment}");
+        _judgeText.ShowToast(judgment, 0.5f);
+
+        if (_isOnSetting)
+        {
+            return;
+        }
+
+        scoreManager.AddJudgment(judgment);
+        processCount(judgment);
         _infoPannel.SetJudgeCount(_judgeCount);
-
-        _noteHitEffectPool.PlayHitEffect(judgment, new Vector3(note.GetLaneIndex() - 1.5f, _judgeY, 0f));
-
         //이거때문에 note메니저랑 judgement메니저끼리 상호간섭함
         //더 좋은 방안이 없을까
         patternManager.CheckPatternEnd();
@@ -186,9 +199,6 @@ public class JudgementManager : MonoBehaviour
     }
     private void ProcessMiss(Queue<NoteObject> buffer, NoteObject note)
     {
-        Debug.Log("Miss! (놓침)");
-        _judgeText.ShowToast("Miss", 0.5f);
-        scoreManager.AddJudgment("Miss");
         if(note.GetIsLong() && !note.GetIsHolding())
         {
             scoreManager.AddJudgment("Miss");
@@ -197,6 +207,12 @@ public class JudgementManager : MonoBehaviour
         processCount("Miss");
         buffer.Dequeue();
         note.OnMiss(_startAudioTime); // Pool로 반환
+
+        Debug.Log("Miss! (놓침)");
+        _judgeText.ShowToast("Miss", 0.5f);
+        if(_isOnSetting) return;
+
+        scoreManager.AddJudgment("Miss");
         _infoPannel.SetJudgeCount(_judgeCount);
 
         patternManager.CheckPatternEnd();
@@ -219,7 +235,7 @@ public class JudgementManager : MonoBehaviour
         _startAudioTime = audioTime;
         _startInputTime = inputTime;
         
-        _playOption = GameObject.FindGameObjectWithTag("DataMaster").GetComponent<DataMaster>().GetPlayOption();
+        _playOption = patternManager.GetPlayOption();
         _noteOffset = _playOption.noteOffset;
     }
 
@@ -265,6 +281,14 @@ public class JudgementManager : MonoBehaviour
             }
         }
     }
+    #region Only Option
+    public void UpdatePlayOption()
+    {
+        if(patternManager == null) patternManager = GameObject.FindGameObjectWithTag("NoteManager").GetComponent<PatternManager>();
+        _playOption = patternManager.GetPlayOption();
+        _noteOffset = _playOption.noteOffset;
+    }
+    #endregion
     #region GameEnd
     public PlayData OnPatternEnd()
     {

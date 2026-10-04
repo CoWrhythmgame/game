@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
@@ -25,11 +27,32 @@ public class PatternManager : MonoBehaviour
     private float _songBPM = 1;
     private bool _isLoaded=false;
     private bool _isSongBuiltin = false;
+    [Header("ForOptionMenu")]//옵션에 쓸 레인용 변수
+    [SerializeField] private OptionMenuUI _optionMenuUI;
+    [SerializeField] private bool _isOnSetting = false;
+    [SerializeField] private AudioClip _optionMusic;
+    private Note _optionNote;
     void Start()
     {
+        
         SetUp();
 
+
         Invoke("StartSong", 1f);
+    }
+    private void OnEnable() // 이벤트 받는 부분
+    {
+        PauseManager.OnGamePaused += PauseMusic;
+        PauseManager.OnGameResumed += ResumeMusic;
+    }
+    private void OnDisable()
+    {
+        PauseManager.OnGamePaused -= PauseMusic;
+        PauseManager.OnGameResumed -= ResumeMusic;
+        if(!_isOnSetting)return;
+        _isLoaded = false;
+        _audioSource.Stop();
+        _audioSource.time = 0f;
     }
     private void SetUp()
     {
@@ -45,15 +68,27 @@ public class PatternManager : MonoBehaviour
         {
             _noteQueue[i] = new Queue<Note>();
         }
-        GetDataFromMaster();
-
-        _infoPannel.SetSongInfo(_songData, _isSongBuiltin);
+        if (_isOnSetting)
+        {
+            _playOption = _optionMenuUI.GetCurrentPlayOption();
+            _songData = new Song
+            {
+                bpm = 120,
+            };
+            _audioSource.clip = _optionMusic;
+            _audioSource.loop = true;
+        }
+        else
+        {
+            GetDataFromMaster();
+            _infoPannel.SetSongInfo(_songData, _isSongBuiltin);
+            _audioSource.clip = _music;
+        }
 
         _scrollSpeed = _playOption.scrollSpeed;
         _noteoffset = _playOption.noteOffset;
         _songBPM = _songData.bpm;
         _tripTime = 2d/_scrollSpeed;
-        _audioSource.clip = _music;
     }
     //datamaster에서 가져옴
     private void GetDataFromMaster()
@@ -70,10 +105,18 @@ public class PatternManager : MonoBehaviour
         _startAudioTime = AudioSettings.dspTime;
         _startInputTime = InputState.currentTime;
         
+        _optionNote = new Note
+        {
+            time = 2d,
+            bpm = 120
+        };
+        GetComponent<NotePosManager>().SetStartTime(_startAudioTime);
+        judgementManager.GetComponent<JudgementManager>().SetStartTime(_startAudioTime, _startInputTime);
+
+        if(_isOnSetting)return;
+
         ReadPattern();
 
-        transform.GetComponent<NotePosManager>().SetStartTime(_startAudioTime);
-        judgementManager.GetComponent<JudgementManager>().SetStartTime(_startAudioTime, _startInputTime);
         judgementManager.GetComponent<ScoreManager>().Initialize(_noteList.Count,_noteList.Where(c=>c.noteType == NoteType.hold).ToList().Count);
     }
     private void ReadPattern()
@@ -138,16 +181,6 @@ public class PatternManager : MonoBehaviour
             SceneManager.LoadScene("ResultScene");
         }
     }
-    private void OnEnable() // 이벤트 받는 부분
-    {
-        PauseManager.OnGamePaused += PauseMusic;
-        PauseManager.OnGameResumed += ResumeMusic;
-    }
-    private void OnDisable()
-    {
-        PauseManager.OnGamePaused -= PauseMusic;
-        PauseManager.OnGameResumed -= ResumeMusic;
-    }
     private void PauseMusic()
     {
         if (_audioSource != null && _audioSource.isPlaying)
@@ -198,20 +231,47 @@ public class PatternManager : MonoBehaviour
                 _audioSource.Play();
             }
         }
-        for(int i = 0; i < 4; i++)
-        {
-            if(_noteQueue[i].Count > 0){
-                Note note = _noteQueue[i].Peek();
-                if(currentTime >= note.time - _tripTime*note.bpm/_songBPM/Mathf.Clamp(_scrollSpeed, float.MinValue, 1f)/Mathf.Clamp(NotePosManager._bpmFactor, float.MinValue, 1f)+Mathf.Clamp(_noteoffset, float.MinValue, 0))
-                {
 
-                    notePoolManager.SpawnNote(note, _scrollSpeed, note.bpm/_songBPM);
-                    _noteQueue[i].Dequeue();
+        if (_isOnSetting)//설정 테스트용
+        {
+            Note note = _optionNote;
+            if(currentTime >= note.time - _tripTime*note.bpm/_songBPM/Mathf.Clamp(_scrollSpeed, float.MinValue, 1f)/Mathf.Clamp(NotePosManager._bpmFactor, float.MinValue, 1f)+Mathf.Clamp(_noteoffset, float.MinValue, 0))
+            {
+                Debug.Log($"[spawn] {currentTime}, {_tripTime*note.bpm/_songBPM/Mathf.Clamp(_scrollSpeed, float.MinValue, 1f)/Mathf.Clamp(NotePosManager._bpmFactor, float.MinValue, 1f)+Mathf.Clamp(_noteoffset, float.MinValue, 0)}");
+                notePoolManager.SpawnNote(note, _scrollSpeed, note.bpm/_songBPM);
+                _optionNote.time += 1d;
+            }
+        }
+        else{//인게임
+            for(int i = 0; i < 4; i++)
+            {
+                if(_noteQueue[i].Count > 0){
+                    Note note = _noteQueue[i].Peek();
+                    if(currentTime >= note.time - _tripTime*note.bpm/_songBPM/Mathf.Clamp(_scrollSpeed, float.MinValue, 1f)/Mathf.Clamp(NotePosManager._bpmFactor, float.MinValue, 1f)+Mathf.Clamp(_noteoffset, float.MinValue, 0))
+                    {
+
+                        notePoolManager.SpawnNote(note, _scrollSpeed, note.bpm/_songBPM);
+                        _noteQueue[i].Dequeue();
+                    }
+                    //여기에 롱노트 관련 삽입
                 }
-                //여기에 롱노트 관련 삽입
             }
         }
     }
+
+    #region Only Option
+    public PlayOption GetPlayOption()
+    {
+        return _playOption;
+    }
+
+    public void UpdatePlayOption()
+    {
+        _playOption = _optionMenuUI.GetCurrentPlayOption();
+        _scrollSpeed = _playOption.scrollSpeed;
+        _noteoffset = _playOption.noteOffset;
+    }
+    #endregion
     #region 테스트용
     private void TestFillList(int lane, double time, NoteType noteType = NoteType.single, double releaseTime = 0)
     {
